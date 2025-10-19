@@ -18,7 +18,8 @@ namespace LibraryWeb.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // 🔹 Додаємо обмеження для decimal
+
+            // Обмеження для decimal
             modelBuilder.Entity<Membership>()
                 .Property(m => m.Price)
                 .HasPrecision(18, 2);
@@ -31,57 +32,72 @@ namespace LibraryWeb.Data
                 .Property(r => r.Amount)
                 .HasPrecision(18, 2);
 
-            // 🔹 Встановлюємо зв’язки
+            // User → Loans та Reservations (Reader)
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Loans)
-                .WithOne()
+                .WithOne(l => l.Reader)
                 .HasForeignKey(l => l.ReaderID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reservations)
-                .WithOne()
+                .WithOne(r => r.Reader)
                 .HasForeignKey(r => r.ReaderID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Payment → User (платник)
+            // Payment → User (платник) та Employee (той, хто обробляв)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(p => p.UserID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Payment → Employee (той, хто обробляв)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Employee)
                 .WithMany()
                 .HasForeignKey(p => p.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Loan>()
-               .HasOne(l => l.Reader)
-               .WithMany(u => u.Loans)
-               .HasForeignKey(l => l.ReaderID)
-               .OnDelete(DeleteBehavior.Restrict); // 🔹 не каскадно
-
+            // Loan → Employee
             modelBuilder.Entity<Loan>()
                 .HasOne(l => l.Employee)
                 .WithMany()
                 .HasForeignKey(l => l.EmployeeID)
-                .OnDelete(DeleteBehavior.Restrict); // 🔹 не каскадно
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Reservation>()
-              .HasOne(r => r.Reader)
-              .WithMany(u => u.Reservations)
-              .HasForeignKey(r => r.ReaderID)
-              .OnDelete(DeleteBehavior.Restrict);
-
+            // Reservation → Employee
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Employee)
                 .WithMany()
                 .HasForeignKey(r => r.EmployeeID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Membership → User (Reader)
+            modelBuilder.Entity<Membership>()
+                .HasOne(m => m.Reader)
+                .WithOne(u => u.Membership)
+                .HasForeignKey<Membership>(m => m.ReaderID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Book → Copies
+            modelBuilder.Entity<Book>()
+                .HasMany(b => b.Copies)
+                .WithOne(c => c.Book)
+                .HasForeignKey(c => c.BookID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Copy → Loans та Reservations
+            modelBuilder.Entity<Copy>()
+                .HasMany(c => c.Loans)
+                .WithOne(l => l.Copy)
+                .HasForeignKey(l => l.InventoryNum)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Copy>()
+                .HasMany(c => c.Reservations)
+                .WithOne(r => r.Copy)
+                .HasForeignKey(r => r.InventoryNum)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
