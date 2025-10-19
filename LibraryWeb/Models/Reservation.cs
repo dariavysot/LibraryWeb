@@ -18,7 +18,7 @@ namespace LibraryWeb.Models
         // Foreign key → Reader (User subtype)
         [ForeignKey("Reader")]
         public int ReaderID { get; set; }
-        public virtual Reader Reader { get; set; } = null!;
+        public virtual User Reader { get; set; } = null!;
 
         // Foreign key → Copy
         [ForeignKey("Copy")]
@@ -28,6 +28,6 @@ namespace LibraryWeb.Models
         // Хто обробляв (опціонально)
         [ForeignKey("Employee")]
         public int? EmployeeID { get; set; }
-        public virtual Employee? Employee { get; set; }
+        public virtual User? Employee { get; set; }
     }
 }

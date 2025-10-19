@@ -30,6 +30,6 @@ namespace LibraryWeb.Models
         // Хто обробляв (якщо потрібно)
         [ForeignKey("Employee")]
         public int? EmployeeID { get; set; }
-        public virtual Employee? Employee { get; set; }
+        public virtual User? Employee { get; set; }
     }
 }

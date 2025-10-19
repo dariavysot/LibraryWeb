@@ -23,6 +23,6 @@ namespace LibraryWeb.Models
         // Foreign key → Reader (User subtype)
         [ForeignKey("Reader")]
         public int ReaderID { get; set; }
-        public virtual Reader Reader { get; set; } = null!;
+        public virtual User Reader { get; set; } = null!;
     }
 }

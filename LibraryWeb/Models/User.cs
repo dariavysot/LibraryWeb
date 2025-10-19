@@ -3,27 +3,40 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LibraryWeb.Models
 {
+    public enum UserRole
+    {
+        Reader,
+        Employee,
+        Admin
+    }
+
     public class User
     {
         [Key]
         public int UserID { get; private set; }
 
         [Required, MaxLength(150)]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
         [Required, MaxLength(50)]
-        public string Login { get; set; } = string.Empty;
+        public required string Login { get; set; }
 
-        [Required]
-        public string UserPassword { get; set; } = string.Empty;
+        [Required, MaxLength(100)]
+        public required string UserPassword { get; set; }
 
         [MaxLength(20)]
-        public string Phone { get; set; } = string.Empty;
+        public string? Phone { get; set; }
 
         [MaxLength(100)]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
+
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Reader;
 
         // Навігаційні властивості
+        public virtual Membership? Membership { get; set; }
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
+        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }
