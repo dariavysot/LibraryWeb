@@ -7,7 +7,7 @@ namespace LibraryWeb.Models
     public class Membership
     {
         [Key]
-        public int MembershipID { get; set; }
+        public int MembershipID { get; private set; }
 
         [MaxLength(50)]
         public string Type { get; set; } = string.Empty;

@@ -102,7 +102,7 @@ namespace LibraryWeb.Data
                 .HasForeignKey(r => r.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Ініціалізація колекцій для Employee та Reader, щоб уникнути CS8618
+            // Ініціалізація колекцій для Employee та Reader
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.Loans)
                 .WithOne(l => l.Employee)

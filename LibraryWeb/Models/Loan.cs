@@ -6,7 +6,7 @@ namespace LibraryWeb.Models
     public class Loan
     {
         [Key]
-        public int LoanID { get; set; }
+        public int LoanID { get; private set; }
 
         public DateTime StartDate { get; set; } = DateTime.Now;
         public DateTime EndDate { get; set; } = DateTime.Now.AddDays(14);

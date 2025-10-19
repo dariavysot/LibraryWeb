@@ -5,7 +5,7 @@ namespace LibraryWeb.Models
     public class Book
     {
         [Key]
-        public int BookID { get; set; }
+        public int BookID { get; private set; }
 
         [Required, MaxLength(200)]
         public string Title { get; set; } = string.Empty;
@@ -30,6 +30,6 @@ namespace LibraryWeb.Models
         public DateTime DateAdded { get; set; } = DateTime.Now;
 
         // Зв’язки
-        public virtual ICollection<Copy> Copies { get; set; } = new List<Copy>(); // ініціалізація
+        public virtual ICollection<Copy> Copies { get; set; } = new List<Copy>();
     }
 }

@@ -6,7 +6,7 @@ namespace LibraryWeb.Models
     public class User
     {
         [Key]
-        public int UserID { get; set; }
+        public int UserID { get; private set; }
 
         [Required, MaxLength(150)]
         public string Name { get; set; } = string.Empty;
