@@ -36,6 +36,11 @@ namespace LibraryWeb.Controllers
             if (string.IsNullOrWhiteSpace(model.UserPassword))
                 ModelState.AddModelError("UserPassword", "Пароль обов’язковий");
 
+            if (model.BirthDate == default)
+                ModelState.AddModelError("BirthDate", "Дата народження обов’язкова");
+            else if (model.BirthDate > DateTime.Today)
+                ModelState.AddModelError("BirthDate", "Дата народження не може бути в майбутньому");
+
             if (_context.Users.Any(u => u.Login == model.Login))
                 ModelState.AddModelError("Login", "Користувач з таким логіном вже існує!");
 

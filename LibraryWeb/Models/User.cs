@@ -31,6 +31,9 @@ namespace LibraryWeb.Models
         [MaxLength(100)]
         public string? Email { get; set; }
 
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate { get; set; }
+
         [Required]
         public UserRole Role { get; set; } = UserRole.Reader;
 

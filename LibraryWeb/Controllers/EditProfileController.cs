@@ -68,6 +68,12 @@ namespace LibraryWeb.Controllers
             if (_context.Users.Any(u => u.Login == model.Login && u.UserID != userId))
                 ModelState.AddModelError("Login", "Цей логін уже використовується");
 
+            if (model.BirthDate == default)
+                ModelState.AddModelError("BirthDate", "Дата народження обов’язкова");
+            else if (model.BirthDate > DateTime.Today)
+                ModelState.AddModelError("BirthDate", "Дата народження не може бути в майбутньому");
+
+
             if (!ModelState.IsValid)
                 return View("~/Views/User/EditProfile.cshtml", model);
 
@@ -75,6 +81,7 @@ namespace LibraryWeb.Controllers
             user.Login = model.Login;
             user.Email = model.Email;
             user.Phone = model.Phone;
+            user.BirthDate = model.BirthDate;
 
             if (!string.IsNullOrWhiteSpace(model.UserPassword))
             {

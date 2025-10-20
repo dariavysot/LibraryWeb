@@ -51,6 +51,11 @@
         <input asp-for="Phone" type="text" class="form-control" />
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
+    <div class="mb-3">
+        <label>Дата народження</label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
 
     <button type="submit" class="btn btn-primary mt-2">Зареєструватися</button>
 </form>
