@@ -34,6 +34,8 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
+            ViewBag.Success = TempData["Success"] as string;
+
             return View("~/Views/User/Profile.cshtml", user);
         }
     }
