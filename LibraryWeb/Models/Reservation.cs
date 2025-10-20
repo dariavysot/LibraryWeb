@@ -6,7 +6,7 @@ namespace LibraryWeb.Models
     public class Reservation
     {
         [Key]
-        public int ReservationID { get; private set; }
+        public int ReservationID { get; set; }
         public DateTime StartDate { get; set; } = DateTime.Now;
         public DateTime EndDate { get; set; }
 

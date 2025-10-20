@@ -6,7 +6,7 @@ namespace LibraryWeb.Models
     public class Payment
     {
         [Key]
-        public int PaymentID { get; private set; }
+        public int PaymentID { get; set; }
 
         public decimal Amount { get; set; } = 0m;
         public DateTime Date { get; set; } = DateTime.Now;

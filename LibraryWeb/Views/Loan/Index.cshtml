@@ -1,0 +1,54 @@
+﻿@model IEnumerable<LibraryWeb.Models.Loan>
+
+<h2>Список позик</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Книга</th>
+            <th>Примірник №</th>
+            <th>Читач</th>
+            <th>Статус</th>
+            <th>Початок</th>
+            <th>Кінець</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.LoanID</td>
+                <td>@loan.Copy.Book.Title</td>
+                <td>@loan.InventoryNum</td>
+                <td>@loan.Reader.Name</td>
+                <td>@loan.Status</td>
+                <td>@loan.StartDate.ToShortDateString()</td>
+                <td>@loan.EndDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn btn-info btn-sm">Деталі</a>
+                    <a asp-action="Edit" asp-route-id="@loan.LoanID" class="btn btn-warning btn-sm">Редагувати</a>
+                    <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" style="display:inline"
+                          onsubmit="return confirm('Видалити цю позику?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                    </form>
+                    @if (loan.Status != "Повернено")
+                    {
+                        <form asp-action="Return" asp-route-id="@loan.LoanID" method="post" style="display:inline"
+                              onsubmit="return confirm('Позначити як повернену?');">
+                            <button type="submit" class="btn btn-success btn-sm">Повернено</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>

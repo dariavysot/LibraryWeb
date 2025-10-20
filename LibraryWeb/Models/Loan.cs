@@ -8,8 +8,8 @@ namespace LibraryWeb.Models
         [Key]
         public int LoanID { get; private set; }
 
-        public DateTime StartDate { get; set; } = DateTime.Now;
-        public DateTime EndDate { get; set; } = DateTime.Now.AddDays(14);
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
