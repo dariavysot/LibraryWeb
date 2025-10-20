@@ -1,5 +1,10 @@
 ﻿using LibraryWeb.Data;
+using LibraryWeb.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace LibraryWeb.Controllers
 {
@@ -20,27 +25,50 @@ namespace LibraryWeb.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Index(string login, string password)
+        public async Task<IActionResult> Index(string login, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Login == login && u.UserPassword == password);
-
+            var user = _context.Users.FirstOrDefault(u => u.Login == login);
             if (user == null)
             {
                 ViewBag.Error = "Невірний логін або пароль.";
                 return View("~/Views/User/Login.cshtml");
             }
 
-            HttpContext.Session.SetInt32("UserID", user.UserID);
-            HttpContext.Session.SetString("UserName", user.Name);
-            HttpContext.Session.SetString("UserRole", user.Role.ToString());
+            var hasher = new PasswordHasher<User>();
+            var result = hasher.VerifyHashedPassword(user, user.UserPassword, password);
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                ViewBag.Error = "Невірний логін або пароль.";
+                return View("~/Views/User/Login.cshtml");
+            }
+
+            // Створюємо Claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim(ClaimTypes.Name, user.Name ?? ""),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(30)
+                });
 
             return RedirectToAction("Index", "Profile");
         }
 
         [HttpGet("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Login");
         }
     }

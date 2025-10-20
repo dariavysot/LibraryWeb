@@ -14,7 +14,7 @@ namespace LibraryWeb.Models
     public class User
     {
         [Key]
-        public int UserID { get; private set; }
+        public int UserID { get; set; }
 
         [Required, MaxLength(150)]
         public required string Name { get; set; }

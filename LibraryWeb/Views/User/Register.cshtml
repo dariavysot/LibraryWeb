@@ -1,23 +1,62 @@
 ﻿@model LibraryWeb.Models.User
+
 <h2>Реєстрація</h2>
+
+<!-- Повідомлення про успіх -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<!-- Повідомлення про глобальні помилки -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
 <form asp-action="Index" asp-controller="Registration" method="post">
-    <div>
-        <label>Ім’я</label>
-        <input asp-for="Name" class="form-control" required />
+    <div class="mb-3">
+        <label class="form-label">Ім’я</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <div>
-        <label>Логін</label>
-        <input asp-for="Login" class="form-control" required />
+
+    <div class="mb-3">
+        <label class="form-label">Логін</label>
+        <input asp-for="Login" class="form-control" />
+        <span asp-validation-for="Login" class="text-danger"></span>
     </div>
-    <div>
-        <label>Пароль</label>
-        <input asp-for="UserPassword" class="form-control" type="password" required />
+
+    <div class="mb-3">
+        <label class="form-label">Пароль</label>
+        <input asp-for="UserPassword" type="password" class="form-control" />
+        <span asp-validation-for="UserPassword" class="text-danger"></span>
     </div>
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" class="form-control" type="email" required />
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" type="email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Телефон</label>
+        <input asp-for="Phone" type="text" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary mt-2">Зареєструватися</button>
 </form>
+
 <p><a asp-controller="Login" asp-action="Index">Увійти</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

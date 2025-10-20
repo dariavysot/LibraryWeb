@@ -1,22 +1,26 @@
 ﻿using LibraryWeb;
 using LibraryWeb.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Підключення бази даних
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// MVC
 builder.Services.AddControllersWithViews();
 
-// Додаємо підтримку сесій
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // сесія 30 хв
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
+// Додаємо підтримку cookie-based authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/user/login";           // якщо користувач не авторизований
+        options.AccessDeniedPath = "/user/access-denied"; // якщо доступ заборонений
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);  // час життя cookie
+        options.SlidingExpiration = true;                // автоматичне продовження сесії
+    });
 
 var app = builder.Build();
 
@@ -32,9 +36,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Використовуємо сесію перед авторизацією
-app.UseSession();
-
+//  Додаємо автентифікацію та авторизацію
+app.UseAuthentication(); // повинно бути перед UseAuthorization
 app.UseAuthorization();
 
 // Маршрути

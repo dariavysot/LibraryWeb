@@ -1,9 +1,13 @@
 ﻿using LibraryWeb.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LibraryWeb.Controllers
 {
+    [Authorize]
     [Route("user")]
     public class ProfileController : Controller
     {
@@ -15,22 +19,28 @@ namespace LibraryWeb.Controllers
         }
 
         [HttpGet("profile")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var userId = HttpContext.Session.GetInt32("UserID");
-
-            if (userId == null)
+            // Отримуємо ID користувача з claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                // Якщо користувач неавторизований — відправляємо на сторінку логіну
                 return RedirectToAction("Index", "Login");
+            }
 
-            var user = _context.Users
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = await _context.Users
                 .Include(u => u.Membership)
                 .Include(u => u.Loans)
                 .Include(u => u.Payments)
-                .FirstOrDefault(u => u.UserID == userId);
+                .FirstOrDefaultAsync(u => u.UserID == userId);
 
             if (user == null)
             {
-                HttpContext.Session.Clear();
+                // Якщо користувача не знайдено — знищуємо сесію
+                await HttpContext.SignOutAsync();
                 return RedirectToAction("Index", "Login");
             }
 
