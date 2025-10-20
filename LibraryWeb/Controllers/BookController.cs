@@ -83,5 +83,91 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = $"Книгу '{model.Title}' додано ({copyCount} примірників).";
             return RedirectToAction("Index");
         }
+        [HttpGet("edit/{id}")]
+        public IActionResult Edit(int id)
+        {
+            var book = _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefault(b => b.BookID == id);
+
+            if (book == null)
+                return NotFound();
+
+            ViewBag.CopyCount = book.Copies.Count;
+            return View("~/Views/Book/Edit.cshtml", book);
+        }
+
+        [HttpPost("edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Book model, int copyCount)
+        {
+            var book = _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefault(b => b.BookID == id);
+
+            if (book == null)
+                return NotFound();
+
+            if (model.PublicationYear != null && model.PublicationYear > DateTime.Now.Year)
+            {
+                ModelState.AddModelError("PublicationYear", "Рік видання не може бути більшим за поточний.");
+            }
+
+            if (copyCount < 1)
+            {
+                ViewBag.CopyCountError = "Кількість примірників має бути не менше 1.";
+            }
+
+            if (!ModelState.IsValid || copyCount < 1)
+                return View("~/Views/Book/Edit.cshtml", model);
+
+            // Оновлюємо поля книги
+            book.Title = model.Title;
+            book.Author = model.Author;
+            book.Type = model.Type;
+            book.ISBN = model.ISBN;
+            book.Language = model.Language;
+            book.PublishingHouse = model.PublishingHouse;
+            book.PublicationYear = model.PublicationYear;
+
+            // Кількість примірників
+            int currentCount = book.Copies.Count;
+
+            if (copyCount > currentCount)
+            {
+                // Додаємо нові копії
+                for (int i = 0; i < copyCount - currentCount; i++)
+                {
+                    _context.Copies.Add(new Copy
+                    {
+                        BookID = book.BookID,
+                        Condition = "Нова",
+                        Status = "Доступна"
+                    });
+                }
+            }
+            else if (copyCount < currentCount)
+            {
+                // Видаляємо зайві (тільки доступні)
+                var removableCopies = book.Copies
+                    .Where(c => c.Status == "Доступна")
+                    .Take(currentCount - copyCount)
+                    .ToList();
+
+                if (removableCopies.Count < (currentCount - copyCount))
+                {
+                    ModelState.AddModelError("", "Не можна зменшити кількість, бо деякі примірники позичені.");
+                    ViewBag.CopyCount = book.Copies.Count;
+                    return View("~/Views/Book/Edit.cshtml", book);
+                }
+
+                _context.Copies.RemoveRange(removableCopies);
+            }
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Книгу успішно оновлено!";
+            return RedirectToAction("Index");
+        }
     }
 }
