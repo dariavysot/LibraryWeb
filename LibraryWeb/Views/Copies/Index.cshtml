@@ -1,0 +1,44 @@
+﻿@model IEnumerable<LibraryWeb.Models.Copy>
+
+<h2>Примірники книги: @ViewBag.BookTitle</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Інвентарний номер</th>
+            <th>Стан</th>
+            <th>Статус</th>
+            <th>Дата повернення</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var copy in Model)
+        {
+            <tr>
+                <td>@copy.InventoryNum</td>
+                <td>@copy.Condition</td>
+                <td>@copy.Status</td>
+                <td>@(copy.ReturnDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                <td>
+                    <form asp-action="Delete" asp-controller="Copies" asp-route-id="@copy.InventoryNum" method="post" style="display:inline"
+                          onsubmit="return confirm('@(copy.Status == "Доступна" && Model.Count() == 1
+                                                             ? "Це останній примірник книги. Після видалення дані про книгу будуть видалені. Ви впевнені?"
+                                                             : "Видалити цей примірник?")');">
+                    <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                </form>
+            </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-controller="Book" asp-action="Details" asp-route-id="@ViewBag.BookId" class="btn btn-secondary">⬅ Назад до книги</a>
+</p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}

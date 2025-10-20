@@ -71,4 +71,8 @@
     <div class="mt-3">
         <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">⬅ Назад до списку</a>
     </div>
+
+    <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@Model.BookID" class="btn btn-primary">
+        📚 Керувати примірниками
+    </a>
 </div>
