@@ -1,0 +1,13 @@
+﻿@model LibraryWeb.Models.User
+<h2>Профіль</h2>
+
+<p><strong>Ім’я:</strong> @Model.Name</p>
+<p><strong>Email:</strong> @Model.Email</p>
+<p><strong>Роль:</strong> @Model.Role</p>
+
+@if (Model.Membership != null)
+{
+    <h4>Членство:</h4>
+    <p>@Model.Membership.Type - @Model.Membership.Status</p>
+}
+<a asp-controller="Login" asp-action="Logout" class="btn btn-danger">Вийти</a>

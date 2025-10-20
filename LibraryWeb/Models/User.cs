@@ -5,6 +5,7 @@ namespace LibraryWeb.Models
 {
     public enum UserRole
     {
+        User,
         Reader,
         Employee,
         Admin

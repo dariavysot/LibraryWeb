@@ -1,0 +1,23 @@
+﻿@model LibraryWeb.Models.User
+<h2>Реєстрація</h2>
+<form asp-action="Index" asp-controller="Registration" method="post">
+    <div>
+        <label>Ім’я</label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+    <div>
+        <label>Логін</label>
+        <input asp-for="Login" class="form-control" required />
+    </div>
+    <div>
+        <label>Пароль</label>
+        <input asp-for="UserPassword" class="form-control" type="password" required />
+    </div>
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" type="email" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Зареєструватися</button>
+</form>
+<p><a asp-controller="Login" asp-action="Index">Увійти</a></p>
