@@ -1,0 +1,74 @@
+﻿@model LibraryWeb.Models.Book
+
+@{
+    ViewData["Title"] = "Деталі книги";
+    var availableCopies = Model.Copies?.Count(c => c.Status == "Доступна") ?? 0;
+}
+
+<h2 class="mb-3">📖 Деталі книги</h2>
+
+<div class="card shadow-sm p-4">
+    <h3 class="mb-3">@Model.Title</h3>
+
+    <dl class="row">
+        <dt class="col-sm-3">Автор</dt>
+        <dd class="col-sm-9">@Model.Author</dd>
+
+        <dt class="col-sm-3">Тип</dt>
+        <dd class="col-sm-9">@Model.Type</dd>
+
+        <dt class="col-sm-3">ISBN</dt>
+        <dd class="col-sm-9">@Model.ISBN</dd>
+
+        <dt class="col-sm-3">Мова</dt>
+        <dd class="col-sm-9">@Model.Language</dd>
+
+        <dt class="col-sm-3">Видавництво</dt>
+        <dd class="col-sm-9">@Model.PublishingHouse</dd>
+
+        <dt class="col-sm-3">Рік видання</dt>
+        <dd class="col-sm-9">@Model.PublicationYear</dd>
+
+        <dt class="col-sm-3">Дата додавання</dt>
+        <dd class="col-sm-9">@Model.DateAdded.ToShortDateString()</dd>
+
+        <dt class="col-sm-3 text-success fw-bold">Доступні примірники</dt>
+        <dd class="col-sm-9 text-success fw-bold">@availableCopies</dd>
+    </dl>
+
+    <hr />
+
+    <h4>📚 Копії книги</h4>
+    @if (Model.Copies != null && Model.Copies.Any())
+    {
+        <table class="table table-bordered mt-2">
+            <thead class="table-light">
+                <tr>
+                    <th>Інвентарний №</th>
+                    <th>Стан</th>
+                    <th>Статус</th>
+                    <th>Дата повернення</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var copy in Model.Copies)
+                {
+                    <tr>
+                        <td>@copy.InventoryNum</td>
+                        <td>@copy.Condition</td>
+                        <td>@copy.Status</td>
+                        <td>@(copy.ReturnDate?.ToShortDateString() ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Немає доданих копій для цієї книги.</p>
+    }
+
+    <div class="mt-3">
+        <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">⬅ Назад до списку</a>
+    </div>
+</div>
