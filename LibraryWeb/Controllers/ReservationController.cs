@@ -20,8 +20,7 @@ namespace LibraryWeb.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            // Отримуємо ID поточного користувача
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
             {
                 TempData["Error"] = "Не вдалося визначити користувача.";
@@ -29,7 +28,6 @@ namespace LibraryWeb.Controllers
             }
             int userId = int.Parse(userIdClaim.Value);
 
-            // Вибираємо лише резервації для цього користувача
             var reservations = _context.Reservations
                 .Where(r => r.UserID == userId)
                 .Include(r => r.User)
@@ -71,6 +69,16 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // --- Перевірка активного членства ---
+            var membership = _context.Memberships
+                .FirstOrDefault(m => m.UserID == userId && m.Status == "Активне" && m.EndDate >= DateTime.Now);
+
+            if (membership == null)
+            {
+                TempData["Error"] = "Для створення резервації потрібне активне членство.";
+                return RedirectToAction("Index");
+            }
+
             var copy = _context.Copies
                 .Include(c => c.Book)
                 .FirstOrDefault(c => c.BookID == selectedBookId && c.Status == "Доступна");
@@ -87,7 +95,6 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Create");
             }
 
-            // Перевірка на конфлікт з іншими резерваціями
             var conflict = _context.Reservations.Any(r =>
                 r.InventoryNum == copy.InventoryNum &&
                 ((startDate >= r.StartDate && startDate < r.EndDate) ||
@@ -101,7 +108,7 @@ namespace LibraryWeb.Controllers
 
             // --- Розрахунок суми ---
             int totalDays = (endDate - startDate).Days;
-            decimal dailyRate = 50m; // 50 грн за день
+            decimal dailyRate = 20m; // 50 грн за день
             decimal totalAmount = totalDays * dailyRate;
 
             var reservation = new Reservation
@@ -116,7 +123,6 @@ namespace LibraryWeb.Controllers
             _context.Reservations.Add(reservation);
             _context.SaveChanges();
 
-            // --- Створюємо запис оплати ---
             var payment = new Payment
             {
                 UserID = user.UserID,
@@ -124,7 +130,7 @@ namespace LibraryWeb.Controllers
                 Date = DateTime.Now,
                 Type = "Резервація книги",
                 Status = "Очікує оплату",
-                MembershipID = 1 // тимчасово, якщо потрібно зв’язати з Membership
+                MembershipID = membership.MembershipID
             };
 
             _context.Payments.Add(payment);
@@ -133,7 +139,6 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена. Сума до оплати: {totalAmount} грн";
             return RedirectToAction("Index");
         }
-
 
         // --- Видалення резервації ---
         [HttpPost("delete/{id}")]

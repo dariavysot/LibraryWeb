@@ -24,6 +24,10 @@ namespace LibraryWeb.Data
                 .Property(m => m.Price)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Loan>()
+                .Property(l => l.Fine)
+                .HasPrecision(18, 2);
+
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
@@ -67,9 +71,9 @@ namespace LibraryWeb.Data
 
             // Membership → User (Reader)
             modelBuilder.Entity<Membership>()
-                .HasOne(m => m.Reader)
+                .HasOne(m => m.User)
                 .WithOne(u => u.Membership)
-                .HasForeignKey<Membership>(m => m.ReaderID)
+                .HasForeignKey<Membership>(m => m.UserID)
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Book → Copies

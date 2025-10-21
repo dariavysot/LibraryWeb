@@ -1,0 +1,26 @@
+﻿@model LibraryWeb.Models.Membership
+
+@{
+    ViewData["Title"] = "Створити членство";
+}
+
+<h2>Створити членство</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label>Тип членства</label>
+        <select name="Type" class="form-control" required>
+            <option value="">-- Оберіть тип --</option>
+            <option value="Standard">Standard</option>
+            <option value="Premium">Premium</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Оформити</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

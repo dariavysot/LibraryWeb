@@ -1,0 +1,49 @@
+﻿@model LibraryWeb.Models.Membership
+
+@{
+    ViewData["Title"] = "Моє членство";
+}
+
+<h2>Моє членство</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model == null)
+{
+    <p>У вас ще немає активного членства.</p>
+    <a asp-action="Create" class="btn btn-success">Створити членство</a>
+}
+else
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Тип</th>
+            <th>Ціна</th>
+            <th>Початок</th>
+            <th>Кінець</th>
+            <th>Статус</th>
+            <th>Дії</th>
+        </tr>
+        <tr>
+            <td>@Model.Type</td>
+            <td>@Model.Price</td>
+            <td>@Model.StartDate.ToShortDateString()</td>
+            <td>@Model.EndDate.ToShortDateString()</td>
+            <td>@Model.Status</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@Model.MembershipID" class="btn btn-sm btn-primary">Редагувати</a>
+                <form asp-action="Delete" asp-route-id="@Model.MembershipID" method="post" style="display:inline"
+                      onsubmit="return confirm('Видалити членство?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+}
