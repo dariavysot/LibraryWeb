@@ -33,17 +33,13 @@
                 <td>@loan.EndDate.ToShortDateString()</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn btn-info btn-sm">Деталі</a>
-                    <a asp-action="Edit" asp-route-id="@loan.LoanID" class="btn btn-warning btn-sm">Редагувати</a>
                     <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" style="display:inline"
                           onsubmit="return confirm('Видалити цю позику?');">
                         <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
                     </form>
                     @if (loan.Status != "Повернено")
                     {
-                        <form asp-action="Return" asp-route-id="@loan.LoanID" method="post" style="display:inline"
-                              onsubmit="return confirm('Позначити як повернену?');">
-                            <button type="submit" class="btn btn-success btn-sm">Повернено</button>
-                        </form>
+                        <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn btn-warning">Повернути</a>
                     }
                 </td>
             </tr>

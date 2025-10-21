@@ -1,6 +1,13 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Copy>
 
-<h2>Примірники книги: @ViewBag.BookTitle</h2>
+@{
+    ViewData["Title"] = "Примірники книги";
+    var bookTitle = ViewBag.BookTitle as string;
+    var bookId = ViewBag.BookId;
+    var availableCount = Model.Count(c => c.Status == "Доступна");
+}
+
+<h2>Примірники книги: @bookTitle</h2>
 
 <table class="table table-striped">
     <thead>
@@ -19,24 +26,34 @@
                 <td>@copy.Condition</td>
                 <td>@copy.Status</td>
                 <td>
-                    <form asp-action="Delete" asp-controller="Copies" asp-route-id="@copy.InventoryNum" method="post" style="display:inline"
-                          onsubmit="return confirm('@(copy.Status == "Доступна" && Model.Count() == 1
-                                                             ? "Це останній примірник книги. Після видалення дані про книгу будуть видалені. Ви впевнені?"
-                                                             : "Видалити цей примірник?")');">
+                    @if (copy.Status == "Доступна")
+                    {
+                        <form asp-action="Delete" asp-controller="Copies" asp-route-id="@copy.InventoryNum" method="post" style="display:inline"
+                              onsubmit="return confirm('@(availableCount == 1
+                                                                                       ? "Це останній доступний примірник книги. Після видалення дані про книгу будуть видалені. Ви впевнені?"
+                                                                                       : "Видалити цей примірник?")');">
                     <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
                 </form>
-            </td>
-
+                                }
+                    else
+                    {
+                        <span class="text-muted">Неможливо видалити (позичено)</span>
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
 <p>
-    <a asp-controller="Book" asp-action="Details" asp-route-id="@ViewBag.BookId" class="btn btn-secondary">⬅ Назад до книги</a>
+    <a asp-controller="Book" asp-action="Details" asp-route-id="@bookId" class="btn btn-secondary">⬅ Назад до книги</a>
 </p>
 
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
 }

@@ -101,10 +101,29 @@ namespace LibraryWeb.Controllers
             return RedirectToAction("Index");
         }
 
-        // --- Повернення ---
+        // --- Повернення (GET) ---
+        [HttpGet("return/{id}")]
+        public IActionResult Return(int id)
+        {
+            var loan = _context.Loans
+                .Include(l => l.Copy)
+                .ThenInclude(c => c.Book)
+                .Include(l => l.Reader)
+                .FirstOrDefault(l => l.LoanID == id);
+
+            if (loan == null)
+            {
+                TempData["Error"] = "Позика не знайдена.";
+                return RedirectToAction("Index");
+            }
+
+            return View("~/Views/Loan/Return.cshtml", loan);
+        }
+
+        // --- Повернення (POST) ---
         [HttpPost("return/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult Return(int id)
+        public IActionResult ReturnConfirmed(int id, DateTime returnDate, string condition)
         {
             var loan = _context.Loans
                 .Include(l => l.Copy)
@@ -117,21 +136,25 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index");
             }
 
+            loan.ReturnDate = returnDate;
             loan.Copy.Status = "Доступна";
             loan.Status = "Повернено";
-            loan.ReturnDate = DateTime.Now;
+
+            // --- Обчислення штрафу ---
+            double fine = 0;
+
+            if (returnDate > loan.EndDate)
+                fine += (returnDate - loan.EndDate).Days * 5; // 5 грн за день запізнення
+
+            if (condition == "Пошкоджена")
+                fine += 100; // фіксований штраф за пошкодження
+
             _context.SaveChanges();
 
-            // якщо повернення запізно — можна потім рахувати штраф
-            if (loan.ReturnDate > loan.EndDate)
-            {
-                var daysLate = (loan.ReturnDate.Value - loan.EndDate).Days;
-                TempData["Warning"] = $"Книгу повернено із запізненням на {daysLate} дн.";
-            }
+            if (fine > 0)
+                TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн.";
             else
-            {
-                TempData["Success"] = $"Книга '{loan.Copy.Book.Title}' успішно повернена!";
-            }
+                TempData["Success"] = $"Книга '{loan.Copy.Book.Title}' успішно повернена без штрафу.";
 
             return RedirectToAction("Index");
         }

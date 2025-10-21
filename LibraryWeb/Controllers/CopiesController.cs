@@ -37,32 +37,55 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
+            // Знаходимо примірник за InventoryNum
             var copy = _context.Copies.Include(c => c.Book).FirstOrDefault(c => c.InventoryNum == id);
             if (copy == null)
-                return NotFound();
-
-            int bookId = copy.BookID;
-
-            _context.Copies.Remove(copy);
-            _context.SaveChanges();
-
-            // Перевіряємо, чи залишилися ще копії книги
-            bool hasCopies = _context.Copies.Any(c => c.BookID == bookId);
-            if (!hasCopies)
             {
-                var book = _context.Books.FirstOrDefault(b => b.BookID == bookId);
-                if (book != null)
-                {
-                    _context.Books.Remove(book);
-                    _context.SaveChanges();
-                    TempData["Success"] = "Останній примірник видалено. Книга теж була видалена.";
-                    return RedirectToAction("Index", "Book");
-                }
+                TempData["Error"] = "Примірник не знайдено.";
+                return RedirectToAction("Index");
             }
 
-            TempData["Success"] = "Примірник успішно видалено!";
-            return RedirectToAction("Index", new { bookId });
+            // Перевірка статусу
+            if (copy.Status == "Позичена")
+            {
+                TempData["Error"] = "Неможливо видалити примірник, бо він зараз позичений.";
+                return RedirectToAction("Index", new { bookId = copy.BookID });
+            }
+
+            try
+            {
+                int bookId = copy.BookID;
+
+                // Видаляємо примірник
+                _context.Copies.Remove(copy);
+                _context.SaveChanges();
+
+                // Перевіряємо, чи залишилися копії книги
+                bool hasCopies = _context.Copies.Any(c => c.BookID == bookId);
+                if (!hasCopies)
+                {
+                    var book = _context.Books.FirstOrDefault(b => b.BookID == bookId);
+                    if (book != null)
+                    {
+                        _context.Books.Remove(book);
+                        _context.SaveChanges();
+                        TempData["Success"] = "Останній примірник видалено. Книга теж була видалена.";
+                        return RedirectToAction("Index", "Book");
+                    }
+                }
+
+                TempData["Success"] = "Примірник успішно видалено!";
+                return RedirectToAction("Index", new { bookId });
+            }
+            catch (DbUpdateException ex)
+            {
+                // Ловимо помилки FK
+                Console.WriteLine(ex.Message); // або використати ILogger
+                TempData["Error"] = "Неможливо видалити примірник через наявність позик.";
+                return RedirectToAction("Index", new { bookId = copy.BookID });
+            }
         }
+
 
     }
 }
