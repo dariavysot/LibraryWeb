@@ -106,14 +106,33 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Return(int id)
         {
-            var loan = _context.Loans.Include(l => l.Copy).FirstOrDefault(l => l.LoanID == id);
-            if (loan == null) return NotFound();
+            var loan = _context.Loans
+                .Include(l => l.Copy)
+                .ThenInclude(c => c.Book)
+                .FirstOrDefault(l => l.LoanID == id);
+
+            if (loan == null)
+            {
+                TempData["Error"] = "Позика не знайдена.";
+                return RedirectToAction("Index");
+            }
 
             loan.Copy.Status = "Доступна";
             loan.Status = "Повернено";
+            loan.ReturnDate = DateTime.Now;
             _context.SaveChanges();
 
-            TempData["Success"] = "Книга успішно повернена!";
+            // якщо повернення запізно — можна потім рахувати штраф
+            if (loan.ReturnDate > loan.EndDate)
+            {
+                var daysLate = (loan.ReturnDate.Value - loan.EndDate).Days;
+                TempData["Warning"] = $"Книгу повернено із запізненням на {daysLate} дн.";
+            }
+            else
+            {
+                TempData["Success"] = $"Книга '{loan.Copy.Book.Title}' успішно повернена!";
+            }
+
             return RedirectToAction("Index");
         }
 

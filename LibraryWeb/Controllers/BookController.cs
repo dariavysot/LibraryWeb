@@ -73,7 +73,6 @@ namespace LibraryWeb.Controllers
                     BookID = model.BookID,
                     Condition = "Нова",
                     Status = "Доступна",
-                    ReturnDate = null
                 };
                 _context.Copies.Add(copy);
             }

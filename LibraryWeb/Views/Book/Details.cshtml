@@ -47,7 +47,6 @@
                     <th>Інвентарний №</th>
                     <th>Стан</th>
                     <th>Статус</th>
-                    <th>Дата повернення</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,7 +56,6 @@
                         <td>@copy.InventoryNum</td>
                         <td>@copy.Condition</td>
                         <td>@copy.Status</td>
-                        <td>@(copy.ReturnDate?.ToShortDateString() ?? "—")</td>
                     </tr>
                 }
             </tbody>

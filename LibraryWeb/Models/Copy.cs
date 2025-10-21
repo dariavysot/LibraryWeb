@@ -14,8 +14,6 @@ namespace LibraryWeb.Models
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty; 
 
-        public DateTime? ReturnDate { get; set; }
-
         // Foreign key → Book
         [ForeignKey("Book")]
         public int BookID { get; set; }

@@ -10,6 +10,7 @@ namespace LibraryWeb.Models
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
