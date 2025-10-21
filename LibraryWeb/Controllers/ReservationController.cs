@@ -56,7 +56,6 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(int selectedBookId, DateTime startDate, DateTime endDate)
         {
-            // Отримуємо ID поточного користувача
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
             {
@@ -82,6 +81,12 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (endDate <= startDate)
+            {
+                TempData["Error"] = "Дата завершення має бути пізнішою за дату початку.";
+                return RedirectToAction("Create");
+            }
+
             // Перевірка на конфлікт з іншими резерваціями
             var conflict = _context.Reservations.Any(r =>
                 r.InventoryNum == copy.InventoryNum &&
@@ -93,6 +98,11 @@ namespace LibraryWeb.Controllers
                 TempData["Error"] = "Цей примірник вже зарезервований на обраний проміжок.";
                 return RedirectToAction("Index");
             }
+
+            // --- Розрахунок суми ---
+            int totalDays = (endDate - startDate).Days;
+            decimal dailyRate = 50m; // 50 грн за день
+            decimal totalAmount = totalDays * dailyRate;
 
             var reservation = new Reservation
             {
@@ -106,9 +116,24 @@ namespace LibraryWeb.Controllers
             _context.Reservations.Add(reservation);
             _context.SaveChanges();
 
-            TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена!";
+            // --- Створюємо запис оплати ---
+            var payment = new Payment
+            {
+                UserID = user.UserID,
+                Amount = totalAmount,
+                Date = DateTime.Now,
+                Type = "Резервація книги",
+                Status = "Очікує оплату",
+                MembershipID = 1 // тимчасово, якщо потрібно зв’язати з Membership
+            };
+
+            _context.Payments.Add(payment);
+            _context.SaveChanges();
+
+            TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена. Сума до оплати: {totalAmount} грн";
             return RedirectToAction("Index");
         }
+
 
         // --- Видалення резервації ---
         [HttpPost("delete/{id}")]
