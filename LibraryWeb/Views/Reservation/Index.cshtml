@@ -1,0 +1,50 @@
+﻿@model IEnumerable<LibraryWeb.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Список резервацій";
+}
+
+<h2>Список резервацій</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Користувач</th>
+            <th>Книга</th>
+            <th>Дата початку</th>
+            <th>Дата завершення</th>
+            <th>Статус</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.User.Name</td>
+                <td>@reservation.Copy.Book.Title</td>
+                <td>@reservation.StartDate.ToShortDateString()</td>
+                <td>@reservation.EndDate.ToShortDateString()</td>
+                <td>@reservation.Status</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@reservation.ReservationID" class="btn btn-sm btn-primary">Редагувати</a>
+                    <form asp-action="Delete" asp-route-id="@reservation.ReservationID" method="post" style="display:inline"
+                          onsubmit="return confirm('Видалити цю резервацію?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Створити нову резервацію</a>

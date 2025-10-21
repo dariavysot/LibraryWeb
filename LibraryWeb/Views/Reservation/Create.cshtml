@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Нова резервація";
+    var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
+}
+
+<h2>Створення резервації</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label>Книга</label>
+        <select name="selectedBookId" class="form-control" required>
+            <option value="">-- Оберіть книгу --</option>
+            @foreach (var book in books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
+            {
+                <option value="@book.BookID">@book.Title</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата початку</label>
+        <input type="date" name="startDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата завершення</label>
+        <input type="date" name="endDate" class="form-control" value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Створити резервацію</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
