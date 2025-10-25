@@ -1,6 +1,4 @@
-﻿@model IEnumerable<LibraryWeb.Models.Loan>
-
-@{
+﻿@{
     ViewData["Title"] = "Позики";
 }
 
@@ -11,44 +9,13 @@
     <div class="alert alert-success">@TempData["Success"]</div>
 }
 
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Книга</th>
-            <th>Примірник №</th>
-            <th>Читач</th>
-            <th>Статус</th>
-            <th>Початок</th>
-            <th>Кінець</th>
-            <th>Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var loan in Model)
-        {
-            <tr>
-                <td>@loan.LoanID</td>
-                <td>@loan.Copy.Book.Title</td>
-                <td>@loan.InventoryNum</td>
-                <td>@loan.User.Name</td>
-                <td>@loan.Status</td>
-                <td>@loan.StartDate.ToShortDateString()</td>
-                <td>@loan.EndDate.ToShortDateString()</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn btn-info btn-sm">Деталі</a>
-                    <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" style="display:inline"
-                          onsubmit="return confirm('Видалити цю позику?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
-                    </form>
-                    @if (loan.Status != "Повернено")
-                    {
-                        <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn btn-warning">Повернути</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="mb-3">
+    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="All" class="btn btn-secondary btn-sm">Всі</a>
+    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Active" class="btn btn-primary btn-sm">Активні</a>
+    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Overdue" class="btn btn-danger btn-sm">Прострочені</a>
+    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Returned" class="btn btn-success btn-sm">Повернені</a>
+</div>
+
+@await Component.InvokeAsync("LoanList", new { statusFilter = ViewBag.StatusFilter ?? "All" })
 
 <a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>

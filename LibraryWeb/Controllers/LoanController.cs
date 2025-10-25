@@ -18,13 +18,43 @@ namespace LibraryWeb.Controllers
 
         // --- Список всіх позик ---
         [HttpGet("")]
-        public IActionResult Index()
+        public IActionResult Index(string statusFilter = "All")
         {
+            var today = DateTime.Today;
+
+            // Отримуємо всі активні або прострочені позики
             var loans = _context.Loans
                 .Include(l => l.User)
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
+                .Where(l => l.Status == "Активна" || l.Status == "Прострочена")
                 .ToList();
+
+            // Оновлюємо статус прострочених позик
+            bool changesMade = false;
+            foreach (var loan in loans)
+            {
+                if (loan.Status == "Активна" && loan.EndDate < today)
+                {
+                    loan.Status = "Прострочена";
+                    changesMade = true;
+                }
+            }
+
+            if (changesMade)
+            {
+                _context.SaveChanges();
+
+                // Перечитуємо оновлені дані з бази
+                loans = _context.Loans
+                    .Include(l => l.User)
+                    .Include(l => l.Copy)
+                    .ThenInclude(c => c.Book)
+                    .Where(l => l.Status == "Активна" || l.Status == "Прострочена")
+                    .ToList();
+            }
+
+            ViewBag.StatusFilter = statusFilter;
 
             return View("~/Views/Loan/Index.cshtml", loans);
         }
@@ -146,7 +176,7 @@ namespace LibraryWeb.Controllers
 
             if (loan == null)
             {
-                TempData["Error"] = "Позика не знайдена.";
+                TempData["Error"] = "Бронювання не знайдене";
                 return RedirectToAction("Index");
             }
 
@@ -165,7 +195,7 @@ namespace LibraryWeb.Controllers
 
             if (loan == null)
             {
-                TempData["Error"] = "Позика не знайдена.";
+                TempData["Error"] = "Бронювання не знайдене.";
                 return RedirectToAction("Index");
             }
 
@@ -204,7 +234,7 @@ namespace LibraryWeb.Controllers
             _context.Loans.Remove(loan);
             _context.SaveChanges();
 
-            TempData["Success"] = "Позика успішно видалена!";
+            TempData["Success"] = "Бронювання успішно видалене!";
             return RedirectToAction("Index");
         }
 
