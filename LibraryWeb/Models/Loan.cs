@@ -16,19 +16,15 @@ namespace LibraryWeb.Models
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
 
-        // Foreign key → Reader (User subtype)
-        [ForeignKey("Reader")]
-        public int ReaderID { get; set; }
-        public virtual User Reader { get; set; } = null!; 
+        // Foreign key → (User subtype)
+        [ForeignKey("User")]
+        public int UserID { get; set; }
+        public virtual User User { get; set; } = null!; 
 
         // Foreign key → Copy
         [ForeignKey("Copy")]
         public int InventoryNum { get; set; }
         public virtual Copy Copy { get; set; } = null!; 
 
-        // Можна також додати, хто обслуговував (Employee)
-        [ForeignKey("Employee")]
-        public int? EmployeeID { get; set; }
-        public virtual User? Employee { get; set; } 
     }
 }

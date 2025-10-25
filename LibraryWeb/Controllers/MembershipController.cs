@@ -127,5 +127,61 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = "Членство видалено.";
             return RedirectToAction("Index");
         }
+
+
+        // GET: /membership/createforuser/{userId}
+        [HttpGet("createforuser/{userId}")]
+        public IActionResult CreateForUser(int userId)
+        {
+            var user = _context.Users.Find(userId);
+            if (user == null)
+            {
+                TempData["Error"] = "Користувача не знайдено.";
+                return RedirectToAction("Index", "Loan");
+            }
+
+            ViewBag.User = user; // передаємо користувача у View
+            return View("CreateForUser");
+        }
+
+        // POST: /membership/createforuser/{userId}
+        [HttpPost("createforuser/{userId}")]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateForUser(int userId, Membership model)
+        {
+            var user = _context.Users.Find(userId);
+            if (user == null)
+            {
+                TempData["Error"] = "Користувача не знайдено.";
+                return RedirectToAction("Index", "Loan");
+            }
+
+            var existingMembership = _context.Memberships
+                .FirstOrDefault(m => m.UserID == userId && m.Status == "Активне");
+            if (existingMembership != null)
+            {
+                TempData["Error"] = "У користувача вже є активне членство.";
+                return RedirectToAction("Index", "Loan");
+            }
+
+            model.UserID = userId;
+            model.StartDate = DateTime.Now;
+            model.EndDate = DateTime.Now.AddMonths(1);
+            model.Status = "Активне";
+
+            model.Price = model.Type switch
+            {
+                "Premium" => 200,
+                "Standard" => 100,
+                _ => 50
+            };
+
+            _context.Memberships.Add(model);
+            _context.SaveChanges();
+
+            TempData["Success"] = $"Членство '{model.Type}' створено для користувача {user.Name}!";
+            return RedirectToAction("Index", "Loan"); // або на будь-яку потрібну сторінку
+        }
+
     }
 }

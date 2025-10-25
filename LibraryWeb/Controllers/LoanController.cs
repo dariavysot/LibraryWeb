@@ -21,10 +21,9 @@ namespace LibraryWeb.Controllers
         public IActionResult Index()
         {
             var loans = _context.Loans
-                .Include(l => l.Reader)
+                .Include(l => l.User)
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
-                .Include(l => l.Employee)
                 .ToList();
 
             return View("~/Views/Loan/Index.cshtml", loans);
@@ -35,18 +34,16 @@ namespace LibraryWeb.Controllers
         public IActionResult Details(int id)
         {
             var loan = _context.Loans
-                .Include(l => l.Reader)
+                .Include(l => l.User)
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
-                .Include(l => l.Employee)
                 .FirstOrDefault(l => l.LoanID == id);
 
             if (loan == null) return NotFound();
             return View("~/Views/Loan/Details.cshtml", loan);
         }
 
-        // --- Створення ---
-        // Створення позики (GET)
+        // --- Створення позики (GET) ---
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -61,16 +58,28 @@ namespace LibraryWeb.Controllers
             return View();
         }
 
-        // Створення позики (POST)
+        // --- Створення позики (POST) ---
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(int ReaderID, int selectedBookId)
+        public IActionResult Create(int UserID, int selectedBookId)
         {
-            var reader = _context.Users.FirstOrDefault(u => u.UserID == ReaderID);
-            if (reader == null)
+
+            var user = _context.Users
+                .Include(u => u.Membership)
+                .FirstOrDefault(u => u.UserID == UserID);
+
+            if (user == null)
             {
-                TempData["Error"] = "Оберіть існуючого читача.";
+                TempData["Error"] = "Оберіть існуючого користувача.";
                 return RedirectToAction("Create");
+            }
+
+            // Перевірка на активне членство
+            if (user.Membership == null || user.Membership.Status != "Активне")
+            {
+                TempData["UserIdWithoutMembership"] = user.UserID;
+                TempData["Error"] = $"У користувача '{user.Name}' немає активного членства.";
+                return RedirectToAction("CreateMembershipPrompt");
             }
 
             var copy = _context.Copies
@@ -85,7 +94,7 @@ namespace LibraryWeb.Controllers
 
             var loan = new Loan
             {
-                ReaderID = ReaderID,
+                UserID = UserID,
                 InventoryNum = copy.InventoryNum,
                 Status = "Активна",
                 StartDate = DateTime.Now,
@@ -108,7 +117,7 @@ namespace LibraryWeb.Controllers
             var loan = _context.Loans
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
-                .Include(l => l.Reader)
+                .Include(l => l.User)
                 .FirstOrDefault(l => l.LoanID == id);
 
             if (loan == null)
@@ -173,6 +182,22 @@ namespace LibraryWeb.Controllers
 
             TempData["Success"] = "Позика успішно видалена!";
             return RedirectToAction("Index");
+        }
+
+        // --- Сторінка пропозиції створення членства ---
+        [HttpGet("create-membership")]
+        public IActionResult CreateMembershipPrompt()
+        {
+            var userId = TempData["UserIdWithoutMembership"] as int?;
+            if (userId == null) return RedirectToAction("Index");
+
+            var user = _context.Users.Find(userId.Value);
+            if (user == null) return RedirectToAction("Create");
+
+            ViewBag.User = user;
+            ViewBag.Error = TempData["Error"];
+
+            return View("~/Views/Membership/CreatePrompt.cshtml");
         }
     }
 }

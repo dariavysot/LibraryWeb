@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Оформлення членства";
+}
+
+<h2>@ViewBag.ErrorMessage</h2>
+
+<p>Бажаєте оформити членство для цього користувача?</p>
+
+<form asp-controller="Membership" asp-action="CreateForUser" method="post">
+    <input type="hidden" name="userId" value="@ViewBag.User.UserID" />
+    <a asp-controller="Membership" asp-action="CreateForUser" asp-route-userId="@ViewBag.User.UserID" class="btn btn-primary">
+        Оформити членство
+    </a>
+    <a asp-controller="Loan" asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

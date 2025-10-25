@@ -1,4 +1,5 @@
-﻿using LibraryWeb.Models;
+﻿
+using LibraryWeb.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryWeb.Data
@@ -39,8 +40,8 @@ namespace LibraryWeb.Data
             // User → Loans та Reservations (Reader)
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Loans)
-                .WithOne(l => l.Reader)
-                .HasForeignKey(l => l.ReaderID)
+                .WithOne(l => l.User)
+                .HasForeignKey(l => l.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<User>()
@@ -61,13 +62,6 @@ namespace LibraryWeb.Data
                 .WithMany()
                 .HasForeignKey(p => p.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            // Loan → Employee
-            modelBuilder.Entity<Loan>()
-                .HasOne(l => l.Employee)
-                .WithMany()
-                .HasForeignKey(l => l.EmployeeID)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Membership → User (Reader)
             modelBuilder.Entity<Membership>()

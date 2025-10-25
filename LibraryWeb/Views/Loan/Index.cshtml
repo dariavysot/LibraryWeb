@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Loan>
 
+@{
+    ViewData["Title"] = "Позики";
+}
+
 <h2>Список позик</h2>
 
 @if (TempData["Success"] != null)
@@ -27,7 +31,7 @@
                 <td>@loan.LoanID</td>
                 <td>@loan.Copy.Book.Title</td>
                 <td>@loan.InventoryNum</td>
-                <td>@loan.Reader.Name</td>
+                <td>@loan.User.Name</td>
                 <td>@loan.Status</td>
                 <td>@loan.StartDate.ToShortDateString()</td>
                 <td>@loan.EndDate.ToShortDateString()</td>

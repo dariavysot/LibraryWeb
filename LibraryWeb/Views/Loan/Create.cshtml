@@ -18,7 +18,7 @@
 <form asp-action="Create" method="post">
     <div class="form-group mb-3">
         <label>Читач</label>
-        <select name="ReaderID" class="form-control">
+        <select name="UserID" class="form-control">
             @foreach (var u in users ?? Enumerable.Empty<LibraryWeb.Models.User>())
             {
                 <option value="@u.UserID">@u.Name</option>

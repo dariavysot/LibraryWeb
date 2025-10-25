@@ -108,7 +108,7 @@ namespace LibraryWeb.Controllers
 
             // --- Розрахунок суми ---
             int totalDays = (endDate - startDate).Days;
-            decimal dailyRate = 20m; // 50 грн за день
+            decimal dailyRate = 20m; //20 грн за день
             decimal totalAmount = totalDays * dailyRate;
 
             var reservation = new Reservation
