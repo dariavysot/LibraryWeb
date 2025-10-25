@@ -15,6 +15,7 @@ namespace LibraryWeb.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Membership> Memberships { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<MembershipType> MembershipTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -88,6 +89,13 @@ namespace LibraryWeb.Data
                 .HasMany(c => c.Reservations)
                 .WithOne(r => r.Copy)
                 .HasForeignKey(r => r.InventoryNum)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Membership → MembershipType
+            modelBuilder.Entity<Membership>()
+                .HasOne(m => m.MembershipType)
+                .WithMany()
+                .HasForeignKey(m => m.MembershipTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

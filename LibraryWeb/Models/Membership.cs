@@ -24,5 +24,9 @@ namespace LibraryWeb.Models
         public int UserID { get; set; }
 
         public virtual User User { get; set; } = null!;
+
+        [ForeignKey("MembershipType")]
+        public int MembershipTypeID { get; set; }
+        public virtual MembershipType MembershipType { get; set; } = null!;
     }
 }
