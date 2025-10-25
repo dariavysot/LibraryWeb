@@ -43,7 +43,8 @@ namespace LibraryWeb.Controllers
             return View("~/Views/Loan/Details.cshtml", loan);
         }
 
-        // --- Створення позики (GET) ---
+        // --- Створення позики (POST) ---
+        // GET: /loans/create
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -52,61 +53,84 @@ namespace LibraryWeb.Controllers
                 .Where(b => b.Copies.Any(c => c.Status == "Доступна"))
                 .ToList();
 
-            ViewBag.StartDate = DateTime.Today.ToString("yyyy-MM-dd");
-            ViewBag.EndDate = DateTime.Today.AddDays(14).ToString("yyyy-MM-dd");
-
             return View();
         }
 
-        // --- Створення позики (POST) ---
+        // POST: /loans/create
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(int UserID, int selectedBookId)
         {
-
-            var user = _context.Users
-                .Include(u => u.Membership)
-                .FirstOrDefault(u => u.UserID == UserID);
-
+            var user = _context.Users.Include(u => u.Membership).FirstOrDefault(u => u.UserID == UserID);
             if (user == null)
             {
-                TempData["Error"] = "Оберіть існуючого користувача.";
+                TempData["Error"] = "Оберіть користувача.";
                 return RedirectToAction("Create");
             }
 
-            // Перевірка на активне членство
             if (user.Membership == null || user.Membership.Status != "Активне")
             {
-                TempData["UserIdWithoutMembership"] = user.UserID;
                 TempData["Error"] = $"У користувача '{user.Name}' немає активного членства.";
                 return RedirectToAction("CreateMembershipPrompt");
             }
 
-            var copy = _context.Copies
-                .Include(c => c.Book)
-                .FirstOrDefault(c => c.BookID == selectedBookId && c.Status == "Доступна");
+            var loanStart = DateTime.Now;
+            var loanEnd = loanStart.AddDays(14);
 
-            if (copy == null)
+            // Отримуємо всі доступні примірники обраної книги
+            var availableCopies = _context.Copies
+                .Include(c => c.Book)
+                .Where(c => c.BookID == selectedBookId && c.Status == "Доступна")
+                .ToList();
+
+            Copy? copyToLoan = null;
+
+            foreach (var copy in availableCopies)
             {
-                TempData["Error"] = "Немає доступних примірників цієї книги.";
+                var reservation = _context.Reservations
+                    .Include(r => r.User)
+                    .FirstOrDefault(r =>
+                        r.InventoryNum == copy.InventoryNum &&
+                        loanStart <= r.EndDate && r.StartDate <= loanEnd);
+
+                if (reservation == null)
+                {
+                    // Примірник вільний — можна видати
+                    copyToLoan = copy;
+                    break;
+                }
+                else if (reservation.UserID == user.UserID)
+                {
+                    // Резервація на того ж користувача — видаляємо та беремо цей примірник
+                    _context.Reservations.Remove(reservation);
+                    copyToLoan = copy;
+                    break;
+                }
+                // Інакше примірник заброньований іншим — пропускаємо
+            }
+
+            if (copyToLoan == null)
+            {
+                TempData["Error"] = "Усі примірники цієї книги зарезервовані іншими користувачами на обраний період.";
                 return RedirectToAction("Create");
             }
 
+            // Створюємо позику
             var loan = new Loan
             {
                 UserID = UserID,
-                InventoryNum = copy.InventoryNum,
+                InventoryNum = copyToLoan.InventoryNum,
                 Status = "Активна",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(14)
+                StartDate = loanStart,
+                EndDate = loanEnd
             };
 
-            copy.Status = "Позичена";
+            copyToLoan.Status = "Позичена";
 
             _context.Loans.Add(loan);
             _context.SaveChanges();
 
-            TempData["Success"] = $"Позика для книги '{copy.Book.Title}' успішно створена!";
+            TempData["Success"] = $"Позика для книги '{copyToLoan.Book.Title}' створена!";
             return RedirectToAction("Index");
         }
 

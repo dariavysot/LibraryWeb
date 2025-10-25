@@ -180,7 +180,7 @@ namespace LibraryWeb.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = $"Членство '{model.Type}' створено для користувача {user.Name}!";
-            return RedirectToAction("Index", "Loan"); // або на будь-яку потрібну сторінку
+            return RedirectToAction("Create", "Loan"); // або на будь-яку потрібну сторінку
         }
 
     }

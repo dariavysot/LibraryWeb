@@ -15,37 +15,26 @@
     <div class="alert alert-success">@TempData["Success"]</div>
 }
 
-<form asp-action="Create" method="post">
+<form asp-controller="Loan" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
     <div class="form-group mb-3">
         <label>Читач</label>
         <select name="UserID" class="form-control">
-            @foreach (var u in users ?? Enumerable.Empty<LibraryWeb.Models.User>())
+            @foreach (var u in ViewBag.Users ?? Enumerable.Empty<LibraryWeb.Models.User>())
             {
                 <option value="@u.UserID">@u.Name</option>
             }
         </select>
     </div>
-
     <div class="form-group mb-3">
         <label>Книга</label>
         <select name="selectedBookId" class="form-control">
-            @foreach (var book in books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
+            @foreach (var book in ViewBag.Books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
             {
                 <option value="@book.BookID">@book.Title</option>
             }
         </select>
     </div>
-
-    <div class="form-group mb-3">
-        <label>Початок</label>
-        <input type="date" class="form-control" value="@ViewBag.StartDate" readonly />
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Кінець</label>
-        <input type="date" class="form-control" value="@ViewBag.EndDate" readonly />
-    </div>
-
     <button type="submit" class="btn btn-primary">Створити</button>
     <a asp-action="Index" class="btn btn-secondary">Назад</a>
 </form>
