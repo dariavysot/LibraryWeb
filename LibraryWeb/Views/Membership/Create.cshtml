@@ -1,10 +1,11 @@
 ﻿@model LibraryWeb.Models.Membership
 
 @{
-    ViewData["Title"] = "Створити членство";
+    ViewData["Title"] = "Оформити членство";
+    var membershipTypes = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>;
 }
 
-<h2>Створити членство</h2>
+<h2>@ViewData["Title"]</h2>
 
 @if (TempData["Error"] != null)
 {
@@ -12,15 +13,37 @@
 }
 
 <form asp-action="Create" method="post">
-    <div class="form-group mb-3">
-        <label>Тип членства</label>
-        <select name="Type" class="form-control" required>
-            <option value="">-- Оберіть тип --</option>
-            <option value="Standard">Standard</option>
-            <option value="Premium">Premium</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-success">Оформити</button>
+    @if (membershipTypes != null && membershipTypes.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Назва</th>
+                    <th>Ціна</th>
+                    <th>Тривалість</th>
+                    <th>Дія</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var type in membershipTypes)
+                {
+                    <tr>
+                        <td>@type.Name</td>
+                        <td>@type.Price.ToString("C")</td>
+                        <td>@type.DurationMonths @((type.DurationMonths == 1) ? "місяць" : "місяців")</td>
+                        <td>
+                            <button type="submit" name="MembershipTypeID" value="@type.MembershipTypeID" class="btn btn-success">
+                                Оформити
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Немає доступних типів членства.</p>
+    }
     <a asp-action="Index" class="btn btn-secondary">Назад</a>
 </form>

@@ -1,37 +1,19 @@
-﻿@model LibraryWeb.Models.Membership
-@{
-    ViewData["Title"] = "Оформлення членства";
-    var user = ViewBag.User;
+﻿@{
+    ViewData["Title"] = "Оформити членство для користувача";
+    var user = ViewBag.User as LibraryWeb.Models.User;
+    var membershipTypes = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>;
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<p>Оформлення членства для користувача: <strong>@user.Name</strong></p>
-
-<form asp-controller="Membership"
-      asp-action="CreateForUser"
-      asp-route-userId="@user.UserID"
-      method="post">
-    @Html.AntiForgeryToken()
-
-    <div class="form-group">
-        <label for="Type">Тип членства</label>
-        <select id="Type" name="Type" class="form-control" required>
-            <option value="">Оберіть тип</option>
-            <option value="Premium">Premium</option>
-            <option value="Standard">Standard</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-2">Створити членство</button>
-</form>
-
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger mt-2">@TempData["Error"]</div>
+    <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success mt-2">@TempData["Success"]</div>
-}
+
+<p>Користувач: <strong>@user?.Name</strong></p>
+
+@await Component.InvokeAsync("MembershipList", new { types = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>, user = ViewBag.User as LibraryWeb.Models.User })
+
+<a asp-controller="Loan" asp-action="Index" class="btn btn-secondary mt-3">Назад</a>

@@ -32,13 +32,12 @@ else
             <th>Дії</th>
         </tr>
         <tr>
-            <td>@Model.Type</td>
+            <td>@Model.MembershipType?.Name</td>
             <td>@Model.Price</td>
             <td>@Model.StartDate.ToShortDateString()</td>
             <td>@Model.EndDate.ToShortDateString()</td>
             <td>@Model.Status</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@Model.MembershipID" class="btn btn-sm btn-primary">Редагувати</a>
                 <form asp-action="Delete" asp-route-id="@Model.MembershipID" method="post" style="display:inline"
                       onsubmit="return confirm('Видалити членство?');">
                     <button type="submit" class="btn btn-sm btn-danger">Видалити</button>

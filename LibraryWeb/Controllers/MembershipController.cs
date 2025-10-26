@@ -30,6 +30,7 @@ namespace LibraryWeb.Controllers
             int userId = int.Parse(userIdClaim.Value);
 
             var membership = _context.Memberships
+                 .Include(m => m.MembershipType)
                 .FirstOrDefault(m => m.UserID == userId);
 
             return View(membership);
@@ -39,6 +40,7 @@ namespace LibraryWeb.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
+            ViewBag.MembershipTypes = _context.MembershipTypes.ToList();
             return View();
         }
 
@@ -56,31 +58,29 @@ namespace LibraryWeb.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var existingMembership = _context.Memberships.FirstOrDefault(m => m.UserID == userId);
-            if (existingMembership != null)
+            if (_context.Memberships.Any(m => m.UserID == userId && m.Status == "Активне"))
             {
                 TempData["Error"] = "У вас вже є активне членство.";
                 return RedirectToAction("Index");
             }
 
-            // Розрахунок дат
+            var type = _context.MembershipTypes.Find(model.MembershipTypeID);
+            if (type == null)
+            {
+                TempData["Error"] = "Обраний тип членства не знайдено.";
+                return RedirectToAction("Create");
+            }
+
             model.UserID = userId;
             model.StartDate = DateTime.Now;
-            model.EndDate = DateTime.Now.AddMonths(1);
+            model.EndDate = DateTime.Now.AddMonths(type.DurationMonths);
+            model.Price = type.Price;
             model.Status = "Активне";
-
-            // Ціна за типом
-            model.Price = model.Type switch
-            {
-                "Premium" => 200,
-                "Standard" => 100,
-                _ => 50
-            };
 
             _context.Memberships.Add(model);
             _context.SaveChanges();
 
-            TempData["Success"] = $"Членство '{model.Type}' створено успішно!";
+            TempData["Success"] = $"Членство '{type.Name}' створено успішно!";
             return RedirectToAction("Index");
         }
 
@@ -134,54 +134,50 @@ namespace LibraryWeb.Controllers
         public IActionResult CreateForUser(int userId)
         {
             var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                TempData["Error"] = "Користувача не знайдено.";
-                return RedirectToAction("Index", "Loan");
-            }
+            if (user == null) return RedirectToAction("Index", "Loan");
 
-            ViewBag.User = user; // передаємо користувача у View
-            return View("CreateForUser");
+            ViewBag.User = user;
+            ViewBag.MembershipTypes = _context.MembershipTypes.ToList();
+
+            return View();
         }
 
         // POST: /membership/createforuser/{userId}
         [HttpPost("createforuser/{userId}")]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateForUser(int userId, Membership model)
+        public IActionResult CreateForUser(int userId, int membershipTypeId)
         {
             var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                TempData["Error"] = "Користувача не знайдено.";
-                return RedirectToAction("Index", "Loan");
-            }
+            if (user == null) return RedirectToAction("Index", "Loan");
 
-            var existingMembership = _context.Memberships
-                .FirstOrDefault(m => m.UserID == userId && m.Status == "Активне");
-            if (existingMembership != null)
+            if (_context.Memberships.Any(m => m.UserID == userId && m.Status == "Активне"))
             {
                 TempData["Error"] = "У користувача вже є активне членство.";
                 return RedirectToAction("Index", "Loan");
             }
 
-            model.UserID = userId;
-            model.StartDate = DateTime.Now;
-            model.EndDate = DateTime.Now.AddMonths(1);
-            model.Status = "Активне";
-
-            model.Price = model.Type switch
+            var type = _context.MembershipTypes.Find(membershipTypeId);
+            if (type == null)
             {
-                "Premium" => 200,
-                "Standard" => 100,
-                _ => 50
+                TempData["Error"] = "Тип членства не знайдено.";
+                return RedirectToAction("CreateForUser", new { userId });
+            }
+
+            var membership = new Membership
+            {
+                UserID = userId,
+                MembershipTypeID = type.MembershipTypeID,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddMonths(type.DurationMonths),
+                Price = type.Price,
+                Status = "Активне"
             };
 
-            _context.Memberships.Add(model);
+            _context.Memberships.Add(membership);
             _context.SaveChanges();
 
-            TempData["Success"] = $"Членство '{model.Type}' створено для користувача {user.Name}!";
-            return RedirectToAction("Create", "Loan"); // або на будь-яку потрібну сторінку
+            TempData["Success"] = $"Членство '{type.Name}' створено для користувача {user.Name}!";
+            return RedirectToAction("Create", "Loan");
         }
-
     }
 }

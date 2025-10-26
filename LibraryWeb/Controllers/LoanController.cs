@@ -101,6 +101,7 @@ namespace LibraryWeb.Controllers
             if (user.Membership == null || user.Membership.Status != "Активне")
             {
                 TempData["Error"] = $"У користувача '{user.Name}' немає активного членства.";
+                TempData["UserIdWithoutMembership"] = user.UserID;
                 return RedirectToAction("CreateMembershipPrompt");
             }
 
