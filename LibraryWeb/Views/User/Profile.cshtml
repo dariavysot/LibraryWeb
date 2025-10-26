@@ -20,7 +20,12 @@
 @if (Model.Membership != null)
 {
     <h4>Членство:</h4>
-    <p>@Model.Membership.Type - @Model.Membership.Status</p>
+    <p>
+        Тип: @Model.Membership.MembershipType?.Name <br />
+        Статус: @Model.Membership.Status <br />
+        Ціна: @Model.Membership.Price.ToString("C") <br />
+        Тривалість: @Model.Membership.MembershipType?.DurationMonths @((Model.Membership.MembershipType?.DurationMonths == 1) ? "місяць" : "місяців")
+    </p>
 }
 
 <a asp-controller="EditProfile" asp-action="Index" class="btn btn-primary">Редагувати профіль</a>

@@ -37,6 +37,14 @@ namespace LibraryWeb.Controllers
                 .Include(u => u.Payments)
                 .FirstOrDefaultAsync(u => u.UserID == userId);
 
+            if (user?.Membership != null)
+            {
+                // Якщо членство є, підвантажуємо тип членства
+                await _context.Entry(user.Membership)
+                              .Reference(m => m.MembershipType)
+                              .LoadAsync();
+            }
+
             if (user == null)
             {
                 // Якщо користувача не знайдено — знищуємо сесію
