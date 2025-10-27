@@ -1,5 +1,6 @@
 ﻿using LibraryWeb.Data;
 using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Create GET ---
+        [Authorize(Roles = "Admin")]
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -31,6 +33,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Create POST ---
+        [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(MembershipType model)
@@ -44,6 +47,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Edit GET ---
+        [Authorize(Roles = "Admin")]
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
         {
@@ -53,6 +57,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Edit POST ---
+        [Authorize(Roles = "Admin")]
         [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, MembershipType model)
@@ -72,6 +77,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Delete ---
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)

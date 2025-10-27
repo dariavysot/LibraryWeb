@@ -1,5 +1,6 @@
 ﻿using LibraryWeb.Data;
 using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ namespace LibraryWeb.Controllers
         }
 
         // Список примірників для конкретної книги
+        [Authorize(Roles = "Admin,Employee")]
         [HttpGet("book/{bookId}")]
         public IActionResult Index(int bookId)
         {
@@ -33,6 +35,7 @@ namespace LibraryWeb.Controllers
         }
 
         // Видалення окремого примірника
+        [Authorize(Roles = "Admin,Employee")]
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)

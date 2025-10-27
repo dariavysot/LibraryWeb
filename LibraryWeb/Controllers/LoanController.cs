@@ -1,5 +1,6 @@
 ﻿using LibraryWeb.Data;
 using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -75,6 +76,7 @@ namespace LibraryWeb.Controllers
 
         // --- Створення позики (POST) ---
         // GET: /loans/create
+        [Authorize(Roles = "Admin,Employee")]
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -87,6 +89,7 @@ namespace LibraryWeb.Controllers
         }
 
         // POST: /loans/create
+        [Authorize(Roles = "Admin,Employee")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(int UserID, int selectedBookId)
@@ -166,6 +169,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Повернення (GET) ---
+        [Authorize(Roles = "Admin,Employee")]
         [HttpGet("return/{id}")]
         public IActionResult Return(int id)
         {
@@ -185,6 +189,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Повернення (POST) ---
+        [Authorize(Roles = "Admin,Employee")]
         [HttpPost("return/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult ReturnConfirmed(int id, DateTime returnDate, string condition)
@@ -224,6 +229,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Видалення ---
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -240,6 +246,7 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Сторінка пропозиції створення членства ---
+        [Authorize(Roles = "Admin,Employee")]
         [HttpGet("create-membership")]
         public IActionResult CreateMembershipPrompt()
         {

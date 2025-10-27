@@ -50,7 +50,7 @@ namespace LibraryWeb.Controllers
             var hasher = new PasswordHasher<User>();
             model.UserPassword = hasher.HashPassword(model, model.UserPassword);
 
-            model.Role = UserRole.User;
+            model.Role = UserRole.Admin;
             _context.Users.Add(model);
             _context.SaveChanges();
 

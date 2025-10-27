@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Деталі книги";
     var availableCopies = Model.Copies?.Count(c => c.Status == "Доступна") ?? 0;
+    bool canViewCopies = User.IsInRole("Admin") || User.IsInRole("Employee");
 }
 
 <h2 class="mb-3">📖 Деталі книги</h2>
@@ -38,39 +39,42 @@
 
     <hr />
 
-    <h4>📚 Копії книги</h4>
-    @if (Model.Copies != null && Model.Copies.Any())
+    @if (canViewCopies)
     {
-        <table class="table table-bordered mt-2">
-            <thead class="table-light">
-                <tr>
-                    <th>Інвентарний №</th>
-                    <th>Стан</th>
-                    <th>Статус</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var copy in Model.Copies)
-                {
+        <h4>📚 Копії книги</h4>
+        @if (Model.Copies != null && Model.Copies.Any())
+        {
+            <table class="table table-bordered mt-2">
+                <thead class="table-light">
                     <tr>
-                        <td>@copy.InventoryNum</td>
-                        <td>@copy.Condition</td>
-                        <td>@copy.Status</td>
+                        <th>Інвентарний №</th>
+                        <th>Стан</th>
+                        <th>Статус</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="text-muted">Немає доданих копій для цієї книги.</p>
+                </thead>
+                <tbody>
+                    @foreach (var copy in Model.Copies)
+                    {
+                        <tr>
+                            <td>@copy.InventoryNum</td>
+                            <td>@copy.Condition</td>
+                            <td>@copy.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Немає доданих копій для цієї книги.</p>
+        }
+
+        <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@Model.BookID" class="btn btn-primary mt-3">
+            📚 Керувати примірниками
+        </a>
     }
 
     <div class="mt-3">
         <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">⬅ Назад до списку</a>
     </div>
-
-    <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@Model.BookID" class="btn btn-primary">
-        📚 Керувати примірниками
-    </a>
 </div>

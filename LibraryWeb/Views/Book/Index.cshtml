@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Book>
 
+@using System.Security.Claims
+
 @{
     ViewData["Title"] = "Каталог книг";
+    bool canEditOrDelete = User.IsInRole("Admin") || User.IsInRole("Employee");
 }
 
 <h2 class="mb-3">📚 Каталог книг</h2>
@@ -36,7 +39,12 @@
                     <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookID" class="btn btn-outline-primary btn-sm">
                         Деталі
                     </a>
-                    <a asp-action="Edit" asp-route-id="@book.BookID" class="btn btn-warning btn-sm">Редагувати</a>
+
+                    @if (canEditOrDelete)
+                    {
+                        <a asp-action="Edit" asp-route-id="@book.BookID" class="btn btn-warning btn-sm">Редагувати</a>
+                        <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@book.BookID" class="btn btn-info btn-sm">Примірники</a>
+                    }
                 </td>
             </tr>
         }

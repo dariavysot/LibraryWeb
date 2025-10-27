@@ -1,5 +1,6 @@
 ﻿using LibraryWeb.Data;
 using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,12 +37,14 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Додавання книги ---
+        [Authorize(Roles = "Admin")]
         [HttpGet("create")]
         public IActionResult Create()
         {
             return View("~/Views/Book/Create.cshtml");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Book model, int copyCount)
@@ -82,6 +85,8 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = $"Книгу '{model.Title}' додано ({copyCount} примірників).";
             return RedirectToAction("Index");
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
         {
@@ -96,6 +101,7 @@ namespace LibraryWeb.Controllers
             return View("~/Views/Book/Edit.cshtml", book);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Book model, int copyCount)
