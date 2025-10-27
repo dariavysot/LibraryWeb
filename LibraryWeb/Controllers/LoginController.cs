@@ -64,12 +64,18 @@ namespace LibraryWeb.Controllers
 
             return RedirectToAction("Index", "Profile");
         }
+        
+        [HttpGet("access-denied")]
+        public IActionResult AccessDenied()
+        {
+            return View("~/Views/User/AccessDenied.cshtml");
+        }
 
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Login");
-        }
+        }       
     }
 }
