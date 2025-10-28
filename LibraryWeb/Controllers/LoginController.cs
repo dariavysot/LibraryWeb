@@ -62,7 +62,15 @@ namespace LibraryWeb.Controllers
                     ExpiresUtc = DateTime.UtcNow.AddMinutes(30)
                 });
 
-            return RedirectToAction("Index", "Profile");
+            switch (user.Role)
+            {
+                case UserRole.Admin:
+                    return RedirectToAction("AdminDashboard", "Home"); // сторінка адміна
+                case UserRole.Employee:
+                    return RedirectToAction("EmployeeDashboard", "Home"); // сторінка працівника
+                default:
+                    return RedirectToAction("Index", "Home"); // звичайний користувач
+            }
         }
         
         [HttpGet("access-denied")]

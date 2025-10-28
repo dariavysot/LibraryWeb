@@ -1,3 +1,38 @@
-﻿
-<h1>Hello, Library 📚</h1>
-<p>Welcome to your first ASP.NET Core web app!</p>
+﻿@{
+    ViewData["Title"] = "Головна бібліотеки";
+}
+
+<h2>📚 Ласкаво просимо до нашої бібліотеки!</h2>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Нові книги</h5>
+            <ul>
+                @foreach (var book in ViewBag.NewBooks)
+                {
+                    <li>@book.Title (@book.PublicationYear)</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Статистика бібліотеки</h5>
+            <p>Загальна кількість книг: <strong>@ViewBag.TotalBooks</strong></p>
+            <p>Кількість користувачів: <strong>@ViewBag.TotalUsers</strong></p>
+            <p>Активні позики: <strong>@ViewBag.ActiveLoans</strong></p>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    @if (User?.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <p>Ви залогінені!</p>
+    }
+    else
+    {
+        <p>Ви не залогінені.</p>
+    }
+</div>
