@@ -51,18 +51,34 @@ namespace LibraryWeb.Data
                 .HasForeignKey(r => r.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Payment → User (платник) та Employee (той, хто обробляв)
+            // Payment → User (платник)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(p => p.UserID)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Payment → Employee (той, хто обробляв)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Employee)
                 .WithMany()
                 .HasForeignKey(p => p.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Payment → Membership
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Membership)
+                .WithMany()
+                .HasForeignKey(p => p.MembershipID)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Reservation → Payment (1:1, опціональний)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Payment)
+                .WithOne(p => p.Reservation)
+                .HasForeignKey<Reservation>(r => r.PaymentID)
+                .OnDelete(DeleteBehavior.SetNull);
+
 
             // Membership → User (Reader)
             modelBuilder.Entity<Membership>()
