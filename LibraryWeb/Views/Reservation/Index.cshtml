@@ -22,7 +22,8 @@
             <th>Книга</th>
             <th>Дата початку</th>
             <th>Дата завершення</th>
-            <th>Статус</th>
+            <th>Статус резервації</th>
+            <th>Статус оплати</th>
             <th>Дії</th>
         </tr>
     </thead>
@@ -35,8 +36,25 @@
                 <td>@reservation.StartDate.ToShortDateString()</td>
                 <td>@reservation.EndDate.ToShortDateString()</td>
                 <td>@reservation.Status</td>
+                <td>@reservation.Payment?.Status</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@reservation.ReservationID" class="btn btn-sm btn-primary">Редагувати</a>
+                    <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="btn btn-sm btn-info">Деталі</a>
+                    @* Кнопка для оплати *@
+                    @if (reservation.Payment != null && reservation.Payment.Status == "Очікує оплату")
+                    {
+                        <form asp-controller="Payment" asp-action="ConfirmPayment" asp-route-paymentId="@reservation.Payment.PaymentID" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-success">💳 Оплатити</button>
+                        </form>
+                    }
+                    else if (reservation.Payment == null)
+                    {
+                        <form asp-controller="Payment" asp-action="CreatePaymentForReservation" method="post" style="display:inline">
+                            <input type="hidden" name="reservationId" value="@reservation.ReservationID" />
+                            <button type="submit" class="btn btn-sm btn-primary">Створити оплату</button>
+                        </form>
+                    }
+
+                    @* Кнопка видалення резервації *@
                     <form asp-action="Delete" asp-route-id="@reservation.ReservationID" method="post" style="display:inline"
                           onsubmit="return confirm('Видалити цю резервацію?');">
                         <button type="submit" class="btn btn-sm btn-danger">Видалити</button>

@@ -17,17 +17,22 @@ namespace LibraryWeb.Models
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
 
-        // Payment прив’язаний до Membership
+        // Опціональний зв’язок з Membership
         [ForeignKey("Membership")]
-        public int MembershipID { get; set; }
-        public virtual Membership Membership { get; set; } = null!;
+        public int? MembershipID { get; set; }
+        public virtual Membership? Membership { get; set; }
 
-        // Хто оплатив (будь-який користувач)
+        // Оплата за резервацію
+        [ForeignKey("Reservation")]
+        public int? ReservationID { get; set; }
+        public virtual Reservation? Reservation { get; set; }
+
+        // Хто оплатив
         [ForeignKey("User")]
         public int UserID { get; set; }
         public virtual User User { get; set; } = null!;
 
-        // Хто обробляв (якщо потрібно)
+        // Хто обробляв (опціонально)
         [ForeignKey("Employee")]
         public int? EmployeeID { get; set; }
         public virtual User? Employee { get; set; }

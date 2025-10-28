@@ -1,11 +1,13 @@
 ﻿using LibraryWeb.Data;
 using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace LibraryWeb.Controllers
 {
+    [Authorize(Roles = "User")]
     [Route("reservations")]
     public class ReservationController : Controller
     {
@@ -33,6 +35,7 @@ namespace LibraryWeb.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Copy)
                 .ThenInclude(c => c.Book)
+                .Include(r => r.Payment)
                 .ToList();
 
             return View(reservations);
@@ -108,21 +111,12 @@ namespace LibraryWeb.Controllers
 
             // --- Розрахунок суми ---
             int totalDays = (endDate - startDate).Days;
-            decimal dailyRate = 20m; //20 грн за день
+            if (totalDays <= 0) totalDays = 1;
+
+            decimal dailyRate = 20m; // грн за день
             decimal totalAmount = totalDays * dailyRate;
 
-            var reservation = new Reservation
-            {
-                UserID = user.UserID,
-                InventoryNum = copy.InventoryNum,
-                StartDate = startDate,
-                EndDate = endDate,
-                Status = "Активна"
-            };
-
-            _context.Reservations.Add(reservation);
-            _context.SaveChanges();
-
+            // --- Створюємо Payment спершу ---
             var payment = new Payment
             {
                 UserID = user.UserID,
@@ -132,12 +126,51 @@ namespace LibraryWeb.Controllers
                 Status = "Очікує оплату",
                 MembershipID = membership.MembershipID
             };
-
             _context.Payments.Add(payment);
+            _context.SaveChanges(); // тут генерується PaymentID
+
+            // --- Створюємо Reservation з PaymentID ---
+            var reservation = new Reservation
+            {
+                UserID = user.UserID,
+                InventoryNum = copy.InventoryNum,
+                StartDate = startDate,
+                EndDate = endDate,
+                Status = "Очікує оплату",
+                Amount = totalAmount,
+                PaymentID = payment.PaymentID
+            };
+            _context.Reservations.Add(reservation);
+            _context.SaveChanges();
+
+            // --- Оновлюємо Payment, щоб вказати ReservationID ---
+            payment.ReservationID = reservation.ReservationID;
+            _context.Payments.Update(payment);
+
+            // --- Змінюємо статус примірника ---
+            //copy.Status = "Зарезервована";
+            //_context.Copies.Update(copy);
+
             _context.SaveChanges();
 
             TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена. Сума до оплати: {totalAmount} грн";
             return RedirectToAction("Index");
+        }
+
+        [HttpGet("details/{id}")]
+        public IActionResult Details(int id)
+        {
+            var reservation = _context.Reservations
+                .Include(r => r.User)
+                .Include(r => r.Copy)
+                .ThenInclude(c => c.Book)
+                .Include(r => r.Payment)
+                .FirstOrDefault(r => r.ReservationID == id);
+
+            if (reservation == null)
+                return NotFound();
+
+            return View(reservation);
         }
 
         // --- Видалення резервації ---

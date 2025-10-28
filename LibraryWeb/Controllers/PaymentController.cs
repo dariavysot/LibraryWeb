@@ -1,0 +1,79 @@
+﻿using LibraryWeb.Data;
+using LibraryWeb.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace LibraryWeb.Controllers
+{
+    [Authorize]
+    [Route("payment")]
+    public class PaymentController : Controller
+    {
+        private readonly LibraryContext _context;
+
+        public PaymentController(LibraryContext context)
+        {
+            _context = context;
+        }
+
+        // --- Створення платежу для резервації ---
+        [HttpPost("create/{reservationId}")]
+        public async Task<IActionResult> CreatePaymentForReservation(int reservationId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.ReservationID == reservationId);
+
+            if (reservation == null)
+                return NotFound("Резервацію не знайдено.");
+
+            if (reservation.PaymentID != null)
+                return BadRequest("Оплата для цієї резервації вже існує.");
+
+            var payment = new Payment
+            {
+                Amount = reservation.Amount,
+                Type = "Reservation",
+                Status = "Очікує оплату",
+                UserID = reservation.UserID,
+                ReservationID = reservation.ReservationID
+            };
+
+            _context.Payments.Add(payment);
+            await _context.SaveChangesAsync();
+
+            reservation.PaymentID = payment.PaymentID;
+            _context.Reservations.Update(reservation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Reservation");
+        }
+
+        // --- Імітація підтвердження оплати ---
+        [HttpPost("confirm/{paymentId}")]
+        public async Task<IActionResult> ConfirmPayment(int paymentId)
+        {
+            var payment = await _context.Payments
+                .Include(p => p.Reservation)
+                .FirstOrDefaultAsync(p => p.PaymentID == paymentId);
+
+            if (payment == null)
+                return NotFound("Платіж не знайдено.");
+
+            payment.Status = "Оплачено";
+            payment.Date = DateTime.Now;
+
+            if (payment.Reservation != null)
+            {
+                payment.Reservation.Status = "Активна";
+                _context.Reservations.Update(payment.Reservation);
+            }
+
+            _context.Payments.Update(payment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Reservation");
+        }
+    }
+}
