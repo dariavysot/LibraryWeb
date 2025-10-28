@@ -73,7 +73,44 @@ namespace LibraryWeb.Controllers
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Reservation");
+                return RedirectToAction("Index", "Reservation");
         }
+
+        [HttpPost("membership/confirm/{paymentId}")]
+        public async Task<IActionResult> ConfirmMembershipPayment(int paymentId)
+        {
+            var payment = await _context.Payments
+                .Include(p => p.Membership)
+                .FirstOrDefaultAsync(p => p.PaymentID == paymentId);
+
+            if (payment == null)
+            {
+                TempData["Error"] = "Платіж не знайдено.";
+                return RedirectToAction("Index", "Membership");
+            }
+
+            if (payment.Status == "Оплачено")
+            {
+                TempData["Error"] = "Цей платіж уже підтверджено.";
+                return RedirectToAction("Details", "Membership", new { id = payment.MembershipID });
+            }
+
+            // --- Підтвердження ---
+            payment.Status = "Оплачено";
+            payment.Date = DateTime.Now;
+
+            if (payment.Membership != null)
+            {
+                payment.Membership.Status = "Активне";
+                _context.Memberships.Update(payment.Membership);
+            }
+
+            _context.Payments.Update(payment);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Оплата успішно підтверджена.";
+            return RedirectToAction("Details", "Membership", new { id = payment.MembershipID });
+        }
+
     }
 }

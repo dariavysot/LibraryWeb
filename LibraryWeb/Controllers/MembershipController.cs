@@ -30,8 +30,10 @@ namespace LibraryWeb.Controllers
             int userId = int.Parse(userIdClaim.Value);
 
             var membership = _context.Memberships
-                 .Include(m => m.MembershipType)
-                .FirstOrDefault(m => m.UserID == userId);
+               .Include(m => m.MembershipType)
+               .Include(m => m.Payment)
+               .OrderByDescending(m => m.MembershipID)
+               .FirstOrDefault(m => m.UserID == userId);
 
             return View(membership);
         }
@@ -44,10 +46,9 @@ namespace LibraryWeb.Controllers
             return View();
         }
 
-        // --- Створення членства (POST) ---
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Membership model)
+        public async Task<IActionResult> Create(int MembershipTypeID)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -64,25 +65,44 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index");
             }
 
-            var type = _context.MembershipTypes.Find(model.MembershipTypeID);
+            var type = await _context.MembershipTypes.FindAsync(MembershipTypeID);
             if (type == null)
             {
-                TempData["Error"] = "Обраний тип членства не знайдено.";
+                TempData["Error"] = "Тип членства не знайдено.";
                 return RedirectToAction("Create");
             }
 
-            model.UserID = userId;
-            model.StartDate = DateTime.Now;
-            model.EndDate = DateTime.Now.AddMonths(type.DurationMonths);
-            model.Price = type.Price;
-            model.Status = "Активне";
+            var membership = new Membership
+            {
+                UserID = userId,
+                MembershipTypeID = type.MembershipTypeID,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddMonths(type.DurationMonths),
+                Price = type.Price,
+                Status = "Очікує оплату"
+            };
+            _context.Memberships.Add(membership);
+            await _context.SaveChangesAsync();
 
-            _context.Memberships.Add(model);
-            _context.SaveChanges();
+            var payment = new Payment
+            {
+                UserID = userId,
+                MembershipID = membership.MembershipID,
+                Amount = type.Price,
+                Date = DateTime.Now,
+                Type = "Членство",
+                Status = "Очікує оплату"
+            };
+            _context.Payments.Add(payment);
+            await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Членство '{type.Name}' створено успішно!";
+            membership.Payment = payment;  // EF автоматично оновить PaymentID
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Членство '{type.Name}' створено. Очікує оплату!";
             return RedirectToAction("Index");
         }
+
 
         // --- Редагування членства (GET) ---
         [HttpGet("edit/{id}")]
@@ -94,23 +114,18 @@ namespace LibraryWeb.Controllers
             return View(membership);
         }
 
-        // --- Редагування членства (POST) ---
-        [HttpPost("edit/{id}")]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Membership model)
+        [HttpGet("details/{id}")]
+        public IActionResult Details(int id)
         {
-            var membership = _context.Memberships.Find(id);
+            var membership = _context.Memberships
+                .Include(m => m.User)
+                .Include(m => m.Payment)
+                .Include(m => m.MembershipType)
+                .FirstOrDefault(m => m.MembershipID == id);
+
             if (membership == null) return NotFound();
 
-            membership.Type = model.Type;
-            membership.Price = model.Price;
-            membership.Status = model.Status;
-            membership.EndDate = model.EndDate;
-
-            _context.SaveChanges();
-
-            TempData["Success"] = "Членство оновлено.";
-            return RedirectToAction("Index");
+            return View(membership);
         }
 
         // --- Видалення членства ---

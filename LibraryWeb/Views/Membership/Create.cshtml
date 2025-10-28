@@ -12,38 +12,40 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<form asp-action="Create" method="post">
-    @if (membershipTypes != null && membershipTypes.Any())
-    {
-        <table class="table table-bordered">
-            <thead>
+@if (membershipTypes != null && membershipTypes.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Ціна</th>
+                <th>Тривалість</th>
+                <th>Дія</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var type in membershipTypes)
+            {
                 <tr>
-                    <th>Назва</th>
-                    <th>Ціна</th>
-                    <th>Тривалість</th>
-                    <th>Дія</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var type in membershipTypes)
-                {
-                    <tr>
-                        <td>@type.Name</td>
-                        <td>@type.Price.ToString("C")</td>
-                        <td>@type.DurationMonths @((type.DurationMonths == 1) ? "місяць" : "місяців")</td>
-                        <td>
-                            <button type="submit" name="MembershipTypeID" value="@type.MembershipTypeID" class="btn btn-success">
+                    <td>@type.Name</td>
+                    <td>@type.Price.ToString("C")</td>
+                    <td>@type.DurationMonths @((type.DurationMonths == 1) ? "місяць" : "місяців")</td>
+                    <td>
+                        <form asp-action="Create" method="post" style="display:inline">
+                            <input type="hidden" name="MembershipTypeID" value="@type.MembershipTypeID" />
+                            <button type="submit" class="btn btn-success">
                                 Оформити
                             </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>Немає доступних типів членства.</p>
-    }
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-</form>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Немає доступних типів членства.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Назад</a>
