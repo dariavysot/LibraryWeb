@@ -72,6 +72,13 @@ namespace LibraryWeb.Data
                 .HasForeignKey(p => p.MembershipID)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Loan)
+                .WithMany()
+                .HasForeignKey(p => p.LoanID)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
             // Reservation → Payment (1:1, опціональний)
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Payment)

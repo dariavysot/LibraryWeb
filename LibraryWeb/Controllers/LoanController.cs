@@ -197,6 +197,7 @@ namespace LibraryWeb.Controllers
             var loan = _context.Loans
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
+                .Include(l => l.User)
                 .FirstOrDefault(l => l.LoanID == id);
 
             if (loan == null)
@@ -220,13 +221,31 @@ namespace LibraryWeb.Controllers
 
             _context.SaveChanges();
 
+            // --- Створення платежу за штраф (одразу оплачений) ---
             if (fine > 0)
-                TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн.";
+            {
+                var payment = new Payment
+                {
+                    UserID = loan.UserID,
+                    LoanID = loan.LoanID,
+                    Amount = (decimal)fine,
+                    Date = DateTime.Now,
+                    Type = "Штраф",
+                    Status = "Оплачено"
+                };
+                _context.Payments.Add(payment);
+                _context.SaveChanges();
+
+                TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн (оплачено).";
+            }
             else
+            {
                 TempData["Success"] = $"Книга '{loan.Copy.Book.Title}' успішно повернена без штрафу.";
+            }
 
             return RedirectToAction("Index");
         }
+
 
         // --- Видалення ---
         [Authorize(Roles = "Admin")]

@@ -27,6 +27,10 @@ namespace LibraryWeb.Models
         public int? ReservationID { get; set; }
         public virtual Reservation? Reservation { get; set; }
 
+        [ForeignKey("Loan")]
+        public int? LoanID { get; set; }
+        public virtual Loan? Loan { get; set; }
+
         // Хто оплатив
         [ForeignKey("User")]
         public int UserID { get; set; }
