@@ -27,6 +27,9 @@ namespace LibraryWeb.Models
         [MaxLength(100)]
         public string Author { get; set; } = string.Empty;
 
+        [MaxLength(100)]
+        public string Genre { get; set; } = string.Empty;
+
         public DateTime DateAdded { get; set; } = DateTime.Now;
 
         // Зв’язки

@@ -134,6 +134,7 @@ namespace LibraryWeb.Controllers
             book.Language = model.Language;
             book.PublishingHouse = model.PublishingHouse;
             book.PublicationYear = model.PublicationYear;
+            book.Genre = model.Genre;
 
             // Кількість примірників
             int currentCount = book.Copies.Count;

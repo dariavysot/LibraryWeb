@@ -18,11 +18,16 @@ namespace LibraryWeb.Controllers
         [HttpGet("/")]
         public IActionResult Index()
         {
-            // Можна показати останні книги та базову інформацію
+            //показати останні книги та базову інформацію
             var newBooks = _context.Books
-                .OrderByDescending(b => b.DateAdded)
-                .Take(5)
-                .ToList();
+                 .OrderByDescending(b => b.DateAdded)
+                 .Take(5)
+                 .Select(b => new
+                 {
+                     b.Title,
+                     b.PublicationYear
+                 })
+                 .ToList();
 
             ViewBag.NewBooks = newBooks;
             ViewBag.TotalBooks = _context.Books.Count();
