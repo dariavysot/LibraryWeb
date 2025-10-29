@@ -22,35 +22,33 @@ namespace LibraryWeb.Controllers
         public async Task<IActionResult> CreatePaymentForReservation(int reservationId)
         {
             var reservation = await _context.Reservations
+                .Include(r => r.Payment)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.ReservationID == reservationId);
 
             if (reservation == null)
                 return NotFound("Резервацію не знайдено.");
 
-            if (reservation.PaymentID != null)
+            if (reservation.Payment != null)
                 return BadRequest("Оплата для цієї резервації вже існує.");
 
             var payment = new Payment
             {
                 Amount = reservation.Amount,
-                Type = "Reservation",
+                Type = "Резервація книги",
                 Status = "Очікує оплату",
                 UserID = reservation.UserID,
-                ReservationID = reservation.ReservationID
+                Reservation = reservation // EF автоматично встановить ReservationID
             };
 
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            reservation.PaymentID = payment.PaymentID;
-            _context.Reservations.Update(reservation);
-            await _context.SaveChangesAsync();
-
+            TempData["Success"] = "Платіж створено, очікує оплати.";
             return RedirectToAction("Index", "Reservation");
         }
 
-        // --- Імітація підтвердження оплати ---
+        // --- Підтвердження оплати ---
         [HttpPost("confirm/{paymentId}")]
         public async Task<IActionResult> ConfirmPayment(int paymentId)
         {
@@ -73,7 +71,8 @@ namespace LibraryWeb.Controllers
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Reservation");
+            TempData["Success"] = "Оплата успішно підтверджена.";
+            return RedirectToAction("Index", "Reservation");
         }
 
         // Підтвердження оплати членства

@@ -22,7 +22,7 @@ namespace LibraryWeb.Models
         public virtual Membership? Membership { get; set; }
 
         // Оплата за резервацію
-        [ForeignKey("Reservation")]
+        //[ForeignKey("Reservation")]
         public int? ReservationID { get; set; }
         public virtual Reservation? Reservation { get; set; }
 

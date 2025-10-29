@@ -26,6 +26,11 @@ namespace LibraryWeb.Data
                 .Property(m => m.Price)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<MembershipType>()
+                .Property(m => m.Price)
+                .HasPrecision(18, 2);
+
+
             modelBuilder.Entity<Loan>()
                 .Property(l => l.Fine)
                 .HasPrecision(18, 2);
@@ -65,12 +70,13 @@ namespace LibraryWeb.Data
                 .HasForeignKey(p => p.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Payment → Membership
-            modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Membership)
-                .WithMany()
-                .HasForeignKey(p => p.MembershipID)
-                .OnDelete(DeleteBehavior.SetNull);
+            // Payment → Membership (1:1, опціонально)
+            modelBuilder.Entity<Membership>()
+                 .HasOne(m => m.Payment)
+                 .WithOne(p => p.Membership)
+                 .HasForeignKey<Payment>(p => p.MembershipID)
+                 .OnDelete(DeleteBehavior.SetNull);
+
 
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Loan)
@@ -83,7 +89,7 @@ namespace LibraryWeb.Data
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Payment)
                 .WithOne(p => p.Reservation)
-                .HasForeignKey<Reservation>(r => r.PaymentID)
+                .HasForeignKey<Payment>(p => p.ReservationID)
                 .OnDelete(DeleteBehavior.SetNull);
 
 

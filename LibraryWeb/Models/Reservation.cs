@@ -26,8 +26,8 @@ namespace LibraryWeb.Models
         public int InventoryNum { get; set; }
         public virtual Copy Copy { get; set; } = null!;
 
-        [ForeignKey("Payment")]
-        public int? PaymentID { get; set; }
+        //[ForeignKey("Payment")]
+        //public int? PaymentID { get; set; }
         public virtual Payment? Payment { get; set; }
     }
 }
