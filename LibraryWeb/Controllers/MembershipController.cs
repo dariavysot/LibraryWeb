@@ -46,6 +46,7 @@ namespace LibraryWeb.Controllers
             return View();
         }
 
+        // --- Створення членства (POST) ---
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int MembershipTypeID)
@@ -102,7 +103,6 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = $"Членство '{type.Name}' створено. Очікує оплату!";
             return RedirectToAction("Index");
         }
-
 
         // --- Редагування членства (GET) ---
         [HttpGet("edit/{id}")]
@@ -206,7 +206,7 @@ namespace LibraryWeb.Controllers
             _context.SaveChanges();
 
             // --- Зв'язуємо Membership з Payment ---
-            membership.PaymentID = payment.PaymentID;
+            membership.Payment = payment;
             _context.Memberships.Update(membership);
             _context.SaveChanges();
 

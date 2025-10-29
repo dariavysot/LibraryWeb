@@ -76,6 +76,7 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index", "Reservation");
         }
 
+        // Підтвердження оплати членства
         [HttpPost("membership/confirm/{paymentId}")]
         public async Task<IActionResult> ConfirmMembershipPayment(int paymentId)
         {
@@ -83,33 +84,29 @@ namespace LibraryWeb.Controllers
                 .Include(p => p.Membership)
                 .FirstOrDefaultAsync(p => p.PaymentID == paymentId);
 
-            if (payment == null)
+            if (payment == null || payment.Membership == null)
             {
-                TempData["Error"] = "Платіж не знайдено.";
+                TempData["Error"] = "Не знайдено пов'язане членство.";
                 return RedirectToAction("Index", "Membership");
             }
 
             if (payment.Status == "Оплачено")
             {
                 TempData["Error"] = "Цей платіж уже підтверджено.";
-                return RedirectToAction("Details", "Membership", new { id = payment.MembershipID });
+                return RedirectToAction("Details", "Membership", new { id = payment.Membership.MembershipID });
             }
 
-            // --- Підтвердження ---
             payment.Status = "Оплачено";
             payment.Date = DateTime.Now;
 
-            if (payment.Membership != null)
-            {
-                payment.Membership.Status = "Активне";
-                _context.Memberships.Update(payment.Membership);
-            }
+            payment.Membership.Status = "Активне";
+            _context.Memberships.Update(payment.Membership);
 
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Оплата успішно підтверджена.";
-            return RedirectToAction("Details", "Membership", new { id = payment.MembershipID });
+            return RedirectToAction("Details", "Membership", new { id = payment.Membership.MembershipID });
         }
 
     }

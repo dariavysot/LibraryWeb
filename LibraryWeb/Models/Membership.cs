@@ -28,8 +28,6 @@ namespace LibraryWeb.Models
         [ForeignKey("MembershipType")]
         public int MembershipTypeID { get; set; }
         public virtual MembershipType MembershipType { get; set; } = null!;
-
-        public int? PaymentID { get; set; } // nullable, бо платіж ще може не бути
-        public Payment? Payment { get; set; }
+        public virtual Payment? Payment { get; set; } // навігаційне поле
     }
 }

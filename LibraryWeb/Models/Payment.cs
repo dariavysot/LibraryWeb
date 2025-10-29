@@ -17,8 +17,7 @@ namespace LibraryWeb.Models
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
 
-        // Опціональний зв’язок з Membership
-        [ForeignKey("Membership")]
+        //[ForeignKey("Membership")]
         public int? MembershipID { get; set; }
         public virtual Membership? Membership { get; set; }
 

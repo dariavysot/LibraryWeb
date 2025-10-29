@@ -154,12 +154,6 @@ namespace LibraryWeb.Migrations
                     b.Property<int>("MembershipTypeID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PaymentID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PaymentID1")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -184,8 +178,6 @@ namespace LibraryWeb.Migrations
 
                     b.HasIndex("MembershipTypeID");
 
-                    b.HasIndex("PaymentID1");
-
                     b.HasIndex("UserID")
                         .IsUnique();
 
@@ -209,6 +201,7 @@ namespace LibraryWeb.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("MembershipTypeID");
@@ -262,7 +255,9 @@ namespace LibraryWeb.Migrations
 
                     b.HasIndex("LoanID");
 
-                    b.HasIndex("MembershipID");
+                    b.HasIndex("MembershipID")
+                        .IsUnique()
+                        .HasFilter("[MembershipID] IS NOT NULL");
 
                     b.HasIndex("UserID");
 
@@ -394,10 +389,6 @@ namespace LibraryWeb.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LibraryWeb.Models.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentID1");
-
                     b.HasOne("LibraryWeb.Models.User", "User")
                         .WithOne("Membership")
                         .HasForeignKey("LibraryWeb.Models.Membership", "UserID")
@@ -405,8 +396,6 @@ namespace LibraryWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("MembershipType");
-
-                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -424,8 +413,8 @@ namespace LibraryWeb.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibraryWeb.Models.Membership", "Membership")
-                        .WithMany()
-                        .HasForeignKey("MembershipID")
+                        .WithOne("Payment")
+                        .HasForeignKey("LibraryWeb.Models.Payment", "MembershipID")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibraryWeb.Models.User", "User")
@@ -479,6 +468,11 @@ namespace LibraryWeb.Migrations
                     b.Navigation("Loans");
 
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("LibraryWeb.Models.Membership", b =>
+                {
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Payment", b =>
