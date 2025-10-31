@@ -24,7 +24,7 @@ namespace LibraryWeb.Controllers
             ViewBag.BookCount = _context.Books.Count();
             ViewBag.MembershipCount = _context.MembershipTypes.Count();
 
-            return View("~/Views/Admin/Dashboard.cshtml");
+            return View("~/Views/Home/AdminDashboard.cshtml");
         }
     }
 }
