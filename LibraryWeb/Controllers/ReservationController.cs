@@ -109,6 +109,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = user.UserID,
                 InventoryNum = copy.InventoryNum,
+                UserName = user.Name,
                 StartDate = startDate,
                 EndDate = endDate,
                 Status = "Очікує оплату",
@@ -119,6 +120,7 @@ namespace LibraryWeb.Controllers
             var payment = new Payment
             {
                 UserID = user.UserID,
+                UserName = user.Name,
                 Amount = totalAmount,
                 Type = "Резервація книги",
                 Status = "Очікує оплату",

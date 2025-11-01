@@ -54,7 +54,7 @@ namespace LibraryWeb.Data
                 .HasMany(u => u.Reservations)
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Payment → User (платник)
             modelBuilder.Entity<Payment>()

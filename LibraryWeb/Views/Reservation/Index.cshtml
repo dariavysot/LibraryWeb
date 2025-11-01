@@ -31,7 +31,7 @@
         @foreach (var reservation in Model)
         {
             <tr>
-                <td>@reservation.User.Name</td>
+                <td>@reservation.User?.Name</td>
                 <td>@reservation.Copy.Book.Title</td>
                 <td>@reservation.StartDate.ToShortDateString()</td>
                 <td>@reservation.EndDate.ToShortDateString()</td>

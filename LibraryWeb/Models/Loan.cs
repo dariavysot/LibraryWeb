@@ -12,6 +12,7 @@ namespace LibraryWeb.Models
         public DateTime EndDate { get; set; }
         public DateTime? ReturnDate { get; set; }
         public decimal? Fine { get; set; }
+        public string? UserName { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;

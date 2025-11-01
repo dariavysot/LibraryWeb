@@ -7,7 +7,6 @@ namespace LibraryWeb.Models
     {
         [Key]
         public int PaymentID { get; set; }
-
         public decimal Amount { get; set; } = 0m;
         public DateTime Date { get; set; } = DateTime.Now;
 
@@ -16,6 +15,7 @@ namespace LibraryWeb.Models
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
+        public string? UserName { get; set; }
 
         //[ForeignKey("Membership")]
         public int? MembershipID { get; set; }

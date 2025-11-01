@@ -20,7 +20,7 @@
                 <td>@loan.LoanID</td>
                 <td>@loan.Copy.Book.Title</td>
                 <td>@loan.InventoryNum</td>
-                <td>@loan.User?.Name</td>
+                <td>@(loan.User?.Name ?? loan.UserName ?? "—")</td>
                 <td>@loan.Status</td>
                 <td>@loan.StartDate.ToShortDateString()</td>
                 <td>@loan.EndDate.ToShortDateString()</td>

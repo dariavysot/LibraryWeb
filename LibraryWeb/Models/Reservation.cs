@@ -15,11 +15,12 @@ namespace LibraryWeb.Models
         public string Status { get; set; } = string.Empty;
 
         public decimal Amount { get; set; } = 0m;
+        public string? UserName { get; set; }
 
         // Foreign key → User
         [ForeignKey("User")]
-        public int UserID { get; set; }
-        public virtual User User { get; set; } = null!;
+        public int? UserID { get; set; }
+        public virtual User? User { get; set; } = null!;
 
         // Foreign key → Copy
         [ForeignKey("Copy")]

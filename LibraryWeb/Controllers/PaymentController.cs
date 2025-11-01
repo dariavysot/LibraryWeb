@@ -38,6 +38,7 @@ namespace LibraryWeb.Controllers
                 Type = "Резервація книги",
                 Status = "Очікує оплату",
                 UserID = reservation.UserID,
+                UserName = reservation.User?.Name,
                 Reservation = reservation // EF автоматично встановить ReservationID
             };
 

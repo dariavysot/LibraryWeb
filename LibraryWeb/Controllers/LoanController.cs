@@ -153,6 +153,7 @@ namespace LibraryWeb.Controllers
             var loan = new Loan
             {
                 UserID = UserID,
+                UserName = user.Name,
                 InventoryNum = copyToLoan.InventoryNum,
                 Status = "Активна",
                 StartDate = loanStart,
@@ -229,6 +230,7 @@ namespace LibraryWeb.Controllers
                     var payment = new Payment
                     {
                         UserID = loan.UserID.Value,  // тепер безпечно
+                        UserName = loan.User?.Name,
                         LoanID = loan.LoanID,
                         Amount = (decimal)fine,
                         Date = DateTime.Now,

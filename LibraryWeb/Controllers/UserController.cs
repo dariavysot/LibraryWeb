@@ -129,9 +129,12 @@ namespace LibraryWeb.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // Видалення усіх резервацій
-                if (user.Reservations.Any())
-                    _context.Reservations.RemoveRange(user.Reservations);
+                // --- Зберігаємо ім’я користувача у його резерваціях ---
+                foreach (var reservation in user.Reservations)
+                {
+                    reservation.UserName = user.Name;
+                    reservation.UserID = null; // розриваємо зв’язок
+                }
 
                 // Видалення членства вручну
                 if (user.Membership != null)
