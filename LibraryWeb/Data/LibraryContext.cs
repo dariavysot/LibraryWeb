@@ -45,10 +45,10 @@ namespace LibraryWeb.Data
 
             // User → Loans та Reservations (Reader)
             modelBuilder.Entity<User>()
-                .HasMany(u => u.Loans)
-                .WithOne(l => l.User)
-                .HasForeignKey(l => l.UserID)
-                .OnDelete(DeleteBehavior.Restrict);
+                 .HasMany(u => u.Loans)
+                 .WithOne(l => l.User)
+                 .HasForeignKey(l => l.UserID)
+                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reservations)
@@ -61,7 +61,7 @@ namespace LibraryWeb.Data
                 .HasOne(p => p.User)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(p => p.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Payment → Employee (той, хто обробляв)
             modelBuilder.Entity<Payment>()
@@ -98,7 +98,7 @@ namespace LibraryWeb.Data
                 .HasOne(m => m.User)
                 .WithOne(u => u.Membership)
                 .HasForeignKey<Membership>(m => m.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Book → Copies
             modelBuilder.Entity<Book>()

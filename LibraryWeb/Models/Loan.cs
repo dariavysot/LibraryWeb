@@ -18,8 +18,8 @@ namespace LibraryWeb.Models
 
         // Foreign key → (User subtype)
         [ForeignKey("User")]
-        public int UserID { get; set; }
-        public virtual User User { get; set; } = null!; 
+        public int? UserID { get; set; }
+        public virtual User? User { get; set; } = null!; 
 
         // Foreign key → Copy
         [ForeignKey("Copy")]

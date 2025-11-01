@@ -53,7 +53,6 @@ namespace LibraryWeb.Controllers
         }
 
         // --- Створення резервації (POST) ---
-        // --- Створення резервації (POST) ---
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int selectedBookId, DateTime startDate, DateTime endDate)
@@ -123,7 +122,7 @@ namespace LibraryWeb.Controllers
                 Amount = totalAmount,
                 Type = "Резервація книги",
                 Status = "Очікує оплату",
-                Reservation = reservation // EF сам встановить ReservationID
+                Reservation = reservation
             };
 
             _context.Payments.Add(payment);

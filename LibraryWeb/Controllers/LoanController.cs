@@ -224,19 +224,27 @@ namespace LibraryWeb.Controllers
             // --- Створення платежу за штраф (одразу оплачений) ---
             if (fine > 0)
             {
-                var payment = new Payment
+                if (loan.UserID != null)
                 {
-                    UserID = loan.UserID,
-                    LoanID = loan.LoanID,
-                    Amount = (decimal)fine,
-                    Date = DateTime.Now,
-                    Type = "Штраф",
-                    Status = "Оплачено"
-                };
-                _context.Payments.Add(payment);
-                _context.SaveChanges();
+                    var payment = new Payment
+                    {
+                        UserID = loan.UserID.Value,  // тепер безпечно
+                        LoanID = loan.LoanID,
+                        Amount = (decimal)fine,
+                        Date = DateTime.Now,
+                        Type = "Штраф",
+                        Status = "Оплачено"
+                    };
 
-                TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн (оплачено).";
+                    _context.Payments.Add(payment);
+                    _context.SaveChanges();
+
+                    TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн (оплачено).";
+                }
+                else
+                {
+                    TempData["Warning"] = $"Книга '{loan.Copy.Book.Title}' повернена із штрафом {fine} грн (користувача вже немає в системі, платіж не створено).";
+                }
             }
             else
             {

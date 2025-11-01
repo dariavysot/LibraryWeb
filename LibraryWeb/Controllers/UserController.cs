@@ -107,21 +107,46 @@ namespace LibraryWeb.Controllers
         {
             try
             {
-                var user = _context.Users.Find(id);
+                var user = _context.Users
+                    .Include(u => u.Loans)
+                    .Include(u => u.Reservations)
+                    .Include(u => u.Membership)
+                    .FirstOrDefault(u => u.UserID == id);
+
                 if (user == null)
                 {
                     TempData["Error"] = "Користувача не знайдено.";
                     return RedirectToAction("Index");
                 }
 
+                // Перевірка на активні або прострочені позики
+                var hasActiveOrOverdue = user.Loans
+                    .Any(l => l.Status == "Активна" || l.Status == "Прострочена");
+
+                if (hasActiveOrOverdue)
+                {
+                    TempData["Error"] = "Неможливо видалити користувача, який має активну або прострочену позику.";
+                    return RedirectToAction("Index");
+                }
+
+                // Видалення усіх резервацій
+                if (user.Reservations.Any())
+                    _context.Reservations.RemoveRange(user.Reservations);
+
+                // Видалення членства вручну
+                if (user.Membership != null)
+                    _context.Memberships.Remove(user.Membership);
+
+
+                // Видалення користувача (Membership видалиться каскадно)
                 _context.Users.Remove(user);
                 _context.SaveChanges();
 
-                TempData["Success"] = "Користувача видалено.";
+                TempData["Success"] = "Користувача та пов’язані дані успішно видалено.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Помилка при видаленні: {ex.Message}";
+                TempData["Error"] = $"Помилка при видаленні: {ex.InnerException?.Message ?? ex.Message}";
             }
 
             return RedirectToAction("Index");

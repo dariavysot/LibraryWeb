@@ -32,8 +32,8 @@ namespace LibraryWeb.Models
 
         // Хто оплатив
         [ForeignKey("User")]
-        public int UserID { get; set; }
-        public virtual User User { get; set; } = null!;
+        public int? UserID { get; set; }
+        public virtual User? User { get; set; } = null!;
 
         // Хто обробляв (опціонально)
         [ForeignKey("Employee")]
