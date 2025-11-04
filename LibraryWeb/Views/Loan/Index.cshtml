@@ -4,7 +4,7 @@
     ViewData["Title"] = "Позики";
 }
 
-<h2>Список позик</h2>
+<h2>Список бронювань</h2>
 
 @if (TempData["Success"] != null)
 {
@@ -57,6 +57,14 @@
                     @if (loan.Status != "Повернено")
                     {
                         <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn btn-warning btn-sm">Повернути</a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити цю позику?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                            @Html.AntiForgeryToken()
+                        </form>
                     }
                 </td>
             </tr>
