@@ -19,45 +19,56 @@ namespace LibraryWeb.Controllers
 
         // --- Список всіх позик ---
         [HttpGet("")]
-        public IActionResult Index(string statusFilter = "All")
+        public IActionResult Index(string statusFilter = "All", string search = "")
         {
             var today = DateTime.Today;
 
-            // Отримуємо всі активні або прострочені позики
+            // Оновлення статусів прострочених позик
+            var activeLoans = _context.Loans
+                .Where(l => l.Status == "Активна")
+                .ToList();
+
+            bool changed = false;
+            foreach (var loan in activeLoans)
+            {
+                if (loan.EndDate < today)
+                {
+                    loan.Status = "Прострочена";
+                    changed = true;
+                }
+            }
+            if (changed) _context.SaveChanges();
+
+            // --- Завантаження позик ---
             var loans = _context.Loans
                 .Include(l => l.User)
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
-                .Where(l => l.Status == "Активна" || l.Status == "Прострочена")
-                .ToList();
+                .AsQueryable();
 
-            // Оновлюємо статус прострочених позик
-            bool changesMade = false;
-            foreach (var loan in loans)
+            // --- Фільтрація ---
+            loans = statusFilter switch
             {
-                if (loan.Status == "Активна" && loan.EndDate < today)
-                {
-                    loan.Status = "Прострочена";
-                    changesMade = true;
-                }
-            }
+                "Active" => loans.Where(l => l.Status == "Активна"),
+                "Overdue" => loans.Where(l => l.Status == "Прострочена"),
+                "Returned" => loans.Where(l => l.Status == "Повернено"),
+                _ => loans
+            };
 
-            if (changesMade)
+            // --- Пошук ---
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                _context.SaveChanges();
-
-                // Перечитуємо оновлені дані з бази
-                loans = _context.Loans
-                    .Include(l => l.User)
-                    .Include(l => l.Copy)
-                    .ThenInclude(c => c.Book)
-                    .Where(l => l.Status == "Активна" || l.Status == "Прострочена")
-                    .ToList();
+                search = search.ToLower();
+                loans = loans.Where(l =>
+                    (l.User != null && l.User.Name.ToLower().Contains(search)) ||
+                    (l.UserName != null && l.UserName.ToLower().Contains(search)) ||
+                    l.Copy.Book.Title.ToLower().Contains(search));
             }
 
             ViewBag.StatusFilter = statusFilter;
+            ViewBag.Search = search;
 
-            return View("~/Views/Loan/Index.cshtml", loans);
+            return View("~/Views/Loan/Index.cshtml", loans.ToList());
         }
 
         // --- Деталі ---

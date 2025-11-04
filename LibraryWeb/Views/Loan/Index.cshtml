@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<LibraryWeb.Models.Loan>
+
+@{
     ViewData["Title"] = "Позики";
 }
 
@@ -8,14 +10,58 @@
 {
     <div class="alert alert-success">@TempData["Success"]</div>
 }
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning">@TempData["Warning"]</div>
+}
+
+<form method="get" asp-action="Index" class="d-flex mb-3">
+    <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
+    <input type="text" name="search" value="@ViewBag.Search" placeholder="Пошук за книгою або користувачем..." class="form-control me-2" />
+    <button type="submit" class="btn btn-outline-primary">🔍 Пошук</button>
+</form>
 
 <div class="mb-3">
-    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="All" class="btn btn-secondary btn-sm">Всі</a>
-    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Active" class="btn btn-primary btn-sm">Активні</a>
-    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Overdue" class="btn btn-danger btn-sm">Прострочені</a>
-    <a asp-controller="Loan" asp-action="Index" asp-route-statusFilter="Returned" class="btn btn-success btn-sm">Повернені</a>
+    <a asp-action="Index" asp-route-statusFilter="All" class="btn btn-secondary btn-sm @(ViewBag.StatusFilter == "All" ? "active" : "")">Всі</a>
+    <a asp-action="Index" asp-route-statusFilter="Active" class="btn btn-primary btn-sm @(ViewBag.StatusFilter == "Active" ? "active" : "")">Активні</a>
+    <a asp-action="Index" asp-route-statusFilter="Overdue" class="btn btn-danger btn-sm @(ViewBag.StatusFilter == "Overdue" ? "active" : "")">Прострочені</a>
+    <a asp-action="Index" asp-route-statusFilter="Returned" class="btn btn-success btn-sm @(ViewBag.StatusFilter == "Returned" ? "active" : "")">Повернені</a>
 </div>
 
-@await Component.InvokeAsync("LoanList", new { statusFilter = ViewBag.StatusFilter ?? "All" })
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Книга</th>
+            <th>Примірник №</th>
+            <th>Читач</th>
+            <th>Статус</th>
+            <th>Початок</th>
+            <th>Кінець</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.LoanID</td>
+                <td>@loan.Copy.Book.Title</td>
+                <td>@loan.InventoryNum</td>
+                <td>@(loan.User?.Name ?? loan.UserName ?? "—")</td>
+                <td>@loan.Status</td>
+                <td>@loan.StartDate.ToShortDateString()</td>
+                <td>@loan.EndDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn btn-info btn-sm">Деталі</a>
+                    @if (loan.Status != "Повернено")
+                    {
+                        <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn btn-warning btn-sm">Повернути</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>
