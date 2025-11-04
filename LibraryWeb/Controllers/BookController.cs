@@ -17,10 +17,50 @@ namespace LibraryWeb.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Index()
+        public IActionResult Index(string? search, string? genre, int? year)
         {
-            var books = _context.Books.Include(b => b.Copies).ToList();
-            return View("~/Views/Book/Index.cshtml", books);
+            var books = _context.Books
+                .Include(b => b.Copies)
+                .AsQueryable();
+
+            // --- Пошук ---
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                books = books.Where(b =>
+                    b.Title.Contains(search) ||
+                    b.Author.Contains(search));
+            }
+
+            // --- Фільтр за жанром ---
+            if (!string.IsNullOrWhiteSpace(genre))
+            {
+                books = books.Where(b => b.Genre == genre);
+            }
+
+            // --- Фільтр за роком ---
+            if (year != null)
+            {
+                books = books.Where(b => b.PublicationYear == year);
+            }
+
+            // --- Дані для фільтрів ---
+            ViewBag.Search = search;
+            ViewBag.Genre = genre;
+            ViewBag.Year = year;
+            ViewBag.Genres = _context.Books
+                .Select(b => b.Genre)
+                .Where(g => g != null && g != "")
+                .Distinct()
+                .OrderBy(g => g)
+                .ToList();
+            ViewBag.Years = _context.Books
+                .Select(b => b.PublicationYear)
+                .Where(y => y != null)
+                .Distinct()
+                .OrderByDescending(y => y)
+                .ToList();
+
+            return View("~/Views/Book/Index.cshtml", books.ToList());
         }
 
         [HttpGet("details/{id}")]
