@@ -19,41 +19,36 @@ namespace LibraryWeb.Controllers
 
         // --- Список всіх позик ---
         [HttpGet("")]
-        public IActionResult Index(string statusFilter = "All", string search = "")
+        public IActionResult Index(string? statusFilter, string search = "")
         {
             var today = DateTime.Today;
 
-            // Оновлення статусів прострочених позик
-            var activeLoans = _context.Loans
-                .Where(l => l.Status == "Активна")
-                .ToList();
-
-            bool changed = false;
+            // --- Оновлення прострочених ---
+            var activeLoans = _context.Loans.Where(l => l.Status == "Активна").ToList();
             foreach (var loan in activeLoans)
             {
                 if (loan.EndDate < today)
-                {
                     loan.Status = "Прострочена";
-                    changed = true;
-                }
             }
-            if (changed) _context.SaveChanges();
+            _context.SaveChanges();
 
-            // --- Завантаження позик ---
+            var statuses = new List<string> { "Усі", "Активна", "Прострочена", "Повернено" };
+            ViewBag.Statuses = statuses;
+
+            if (string.IsNullOrEmpty(statusFilter))
+                statusFilter = "Усі";
+
+            ViewBag.StatusFilter = statusFilter;
+            ViewBag.Search = search;
+
             var loans = _context.Loans
                 .Include(l => l.User)
                 .Include(l => l.Copy)
                 .ThenInclude(c => c.Book)
                 .AsQueryable();
 
-            // --- Фільтрація ---
-            loans = statusFilter switch
-            {
-                "Active" => loans.Where(l => l.Status == "Активна"),
-                "Overdue" => loans.Where(l => l.Status == "Прострочена"),
-                "Returned" => loans.Where(l => l.Status == "Повернено"),
-                _ => loans
-            };
+            if (statusFilter != "Усі")
+                loans = loans.Where(l => l.Status == statusFilter);
 
             // --- Пошук ---
             if (!string.IsNullOrWhiteSpace(search))
@@ -64,9 +59,6 @@ namespace LibraryWeb.Controllers
                     (l.UserName != null && l.UserName.ToLower().Contains(search)) ||
                     l.Copy.Book.Title.ToLower().Contains(search));
             }
-
-            ViewBag.StatusFilter = statusFilter;
-            ViewBag.Search = search;
 
             return View("~/Views/Loan/Index.cshtml", loans.ToList());
         }

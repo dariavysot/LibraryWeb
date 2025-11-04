@@ -15,18 +15,21 @@
     <div class="alert alert-warning">@TempData["Warning"]</div>
 }
 
-<form method="get" asp-action="Index" class="d-flex mb-3">
-    <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
-    <input type="text" name="search" value="@ViewBag.Search" placeholder="Пошук за книгою або користувачем..." class="form-control me-2" />
-    <button type="submit" class="btn btn-outline-primary">🔍 Пошук</button>
-</form>
+<a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>
 
-<div class="mb-3">
-    <a asp-action="Index" asp-route-statusFilter="All" class="btn btn-secondary btn-sm @(ViewBag.StatusFilter == "All" ? "active" : "")">Всі</a>
-    <a asp-action="Index" asp-route-statusFilter="Active" class="btn btn-primary btn-sm @(ViewBag.StatusFilter == "Active" ? "active" : "")">Активні</a>
-    <a asp-action="Index" asp-route-statusFilter="Overdue" class="btn btn-danger btn-sm @(ViewBag.StatusFilter == "Overdue" ? "active" : "")">Прострочені</a>
-    <a asp-action="Index" asp-route-statusFilter="Returned" class="btn btn-success btn-sm @(ViewBag.StatusFilter == "Returned" ? "active" : "")">Повернені</a>
-</div>
+<form method="get" asp-action="Index" class="d-flex mb-3">
+    <select name="statusFilter" class="form-select me-2" style="max-width: 200px;">
+        @foreach (var status in (List<string>)ViewBag.Statuses)
+        {
+            <option value="@status" selected="@(ViewBag.StatusFilter == status)">
+                @status
+            </option>
+        }
+    </select>
+
+    <input type="text" name="search" value="@ViewBag.Search" placeholder="Пошук..." class="form-control me-2" />
+    <button type="submit" class="btn btn-outline-primary">🔍</button>
+</form>
 
 <table class="table table-bordered mt-3">
     <thead>
@@ -71,5 +74,3 @@
         }
     </tbody>
 </table>
-
-<a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>
