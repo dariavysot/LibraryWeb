@@ -77,6 +77,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipTypeID = type.MembershipTypeID,
+                Type = type.Name,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(type.DurationMonths),
                 Price = type.Price,
@@ -184,6 +185,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipTypeID = type.MembershipTypeID,
+                Type = type.Name,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(type.DurationMonths),
                 Price = type.Price,

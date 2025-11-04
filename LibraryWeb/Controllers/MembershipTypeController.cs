@@ -85,6 +85,13 @@ namespace LibraryWeb.Controllers
             var type = _context.MembershipTypes.Find(id);
             if (type == null) return NotFound();
 
+            bool inUse = _context.Memberships.Any(m => m.MembershipTypeID == id);
+            if (inUse)
+            {
+                TempData["Error"] = $"Тип членства '{type.Name}' не може бути видалений, оскільки він використовується у поточних членствах.";
+                return RedirectToAction("Index");
+            }
+
             _context.MembershipTypes.Remove(type);
             _context.SaveChanges();
 
