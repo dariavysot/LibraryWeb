@@ -21,10 +21,34 @@ namespace LibraryWeb.Controllers
 
         // --- Список користувачів ---
         [HttpGet("")]
-        public IActionResult Index()
+        public IActionResult Index(string search, UserRole? role, string membershipType)
         {
-            var users = _context.Users
+            var query = _context.Users
                 .Include(u => u.Membership)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(u =>
+                    (u.Name != null && u.Name.Contains(search)) ||
+                    (u.Email != null && u.Email.Contains(search))
+                );
+            }
+
+            if (role.HasValue)
+                query = query.Where(u => u.Role == role.Value);
+
+            if (!string.IsNullOrEmpty(membershipType))
+                query = query.Where(u => u.Membership != null && u.Membership.Type == membershipType);
+
+            var users = query.ToList();
+
+            ViewBag.Search = search;
+            ViewBag.Role = role;
+            ViewBag.MembershipType = membershipType;
+            ViewBag.MembershipTypes = _context.Memberships
+                .Select(m => m.Type)
+                .Distinct()
                 .ToList();
 
             return View("~/Views/User/Admin/Index.cshtml", users);
