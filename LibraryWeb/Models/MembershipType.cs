@@ -13,7 +13,7 @@ namespace LibraryWeb.Models
 
         [Required]
         [Range(1, 36)]
-        public int DurationMonths { get; set; }
+        public double DurationMonths { get; set; }
 
         [Required]
         [Range(0, 10000)]

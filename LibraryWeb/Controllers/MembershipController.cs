@@ -87,7 +87,7 @@ namespace LibraryWeb.Controllers
                 UserName = user.Name,
                 Type = type.Name,
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(type.DurationMonths),
+                EndDate = DateTime.Now.AddDays(type.DurationMonths * 30),
                 Price = type.Price,
                 Status = "Очікує оплату"
             };
@@ -196,7 +196,7 @@ namespace LibraryWeb.Controllers
                 UserName = user.Name,
                 Type = type.Name,
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(type.DurationMonths),
+                EndDate = DateTime.Now.AddDays(type.DurationMonths * 30),
                 Price = type.Price,
                 Status = "Активне" // одразу активне
             };

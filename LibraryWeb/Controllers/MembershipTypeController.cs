@@ -38,7 +38,7 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(MembershipType model)
         {
-            if (!ModelState.IsValid) return View("Upsert", model);
+            if (!ModelState.IsValid) return View("Create", model);
 
             _context.MembershipTypes.Add(model);
             _context.SaveChanges();
