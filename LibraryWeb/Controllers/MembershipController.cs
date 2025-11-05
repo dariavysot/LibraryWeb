@@ -59,6 +59,13 @@ namespace LibraryWeb.Controllers
             }
 
             int userId = int.Parse(userIdClaim.Value);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                TempData["Error"] = "Користувача не знайдено.";
+                return RedirectToAction("Index", "Home");
+            }
 
             if (_context.Memberships.Any(m => m.UserID == userId && m.Status == "Активне"))
             {
@@ -77,6 +84,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipTypeID = type.MembershipTypeID,
+                UserName = user.Name,
                 Type = type.Name,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(type.DurationMonths),
@@ -185,6 +193,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipTypeID = type.MembershipTypeID,
+                UserName = user.Name,
                 Type = type.Name,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(type.DurationMonths),
