@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Панель користувача";
 }
+
+<h2>Панель користувача</h2>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Останні книги</h5>
+            <ul>
+                @foreach (var book in ViewBag.NewBooks)
+                {
+                    <li>@book.Title (@book.PublicationYear)</li>
+                }
+            </ul>
+            <p>Усього книг: <strong>@ViewBag.TotalBooks</strong></p>
+            <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-sm">Переглянути книги</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Мої активні позики</h5>
+            <p>Кількість: <strong>@ViewBag.MyActiveLoans</strong></p>
+            <a asp-controller="Loan" asp-action="Index" class="btn btn-warning btn-sm">Переглянути мої позики</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Активні резервації</h5>
+            <p>Кількість: <strong>@ViewBag.ActiveReservations</strong></p>
+            <a asp-controller="Reservation" asp-action="Create" class="btn btn-warning btn-sm">Зробити резервацію</a>
+            <a asp-controller="Reservation" asp-action="Index" class="btn btn-secondary btn-sm mt-2">Переглянути всі резервації</a>
+        </div>
+    </div>
+
+</div>
+

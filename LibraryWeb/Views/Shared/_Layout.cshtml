@@ -61,7 +61,7 @@
                                     <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
                                     @if (role == "Admin")
                                     {
-                                        <li><a class="dropdown-item" asp-controller="Membership" asp-action="Index">Manage Memberships</a></li>
+                                        <li><a class="dropdown-item" asp-controller="MembershipType" asp-action="Index">Manage Memberships</a></li>
                                         <li><a class="dropdown-item" asp-controller="Book" asp-action="Index">Manage Books</a></li>
                                     }
                                     else if (role == "Employee")

@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace LibraryWeb.Controllers
 {
+    [Authorize(Roles = "Admin,Employee")]
     [Route("loans")]
     public class LoanController : Controller
     {
