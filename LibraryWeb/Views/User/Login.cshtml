@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Вхід";
+}
+
+<h2>Вхід</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Index" asp-controller="Login" method="post">
+    <div>
+        <label>Логін</label>
+        <input name="login" class="form-control" required />
+    </div>
+    <div>
+        <label>Пароль</label>
+        <input name="password" type="password" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success mt-2">Увійти</button>
+</form>
+<p><a asp-controller="Registration" asp-action="Index">Зареєструватися</a></p>

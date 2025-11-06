@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Панель адміністратора";
+}
+
+<h2>Панель адміністратора</h2>
+
+<div class="row mt-4">
+    <!-- Книги -->
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Книги</h5>
+            <p>Загальна кількість книг: <strong>@ViewBag.TotalBooks</strong></p>
+            <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-sm">Перейти до книг</a>
+        </div>
+    </div>
+
+    <!-- Користувачі -->
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Користувачі</h5>
+            <p>Загальна кількість користувачів: <strong>@ViewBag.TotalUsers</strong></p>
+            <a asp-controller="User" asp-action="Index" class="btn btn-primary btn-sm">Переглянути користувачів</a>
+        </div>
+    </div>
+
+    <!-- Членства -->
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Типи членства</h5>
+            <p>Загальна кількість: <strong>@ViewBag.TotalMemberships</strong></p>
+            <a asp-controller="MembershipType" asp-action="Index" class="btn btn-primary btn-sm">Управління членством</a>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <!-- Позики -->
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Позики</h5>
+            <p>Активні позики: <strong>@ViewBag.ActiveLoans</strong></p>
+            <a asp-controller="Loan" asp-action="Index" class="btn btn-warning btn-sm">Перейти до позик</a>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="col-md-8">
+        <div class="card p-3 mb-3 shadow-sm">
+            <h5>Швидкі дії</h5>
+            <p>Адміністратор може додавати книги, редагувати типи членства, контролювати користувачів та позики.</p>
+            <div class="mt-2">
+                <a asp-controller="Book" asp-action="Create" class="btn btn-success btn-sm me-2">Додати книгу</a>
+                <a asp-controller="MembershipType" asp-action="Create" class="btn btn-success btn-sm me-2">Додати тип членства</a>
+            </div>
+        </div>
+    </div>
+</div>

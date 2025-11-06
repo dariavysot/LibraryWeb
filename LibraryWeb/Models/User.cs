@@ -5,6 +5,7 @@ namespace LibraryWeb.Models
 {
     public enum UserRole
     {
+        User,
         Reader,
         Employee,
         Admin
@@ -13,7 +14,7 @@ namespace LibraryWeb.Models
     public class User
     {
         [Key]
-        public int UserID { get; private set; }
+        public int UserID { get; set; }
 
         [Required, MaxLength(150)]
         public required string Name { get; set; }
@@ -29,6 +30,9 @@ namespace LibraryWeb.Models
 
         [MaxLength(100)]
         public string? Email { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate { get; set; }
 
         [Required]
         public UserRole Role { get; set; } = UserRole.Reader;

@@ -6,7 +6,8 @@ namespace LibraryWeb.Models
     public class Reservation
     {
         [Key]
-        public int ReservationID { get; private set; }
+        public int ReservationID { get; set; }
+
         public DateTime StartDate { get; set; } = DateTime.Now;
         public DateTime EndDate { get; set; }
 
@@ -14,20 +15,20 @@ namespace LibraryWeb.Models
         public string Status { get; set; } = string.Empty;
 
         public decimal Amount { get; set; } = 0m;
+        public string? UserName { get; set; }
 
-        // Foreign key → Reader (User subtype)
-        [ForeignKey("Reader")]
-        public int ReaderID { get; set; }
-        public virtual User Reader { get; set; } = null!;
+        // Foreign key → User
+        [ForeignKey("User")]
+        public int? UserID { get; set; }
+        public virtual User? User { get; set; } = null!;
 
         // Foreign key → Copy
         [ForeignKey("Copy")]
         public int InventoryNum { get; set; }
         public virtual Copy Copy { get; set; } = null!;
 
-        // Хто обробляв (опціонально)
-        [ForeignKey("Employee")]
-        public int? EmployeeID { get; set; }
-        public virtual User? Employee { get; set; }
+        //[ForeignKey("Payment")]
+        //public int? PaymentID { get; set; }
+        public virtual Payment? Payment { get; set; }
     }
 }

@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Нова позика";
+    var users = ViewBag.Users as List<LibraryWeb.Models.User>;
+    var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
+}
+
+<h2>Створення позики</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form asp-controller="Loan" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group mb-3">
+        <label>Читач</label>
+        <select name="UserID" class="form-control">
+            @foreach (var u in ViewBag.Users ?? Enumerable.Empty<LibraryWeb.Models.User>())
+            {
+                <option value="@u.UserID">@u.Name</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mb-3">
+        <label>Книга</label>
+        <select name="selectedBookId" class="form-control">
+            @foreach (var book in ViewBag.Books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
+            {
+                <option value="@book.BookID">@book.Title</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Створити</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

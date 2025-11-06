@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Нова резервація";
+    var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
+}
+
+<h2>Створення резервації</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label>Книга</label>
+        <select name="selectedBookId" class="form-control" required>
+            <option value="">-- Оберіть книгу --</option>
+            @foreach (var book in books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
+            {
+                <option value="@book.BookID">@book.Title</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата початку</label>
+        <input type="date" id="startDate" name="startDate" class="form-control"
+               value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата завершення</label>
+        <input type="date" id="endDate" name="endDate" class="form-control"
+               value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Сума до оплати</label>
+        <input type="text" id="paymentAmount" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Створити резервацію</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <script>
+        const startInput = document.getElementById("startDate");
+        const endInput = document.getElementById("endDate");
+        const amountInput = document.getElementById("paymentAmount");
+        const dailyRate = 20; // грн за день
+
+        function calculateAmount() {
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+            if (!isNaN(start) && !isNaN(end) && end > start) {
+                const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                amountInput.value = (days * dailyRate) + " грн";
+            } else {
+                amountInput.value = "";
+            }
+        }
+
+        startInput.addEventListener("change", calculateAmount);
+        endInput.addEventListener("change", calculateAmount);
+        calculateAmount();
+    </script>
+}

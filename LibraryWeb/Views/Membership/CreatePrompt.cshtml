@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Оформлення членства";
+    var user = ViewBag.User as LibraryWeb.Models.User;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<p>У користувача <strong>@user?.Name</strong> немає активного членства. Бажаєте оформити?</p>
+
+<div class="d-flex gap-2 mt-3">
+    <a asp-controller="Membership"
+       asp-action="CreateForUser"
+       asp-route-userId="@user?.UserID"
+       class="btn btn-primary">
+        Оформити членство
+    </a>
+
+    <a asp-controller="Loan"
+       asp-action="Create"
+       class="btn btn-secondary">
+        Повернутися до оформлення позики
+    </a>
+</div>

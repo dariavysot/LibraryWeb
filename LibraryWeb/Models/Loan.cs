@@ -8,25 +8,24 @@ namespace LibraryWeb.Models
         [Key]
         public int LoanID { get; private set; }
 
-        public DateTime StartDate { get; set; } = DateTime.Now;
-        public DateTime EndDate { get; set; } = DateTime.Now.AddDays(14);
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
+        public decimal? Fine { get; set; }
+        public string? UserName { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
 
-        // Foreign key → Reader (User subtype)
-        [ForeignKey("Reader")]
-        public int ReaderID { get; set; }
-        public virtual User Reader { get; set; } = null!; 
+        // Foreign key → (User subtype)
+        [ForeignKey("User")]
+        public int? UserID { get; set; }
+        public virtual User? User { get; set; } = null!; 
 
         // Foreign key → Copy
         [ForeignKey("Copy")]
         public int InventoryNum { get; set; }
         public virtual Copy Copy { get; set; } = null!; 
 
-        // Можна також додати, хто обслуговував (Employee)
-        [ForeignKey("Employee")]
-        public int? EmployeeID { get; set; }
-        public virtual User? Employee { get; set; } 
     }
 }

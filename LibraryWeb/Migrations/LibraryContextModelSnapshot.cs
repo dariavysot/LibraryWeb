@@ -38,6 +38,11 @@ namespace LibraryWeb.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("ISBN")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -87,9 +92,6 @@ namespace LibraryWeb.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("ReturnDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -110,17 +112,18 @@ namespace LibraryWeb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LoanID"));
 
-                    b.Property<int?>("EmployeeID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Fine")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("InventoryNum")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReaderID")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("ReturnDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -130,13 +133,17 @@ namespace LibraryWeb.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("LoanID");
+                    b.Property<int?>("UserID")
+                        .HasColumnType("int");
 
-                    b.HasIndex("EmployeeID");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LoanID");
 
                     b.HasIndex("InventoryNum");
 
-                    b.HasIndex("ReaderID");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Loans");
                 });
@@ -152,12 +159,12 @@ namespace LibraryWeb.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MembershipTypeID")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ReaderID")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -172,12 +179,45 @@ namespace LibraryWeb.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("MembershipID");
 
-                    b.HasIndex("ReaderID")
+                    b.HasIndex("MembershipTypeID");
+
+                    b.HasIndex("UserID")
                         .IsUnique();
 
                     b.ToTable("Memberships");
+                });
+
+            modelBuilder.Entity("LibraryWeb.Models.MembershipType", b =>
+                {
+                    b.Property<int>("MembershipTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MembershipTypeID"));
+
+                    b.Property<double>("DurationMonths")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("MembershipTypeID");
+
+                    b.ToTable("MembershipTypes");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Payment", b =>
@@ -198,7 +238,13 @@ namespace LibraryWeb.Migrations
                     b.Property<int?>("EmployeeID")
                         .HasColumnType("int");
 
-                    b.Property<int>("MembershipID")
+                    b.Property<int?>("LoanID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MembershipID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReservationID")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -211,14 +257,25 @@ namespace LibraryWeb.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserID")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PaymentID");
 
                     b.HasIndex("EmployeeID");
 
-                    b.HasIndex("MembershipID");
+                    b.HasIndex("LoanID");
+
+                    b.HasIndex("MembershipID")
+                        .IsUnique()
+                        .HasFilter("[MembershipID] IS NOT NULL");
+
+                    b.HasIndex("ReservationID")
+                        .IsUnique()
+                        .HasFilter("[ReservationID] IS NOT NULL");
 
                     b.HasIndex("UserID");
 
@@ -237,16 +294,10 @@ namespace LibraryWeb.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("EmployeeID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("InventoryNum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReaderID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -257,13 +308,17 @@ namespace LibraryWeb.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ReservationID");
+                    b.Property<int?>("UserID")
+                        .HasColumnType("int");
 
-                    b.HasIndex("EmployeeID");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReservationID");
 
                     b.HasIndex("InventoryNum");
 
-                    b.HasIndex("ReaderID");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Reservations");
                 });
@@ -275,6 +330,9 @@ namespace LibraryWeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -320,39 +378,39 @@ namespace LibraryWeb.Migrations
 
             modelBuilder.Entity("LibraryWeb.Models.Loan", b =>
                 {
-                    b.HasOne("LibraryWeb.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("LibraryWeb.Models.Copy", "Copy")
                         .WithMany("Loans")
                         .HasForeignKey("InventoryNum")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LibraryWeb.Models.User", "Reader")
+                    b.HasOne("LibraryWeb.Models.User", "User")
                         .WithMany("Loans")
-                        .HasForeignKey("ReaderID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Copy");
 
-                    b.Navigation("Employee");
-
-                    b.Navigation("Reader");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Membership", b =>
                 {
-                    b.HasOne("LibraryWeb.Models.User", "Reader")
-                        .WithOne("Membership")
-                        .HasForeignKey("LibraryWeb.Models.Membership", "ReaderID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                    b.HasOne("LibraryWeb.Models.MembershipType", "MembershipType")
+                        .WithMany()
+                        .HasForeignKey("MembershipTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Reader");
+                    b.HasOne("LibraryWeb.Models.User", "User")
+                        .WithOne("Membership")
+                        .HasForeignKey("LibraryWeb.Models.Membership", "UserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MembershipType");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Payment", b =>
@@ -362,49 +420,53 @@ namespace LibraryWeb.Migrations
                         .HasForeignKey("EmployeeID")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("LibraryWeb.Models.Membership", "Membership")
+                    b.HasOne("LibraryWeb.Models.Loan", "Loan")
                         .WithMany()
-                        .HasForeignKey("MembershipID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LoanID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("LibraryWeb.Models.Membership", "Membership")
+                        .WithOne("Payment")
+                        .HasForeignKey("LibraryWeb.Models.Payment", "MembershipID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("LibraryWeb.Models.Reservation", "Reservation")
+                        .WithOne("Payment")
+                        .HasForeignKey("LibraryWeb.Models.Payment", "ReservationID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibraryWeb.Models.User", "User")
                         .WithMany("Payments")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Employee");
 
+                    b.Navigation("Loan");
+
                     b.Navigation("Membership");
+
+                    b.Navigation("Reservation");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Reservation", b =>
                 {
-                    b.HasOne("LibraryWeb.Models.User", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("LibraryWeb.Models.Copy", "Copy")
                         .WithMany("Reservations")
                         .HasForeignKey("InventoryNum")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LibraryWeb.Models.User", "Reader")
+                    b.HasOne("LibraryWeb.Models.User", "User")
                         .WithMany("Reservations")
-                        .HasForeignKey("ReaderID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Copy");
 
-                    b.Navigation("Employee");
-
-                    b.Navigation("Reader");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.Book", b =>
@@ -417,6 +479,16 @@ namespace LibraryWeb.Migrations
                     b.Navigation("Loans");
 
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("LibraryWeb.Models.Membership", b =>
+                {
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("LibraryWeb.Models.Reservation", b =>
+                {
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("LibraryWeb.Models.User", b =>

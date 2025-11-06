@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Оформити членство для користувача";
+    var user = ViewBag.User as LibraryWeb.Models.User;
+    var membershipTypes = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+
+<p>Користувач: <strong>@user?.Name</strong></p>
+
+@await Component.InvokeAsync("MembershipList", new { types = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>, user = ViewBag.User as LibraryWeb.Models.User })
+
+<a asp-controller="Loan" asp-action="Index" class="btn btn-secondary mt-3">Назад</a>

@@ -1,0 +1,24 @@
+﻿@model LibraryWeb.Models.Membership
+
+<h2>Деталі членства</h2>
+
+<p><strong>Тип членства:</strong> @Model.MembershipType.Name</p>
+<p><strong>Статус:</strong> @Model.Status</p>
+<p><strong>Ціна:</strong> @Model.Price.ToString("C")</p>
+<p><strong>Дата початку:</strong> @Model.StartDate.ToShortDateString()</p>
+<p><strong>Дата завершення:</strong> @Model.EndDate.ToShortDateString()</p>
+
+@if (Model.Payment != null)
+{
+    <p><strong>Статус оплати:</strong> @Model.Payment.Status</p>
+
+    @if (Model.Payment.Status == "Очікує оплату")
+    {
+        <form asp-controller="Payment" asp-action="ConfirmMembershipPayment" asp-route-paymentId="@Model.Payment.PaymentID" method="post">
+            <button type="submit" class="btn btn-success">💳 Оплатити</button>
+        </form>
+    }
+
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">⬅ Назад до членств</a>

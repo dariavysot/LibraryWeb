@@ -1,0 +1,55 @@
+﻿@model IEnumerable<LibraryWeb.Models.MembershipType>
+
+@{
+    ViewData["Title"] = "Типи членства";
+}
+
+<h2>Типи членства</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">Додати новий тип</a>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Назва</th>
+            <th>Тривалість (місяці)</th>
+            <th>Ціна</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>Дії</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var type in Model)
+        {
+            <tr>
+                <td>@type.Name</td>
+                <td>@type.DurationMonths</td>
+                <td>@type.Price</td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@type.MembershipTypeID" class="btn btn-sm btn-warning">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@type.MembershipTypeID" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Видалити тип?')">Видалити</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

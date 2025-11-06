@@ -6,15 +6,13 @@ namespace LibraryWeb.Models
     public class Copy
     {
         [Key]
-        public int InventoryNum { get; private set; }
+        public int InventoryNum { get; set; }
 
         [MaxLength(50)]
         public string Condition { get; set; } = string.Empty;
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty; 
-
-        public DateTime? ReturnDate { get; set; }
 
         // Foreign key → Book
         [ForeignKey("Book")]

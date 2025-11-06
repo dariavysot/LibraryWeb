@@ -1,4 +1,5 @@
-﻿using LibraryWeb.Models;
+﻿
+using LibraryWeb.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryWeb.Data
@@ -14,6 +15,7 @@ namespace LibraryWeb.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Membership> Memberships { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<MembershipType> MembershipTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +24,15 @@ namespace LibraryWeb.Data
             // Обмеження для decimal
             modelBuilder.Entity<Membership>()
                 .Property(m => m.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<MembershipType>()
+                .Property(m => m.Price)
+                .HasPrecision(18, 2);
+
+
+            modelBuilder.Entity<Loan>()
+                .Property(l => l.Fine)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Payment>()
@@ -34,50 +45,60 @@ namespace LibraryWeb.Data
 
             // User → Loans та Reservations (Reader)
             modelBuilder.Entity<User>()
-                .HasMany(u => u.Loans)
-                .WithOne(l => l.Reader)
-                .HasForeignKey(l => l.ReaderID)
-                .OnDelete(DeleteBehavior.Restrict);
+                 .HasMany(u => u.Loans)
+                 .WithOne(l => l.User)
+                 .HasForeignKey(l => l.UserID)
+                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reservations)
-                .WithOne(r => r.Reader)
-                .HasForeignKey(r => r.ReaderID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserID)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            // Payment → User (платник) та Employee (той, хто обробляв)
+            // Payment → User (платник)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(p => p.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
+            // Payment → Employee (той, хто обробляв)
             modelBuilder.Entity<Payment>()
                 .HasOne(p => p.Employee)
                 .WithMany()
                 .HasForeignKey(p => p.EmployeeID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Loan → Employee
-            modelBuilder.Entity<Loan>()
-                .HasOne(l => l.Employee)
-                .WithMany()
-                .HasForeignKey(l => l.EmployeeID)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Payment → Membership (1:1, опціонально)
+            modelBuilder.Entity<Membership>()
+                 .HasOne(m => m.Payment)
+                 .WithOne(p => p.Membership)
+                 .HasForeignKey<Payment>(p => p.MembershipID)
+                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Reservation → Employee
-            modelBuilder.Entity<Reservation>()
-                .HasOne(r => r.Employee)
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Loan)
                 .WithMany()
-                .HasForeignKey(r => r.EmployeeID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(p => p.LoanID)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+            // Reservation → Payment (1:1, опціональний)
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Payment)
+                .WithOne(p => p.Reservation)
+                .HasForeignKey<Payment>(p => p.ReservationID)
+                .OnDelete(DeleteBehavior.SetNull);
+
 
             // Membership → User (Reader)
             modelBuilder.Entity<Membership>()
-                .HasOne(m => m.Reader)
+                .HasOne(m => m.User)
                 .WithOne(u => u.Membership)
-                .HasForeignKey<Membership>(m => m.ReaderID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey<Membership>(m => m.UserID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Book → Copies
             modelBuilder.Entity<Book>()
@@ -97,6 +118,13 @@ namespace LibraryWeb.Data
                 .HasMany(c => c.Reservations)
                 .WithOne(r => r.Copy)
                 .HasForeignKey(r => r.InventoryNum)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Membership → MembershipType
+            modelBuilder.Entity<Membership>()
+                .HasOne(m => m.MembershipType)
+                .WithMany()
+                .HasForeignKey(m => m.MembershipTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

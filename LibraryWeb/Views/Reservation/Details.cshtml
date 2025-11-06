@@ -1,0 +1,26 @@
+﻿@model LibraryWeb.Models.Reservation
+
+<h2>Деталі резервації</h2>
+
+<p><strong>Статус:</strong> @Model.Status</p>
+<p><strong>Сума до сплати:</strong> @Model.Amount.ToString("C")</p>
+
+@if (Model.Payment != null)
+{
+    <p><strong>Статус оплати:</strong> @Model.Payment.Status</p>
+
+    @if (Model.Payment.Status == "Очікує оплату")
+    {
+        <form asp-controller="Payment" asp-action="ConfirmPayment" asp-route-paymentId="@Model.Payment.PaymentID" method="post">
+            <button type="submit" class="btn btn-success">💳 Оплатити</button>
+        </form>
+    }
+}
+else
+{
+    <form asp-controller="Payment" asp-action="CreatePaymentForReservation" asp-route-reservationId="@Model.ReservationID" method="post">
+        <button type="submit" class="btn btn-primary">Створити оплату</button>
+    </form>
+}
+
+<a asp-controller="Reservation" asp-action="Index" class="btn btn-secondary mt-3">⬅ Назад до резервацій</a>

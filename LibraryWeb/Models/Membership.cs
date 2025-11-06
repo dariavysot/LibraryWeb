@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.PortableExecutable;
 
 namespace LibraryWeb.Models
 {
     public class Membership
     {
         [Key]
-        public int MembershipID { get; private set; }
+        public int MembershipID { get; set; }
 
         [MaxLength(50)]
         public string Type { get; set; } = string.Empty;
@@ -15,14 +14,22 @@ namespace LibraryWeb.Models
         public decimal Price { get; set; } = 0m;
 
         public DateTime StartDate { get; set; } = DateTime.Now;
+
         public DateTime EndDate { get; set; }
+
+        public string? UserName { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; } = string.Empty;
 
-        // Foreign key → Reader (User subtype)
-        [ForeignKey("Reader")]
-        public int ReaderID { get; set; }
-        public virtual User Reader { get; set; } = null!;
+        [ForeignKey("User")]
+        public int UserID { get; set; }
+
+        public virtual User User { get; set; } = null!;
+
+        [ForeignKey("MembershipType")]
+        public int MembershipTypeID { get; set; }
+        public virtual MembershipType MembershipType { get; set; } = null!;
+        public virtual Payment? Payment { get; set; } // навігаційне поле
     }
 }

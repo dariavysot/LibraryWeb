@@ -1,0 +1,97 @@
+﻿@model IEnumerable<LibraryWeb.Models.User>
+
+@{
+    ViewData["Title"] = "Управління користувачами";
+}
+
+<h2 class="mb-4">Управління користувачами</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control" placeholder="Пошук за ім’ям або email..."
+               value="@ViewBag.Search" />
+    </div>
+    <div class="col-md-3">
+        <select name="role" class="form-select">
+            <option value="">Всі ролі</option>
+            <option value="Admin" selected="@(ViewBag.Role?.ToString() == "Admin")">Адміністратор</option>
+            <option value="Employee" selected="@(ViewBag.Role?.ToString() == "Employee")">Працівник</option>
+            <option value="User" selected="@(ViewBag.Role?.ToString() == "User")">Користувач</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="membershipType" class="form-select">
+            <option value="">Всі типи членства</option>
+            @foreach (var type in (ViewBag.MembershipTypes as List<string> ?? new List<string>()))
+            {
+                <option value="@type" selected="@(ViewBag.MembershipType == type)">@type</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Фільтрувати</button>
+    </div>
+</form>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Ім’я</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Роль</th>
+            <th>Тип членства</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserID</td>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Phone</td>
+                <td>
+                    @switch (user.Role)
+                    {
+                        case LibraryWeb.Models.UserRole.Admin:
+                            <span class="badge bg-danger">Адміністратор</span>
+                            break;
+                        case LibraryWeb.Models.UserRole.Employee:
+                            <span class="badge bg-warning text-dark">Працівник</span>
+                            break;
+                        default:
+                            <span class="badge bg-primary">Користувач</span>
+                            break;
+                    }
+                </td>
+                <td>
+                    @(user.Membership != null ? user.Membership.Type : "—")
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-sm btn-primary me-2">Редагувати</a>
+
+                    <form asp-action="Delete" asp-route-id="@user.UserID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Ви впевнені, що хочете видалити цього користувача?');">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Admin" asp-action="Dashboard" class="btn btn-secondary mt-3">← Назад до панелі адміністратора</a>
