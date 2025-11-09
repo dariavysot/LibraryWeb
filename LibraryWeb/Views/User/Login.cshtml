@@ -1,23 +1,34 @@
 ﻿@{
-    ViewData["Title"] = "Вхід";
+    ViewData["Title"] = "Login";
 }
 
-<h2>Вхід</h2>
+<div class="login-page">
+    <div class="login-container">
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtitle">Enter your credentials to access your account</p>
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
 
-<form asp-action="Index" asp-controller="Login" method="post">
-    <div>
-        <label>Логін</label>
-        <input name="login" class="form-control" required />
+        <form asp-action="Index" asp-controller="Login" method="post" class="login-form">
+            <div class="form-group">
+                <label for="login">Username</label>
+                <input id="login" name="login" class="form-control" required />
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn login-btn mt-4">Sign In</button>
+        </form>
+
+        <p class="mt-3">
+            Don't have an account?
+            <a asp-controller="Registration" asp-action="Index">Sign Up</a>
+        </p>
     </div>
-    <div>
-        <label>Пароль</label>
-        <input name="password" type="password" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-success mt-2">Увійти</button>
-</form>
-<p><a asp-controller="Registration" asp-action="Index">Зареєструватися</a></p>
+</div>

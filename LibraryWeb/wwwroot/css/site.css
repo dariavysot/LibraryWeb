@@ -271,6 +271,91 @@ main {
     font-size: 1.1rem;
 }
 
+/* ======================= LOGIN PAGE ======================= */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%; /* займає весь простір між хедером і футером */
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.login-form .form-group {
+    text-align: left;
+}
+
+.login-form label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.login-form input.form-control {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+    .login-form input.form-control:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+    }
+
+.login-btn {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: 0.3s;
+}
+
+    .login-btn:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.login-container a {
+    color: #d2691e;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .login-container a:hover {
+        text-decoration: underline;
+    }
+
+
 
 /* ======================= FOOTER ======================= */
 footer {
