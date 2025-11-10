@@ -1,6 +1,6 @@
 ﻿@model LibraryWeb.Models.User
 @{
-    ViewData["Title"] = "Редагування профілю";
+    ViewData["Title"] = "Edit profile";
 }
 
 <div class="edit-profile-page">
@@ -31,13 +31,13 @@
 
             <form asp-action="Index" asp-controller="EditProfile" method="post" class="edit-profile-form">
                 <div class="mb-3">
-                    <label class="form-label">Ім'я</label>
+                    <label class="form-label">Name</label>
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Логін</label>
+                    <label class="form-label">Login</label>
                     <input asp-for="Login" class="form-control" />
                     <span asp-validation-for="Login" class="text-danger"></span>
                 </div>
@@ -49,26 +49,26 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Дата народження</label>
+                    <label class="form-label">Birth Date</label>
                     <input asp-for="BirthDate" type="date" class="form-control" />
                     <span asp-validation-for="BirthDate" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Телефон</label>
+                    <label class="form-label">Phone</label>
                     <input asp-for="Phone" class="form-control" />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Пароль</label>
+                    <label class="form-label">Password</label>
                     <input asp-for="UserPassword" type="password" class="form-control" />
                     <span asp-validation-for="UserPassword" class="text-danger"></span>
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary">Зберегти</button>
-                    <a asp-controller="Profile" asp-action="Index" class="btn btn-secondary">Відміна</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-controller="Profile" asp-action="Index" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
