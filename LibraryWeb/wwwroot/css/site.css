@@ -738,6 +738,56 @@ main {
     }
 }
 
+/* ======================= Access Denied ======================= */
+
+.access-denied-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background: #fff;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.access-denied-container {
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    padding: 3rem 2rem;
+    max-width: 800px;
+}
+
+.access-denied-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.access-denied-text {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.access-btn {
+    display: inline-block;
+    background-color: #d2691e;
+    color: #fff;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+    border: none;
+}
+
+    .access-btn:hover {
+        background-color: #000;
+        color: #fff;
+    }
 
 
 /* ======================= FOOTER ======================= */
