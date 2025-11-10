@@ -513,7 +513,7 @@ main {
     background: #fff;
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     flex: 1; /* рівна ширина на великих екранах */
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -521,7 +521,7 @@ main {
     .profile-card:hover,
     .membership-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(210,105,30,0.5);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
     }
 
     /* Заголовки карток */
@@ -1001,7 +1001,7 @@ main {
 }
 
 
-/* ===================== ADMIN PAGE MANAGE ===================== */
+/* ===================== ADMIN PAGE MANAGE USERS ===================== */
 .edit-profile-subtitle {
     font-size: 1.1rem;
     color: #d2691e;
@@ -1037,6 +1037,126 @@ main {
         border-color: #d2691e;
         box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
     }
+
+/* ======================= ADMIN DASHBOARD ======================= */
+.admin-dashboard {
+    width: 100%;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.admin-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+    font-size: 1.2rem;
+    color: #d2691e;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.admin-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .admin-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+    .admin-card h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: #000;
+    }
+
+    .admin-card p {
+        font-size: 1.1rem;
+        color: #444;
+        margin-bottom: 1.5rem;
+    }
+
+.admin-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+    .admin-btn:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.admin-btn-orange {
+    background: #d2691e;
+    color: #fff;
+}
+
+    .admin-btn-orange:hover {
+        background: #000;
+    }
+
+.admin-btn-dark {
+    background: #1b3f71;
+    color: #fff;
+    margin: 0.5rem;
+}
+
+    .admin-btn-dark:hover {
+        background: #d2691e;
+    }
+
+.admin-card.wide {
+    grid-column: span 2;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 2rem;
+    }
+
+    .admin-title {
+        font-size: 2.2rem;
+    }
+
+    .admin-subtitle {
+        font-size: 1rem;
+    }
+
+    .admin-card.wide {
+        grid-column: span 1;
+    }
+}
 
 
 
