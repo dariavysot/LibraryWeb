@@ -33,31 +33,31 @@
                 <form asp-action="Index" asp-controller="Registration" method="post" class="auth-form">
                     <div class="mb-3">
                         <label class="form-label">Name</label>
-                        <input asp-for="Name" class="form-control" />
+                        <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Login</label>
-                        <input asp-for="Login" class="form-control" />
+                        <label class="form-label">Username</label>
+                        <input asp-for="Login" class="form-control" placeholder="Choose a login name" />
                         <span asp-validation-for="Login" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input asp-for="UserPassword" type="password" class="form-control" />
+                        <input asp-for="UserPassword" type="password" class="form-control" placeholder="Create a password" />
                         <span asp-validation-for="UserPassword" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input asp-for="Email" type="email" class="form-control" />
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email address" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
-                        <input asp-for="Phone" type="text" class="form-control" />
+                        <input asp-for="Phone" type="text" class="form-control" placeholder="Enter your phone number" />
                         <span asp-validation-for="Phone" class="text-danger"></span>
                     </div>
 
@@ -71,7 +71,7 @@
                 </form>
 
                 <p class="auth-login-link">
-                    <a asp-controller="Login" asp-action="Index">Already have an account? Sign in</a>
+					Already have an account? <a asp-controller="Login" asp-action="Index">Sign in</a>
                 </p>
             </div>
         </div>
