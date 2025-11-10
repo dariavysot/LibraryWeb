@@ -72,6 +72,10 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, User model)
         {
+
+            ModelState.Remove("Login");
+            ModelState.Remove("UserPassword");
+
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Форма заповнена некоректно.";
@@ -92,12 +96,6 @@ namespace LibraryWeb.Controllers
                 user.Phone = model.Phone;
                 user.Role = model.Role;
                 user.Login = model.Login;
-
-                // Якщо введено новий пароль — хешуємо перед збереженням
-                if (!string.IsNullOrWhiteSpace(model.UserPassword))
-                {
-                    user.UserPassword = _passwordHasher.HashPassword(user, model.UserPassword);
-                }
 
                 _context.SaveChanges();
 
