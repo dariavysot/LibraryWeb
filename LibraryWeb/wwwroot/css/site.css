@@ -450,6 +450,150 @@ main {
     margin-bottom: 1rem;
 }
 
+/* ======================= PROFILE PAGE ======================= */
+.profile-page {
+    width: 100%;
+    padding: 3rem 2rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* Заголовок */
+.profile-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Контейнер для карток */
+.profile-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* відстань між картками */
+}
+
+/* Картки */
+.profile-card,
+.membership-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    flex: 1; /* рівна ширина на великих екранах */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .profile-card:hover,
+    .membership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(210,105,30,0.5);
+    }
+
+    /* Заголовки карток */
+    .profile-card h3,
+    .membership-card h3 {
+        font-weight: 800;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    /* Текст карток */
+    .profile-card p,
+    .membership-card p {
+        font-size: 1.1rem;
+        margin-bottom: 0.7rem;
+        color: #444;
+    }
+
+.label {
+    font-weight: 700;
+    color: #000;
+}
+
+/* Адаптивність: поруч на великих екранах */
+@media (min-width: 768px) {
+    .profile-sections {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+/* Дії (кнопки) */
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+    .profile-actions .btn {
+        padding: 0.7rem 2rem;
+        font-weight: 700;
+        border-radius: 25px;
+        transition: all 0.3s;
+    }
+
+    .profile-actions .btn-dark {
+        background: #000;
+        color: #fff;
+        border: none;
+    }
+
+        .profile-actions .btn-dark:hover {
+            background: #d2691e;
+            color: #fff;
+        }
+
+    .profile-actions .btn-outline-dark {
+        border: 2px solid #000;
+        color: #000;
+        background: #fff;
+    }
+
+        .profile-actions .btn-outline-dark:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+/* Повідомлення про успіх */
+.auth-alert {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* ======================= MOBILE ADJUSTMENTS ======================= */
+@media (max-width: 767px) {
+    .profile-title {
+        font-size: 2rem;
+    }
+
+    .profile-card,
+    .membership-card {
+        padding: 1.5rem;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+        .profile-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+}
+
+
 
 /* ======================= FOOTER ======================= */
 footer {

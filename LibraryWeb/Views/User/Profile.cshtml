@@ -1,32 +1,51 @@
 ﻿@model LibraryWeb.Models.User
 
 @{
-    ViewData["Title"] = "Профіль";
+    ViewData["Title"] = "Profile";
 }
 
-<h2>Профіль</h2>
+<section class="profile-page">
+    <div class="profile-container">
 
-@if (ViewBag.Success != null)
-{
-    <div class="alert alert-success">@ViewBag.Success</div>
-}
+        <h1 class="profile-title">My profile</h1>
 
-<p><strong>Ім’я:</strong> @Model.Name</p>
-<p><strong>Email:</strong> @Model.Email</p>
-<p><strong>Login:</strong> @Model.Login</p>
-<p><strong>Phone:</strong> @Model.Phone</p>
-<p><strong>Роль:</strong> @Model.Role</p>
+        @if (ViewBag.Success != null)
+        {
+            <div class="auth-alert alert-success">@ViewBag.Success</div>
+        }
 
-@if (Model.Membership != null)
-{
-    <h4>Членство:</h4>
-    <p>
-        Тип: @Model.Membership.MembershipType?.Name <br />
-        Статус: @Model.Membership.Status <br />
-        Ціна: @Model.Membership.Price.ToString("C") <br />
-        Тривалість: @Model.Membership.MembershipType?.DurationMonths @((Model.Membership.MembershipType?.DurationMonths == 1) ? "місяць" : "місяців")
-    </p>
-}
+        <div class="profile-sections">
+            <!-- Картка з особистою інформацією -->
+            <div class="profile-card">
+                <h3>Personal information</h3>
+                <p><span class="label">Name:</span> @Model.Name</p>
+                <p><span class="label">Email:</span> @Model.Email</p>
+                <p><span class="label">Login:</span> @Model.Login</p>
+                <p><span class="label">Phone:</span> @Model.Phone</p>
+                <p><span class="label">Birth Date</span> @(Model.BirthDate.HasValue? Model.BirthDate.Value.ToString("dd.MM.yyyy") : "")</p>
+            </div>
 
-<a asp-controller="EditProfile" asp-action="Index" class="btn btn-primary">Редагувати профіль</a>
-<a asp-controller="Login" asp-action="Logout" class="btn btn-danger ms-2">Вийти</a>
+            @if (Model.Membership != null)
+            {
+                <!-- Картка з інформацією про членство -->
+                <div class="membership-card">
+                    <h3>Membership</h3>
+                    <p><span class="label">Type:</span> @Model.Membership.MembershipType?.Name</p>
+                    <p><span class="label">Status:</span> @Model.Membership.Status</p>
+                    <p><span class="label">Price:</span> @Model.Membership.Price.ToString("C")</p>
+                    <p>
+                        <span class="label">Duration:</span>
+                        @Model.Membership.MembershipType?.DurationMonths
+                        @((Model.Membership.MembershipType?.DurationMonths == 1) ? "month" : "months")
+                    </p>
+                </div>
+            }
+        </div>
+
+        <div class="profile-actions mt-4">
+            <a asp-controller="EditProfile" asp-action="Index" class="btn btn-dark">Редагувати профіль</a>
+            <a asp-controller="Login" asp-action="Logout" class="btn btn-outline-dark ms-2">Вийти</a>
+        </div>
+
+    </div>
+</section>
