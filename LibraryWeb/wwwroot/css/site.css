@@ -1,22 +1,22 @@
 /* ======================= GLOBAL ======================= */
 html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif;
+    height: 100%;
 }
 
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* займатиме весь екран */
+    min-height: 100vh; /* тіло завжди на весь екран */
 }
 
 /* ======================= MAIN CONTAINER ======================= */
 main {
-    flex: 1 0 auto; /* основний контент займає весь простір, залишаючи футер знизу */
-    padding-left: 2rem;
-    padding-right: 2rem;
+    flex: 1 0 auto; /* займає весь доступний простір */
+    padding: 2rem;
+    padding-bottom: 6rem; /* відступ знизу, щоб футер не перекривав контент */
+    box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
@@ -30,12 +30,13 @@ main {
 .hero-section {
     background: #fff;
     color: #000;
-    height: calc(100vh - 60px); /* 100% висоти вікна мінус футер */
     display: flex;
-    justify-content: center; /* по вертикалі центр для hero-content */
-    align-items: center;
+    justify-content: center;
+    align-items: flex-end; /* вирівнюємо контент донизу */
     width: 100%;
+    min-height: calc(100vh - 80px); /* повна висота екрана мінус футер/хедер */
     flex-direction: column;
+    padding-bottom: 1rem; /* відступ від нижнього краю */
 }
 
 .hero-content {
@@ -355,11 +356,109 @@ main {
         text-decoration: underline;
     }
 
+/* ================= AUTH HERO SECTION ================= */
+.auth-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - 150px);
+}
+
+.auth-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+}
+
+.auth-text {
+    max-width: 500px;
+    text-align: left;
+}
+
+    .auth-text h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+@media (min-width: 768px) {
+    .auth-text h1 {
+        font-size: 4rem;
+    }
+}
+
+.auth-text .description {
+    font-size: 1rem;
+    color: #444;
+}
+
+.auth-form-container {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 450px;
+    margin-top: 1rem;
+}
+
+.auth-form .form-control {
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+}
+
+    .auth-form .form-control:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.15);
+    }
+
+.auth-btn {
+    width: 100%;
+    border-radius: 25px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .auth-btn:hover {
+        background: #d2691e;
+    }
+
+.auth-login-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.auth-alert {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+}
 
 
 /* ======================= FOOTER ======================= */
 footer {
-    flex-shrink: 0; /* футер не перекриває контент */
+    position: static !important;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    padding: 1rem 0;
 }
 
 /* ======================= FOCUS STYLES ======================= */
