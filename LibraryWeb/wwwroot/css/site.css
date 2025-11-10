@@ -599,11 +599,22 @@ main {
     width: 100%;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* по горизонталі */
+    align-items: center; /* по вертикалі */
     padding: 2rem;
     box-sizing: border-box;
-    background: #f8f8f8; /* легкий фон для контрасту */
+}
+
+.edit-profile-container {
+    background: #fff;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 800px; /* збільшили ширину контейнера */
+    min-width: 500px; /* мінімальна ширина для маленьких екранів */
+    box-sizing: border-box;
+    text-align: left;
 }
 
 .edit-profile-container {
