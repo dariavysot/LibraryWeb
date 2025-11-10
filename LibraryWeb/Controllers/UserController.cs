@@ -3,6 +3,7 @@ using LibraryWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryWeb.Controllers
@@ -64,6 +65,13 @@ namespace LibraryWeb.Controllers
                 TempData["Error"] = "Користувача не знайдено.";
                 return RedirectToAction("Index");
             }
+
+            ViewBag.Roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Reader", Text = "Reader", Selected = (user.Role == UserRole.Reader) },
+                new SelectListItem { Value = "Employee", Text = "Employee", Selected = (user.Role == UserRole.Employee) },
+                new SelectListItem { Value = "Admin", Text = "Admin", Selected = (user.Role == UserRole.Admin) }
+            };
 
             return View("~/Views/User/Admin/Edit.cshtml", user);
         }

@@ -789,7 +789,7 @@ main {
         color: #fff;
     }
 
-/* ===================== ADMIN PAGE ===================== */
+/* ===================== ADMIN PAGE USER MANAGENTNT ===================== */
 .admin-page {
     width: 100%;
     min-height: 100vh;
@@ -955,7 +955,7 @@ main {
 }
 
     .btn-edit:hover {
-        background: #000;
+        background: #fff;
     }
 
 .btn-delete {
@@ -999,6 +999,46 @@ main {
         flex-wrap: wrap; /* на мобільних переносимо на декілька рядків */
     }
 }
+
+
+/* ===================== ADMIN PAGE MANAGE ===================== */
+.edit-profile-subtitle {
+    font-size: 1.1rem;
+    color: #d2691e;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Вирівнювання кнопок */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+    /* Фіксована ширина кнопок */
+    .button-group .btn {
+        width: 150px;
+        text-align: center;
+    }
+
+/* Select стилістично під профіль */
+.edit-profile-form .form-select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+    .edit-profile-form .form-select:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+    }
+
+
 
     /* ======================= FOOTER ======================= */
     footer {
