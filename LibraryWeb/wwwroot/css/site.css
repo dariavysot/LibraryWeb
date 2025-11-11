@@ -1134,10 +1134,10 @@ main {
 }
 
 .admin-actions {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    width: auto;
+    flex-shrink: 0;
+    padding: 0.6rem 1.5rem;
+    text-align: center;
 }
 
 /* Адаптивність */
@@ -1170,6 +1170,16 @@ main {
     text-align: right;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
+
+/* ===================== MEMBERSHIP TYPE PAGE ===================== */
+.membership-page-container {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+}
+
 
 
     /* ======================= FOOTER ======================= */
