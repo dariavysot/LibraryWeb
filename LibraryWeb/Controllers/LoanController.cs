@@ -20,7 +20,7 @@ namespace LibraryWeb.Controllers
 
         // --- Список всіх позик ---
         [HttpGet("")]
-        public IActionResult Index(string? statusFilter, string search = "")
+        public IActionResult Index(string? statusFilter, string search = "", string? inventoryFilter = "", string? userFilter = "", DateTime? dateFilter = null)
         {
             var today = DateTime.Today;
 
@@ -35,12 +35,12 @@ namespace LibraryWeb.Controllers
 
             var statuses = new List<string> { "Усі", "Активна", "Прострочена", "Повернено" };
             ViewBag.Statuses = statuses;
+            ViewBag.StatusFilter = statusFilter ?? "Усі";
 
-            if (string.IsNullOrEmpty(statusFilter))
-                statusFilter = "Усі";
-
-            ViewBag.StatusFilter = statusFilter;
             ViewBag.Search = search;
+            ViewBag.InventoryFilter = inventoryFilter;
+            ViewBag.UserFilter = userFilter;
+            ViewBag.DateFilter = dateFilter?.ToString("yyyy-MM-dd");
 
             var loans = _context.Loans
                 .Include(l => l.User)
@@ -48,10 +48,9 @@ namespace LibraryWeb.Controllers
                 .ThenInclude(c => c.Book)
                 .AsQueryable();
 
-            if (statusFilter != "Усі")
+            if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "Усі")
                 loans = loans.Where(l => l.Status == statusFilter);
 
-            // --- Пошук ---
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.ToLower();
@@ -59,6 +58,28 @@ namespace LibraryWeb.Controllers
                     (l.User != null && l.User.Name.ToLower().Contains(search)) ||
                     (l.UserName != null && l.UserName.ToLower().Contains(search)) ||
                     l.Copy.Book.Title.ToLower().Contains(search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(inventoryFilter))
+            {
+                if (int.TryParse(inventoryFilter, out int inventoryNum))
+                {
+                    loans = loans.Where(l => l.InventoryNum == inventoryNum);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(userFilter))
+            {
+                userFilter = userFilter.ToLower();
+                loans = loans.Where(l =>
+                    (l.User != null && l.User.Name.ToLower().Contains(userFilter)) ||
+                    (l.UserName != null && l.UserName.ToLower().Contains(userFilter))
+                );
+            }
+
+            if (dateFilter.HasValue)
+            {
+                loans = loans.Where(l => l.StartDate <= dateFilter && l.EndDate >= dateFilter);
             }
 
             return View("~/Views/Loan/Index.cshtml", loans.ToList());
