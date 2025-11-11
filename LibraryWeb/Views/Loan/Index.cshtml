@@ -1,76 +1,92 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Loan>
 
-@{
-    ViewData["Title"] = "Позики";
-}
+<main class="admin-page">
+    <div class="admin-container">
+        <h2 class="admin-title">Loan List</h2>
+        <p class="admin-subtitle">Here you can view and manage all book loans in the library.</p>
 
-<h2>Список бронювань</h2>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Warning"] != null)
-{
-    <div class="alert alert-warning">@TempData["Warning"]</div>
-}
-
-<a asp-action="Create" class="btn btn-primary mt-3">Додати позику</a>
-
-<form method="get" asp-action="Index" class="d-flex mb-3">
-    <select name="statusFilter" class="form-select me-2" style="max-width: 200px;">
-        @foreach (var status in (List<string>)ViewBag.Statuses)
+        @if (TempData["Success"] != null)
         {
-            <option value="@status" selected="@(ViewBag.StatusFilter == status)">
-                @status
-            </option>
+            <div class="admin-alert-success">@TempData["Success"]</div>
         }
-    </select>
-
-    <input type="text" name="search" value="@ViewBag.Search" placeholder="Пошук..." class="form-control me-2" />
-    <button type="submit" class="btn btn-outline-primary">🔍</button>
-</form>
-
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Книга</th>
-            <th>Примірник №</th>
-            <th>Читач</th>
-            <th>Статус</th>
-            <th>Початок</th>
-            <th>Кінець</th>
-            <th>Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var loan in Model)
+        @if (TempData["Warning"] != null)
         {
-            <tr>
-                <td>@loan.LoanID</td>
-                <td>@loan.Copy.Book.Title</td>
-                <td>@loan.InventoryNum</td>
-                <td>@(loan.User?.Name ?? loan.UserName ?? "—")</td>
-                <td>@loan.Status</td>
-                <td>@loan.StartDate.ToShortDateString()</td>
-                <td>@loan.EndDate.ToShortDateString()</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn btn-info btn-sm">Деталі</a>
-                    @if (loan.Status != "Повернено")
-                    {
-                        <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn btn-warning btn-sm">Повернути</a>
-                    }
-
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити цю позику?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
-                            @Html.AntiForgeryToken()
-                        </form>
-                    }
-                </td>
-            </tr>
+            <div class="admin-alert-error">@TempData["Warning"]</div>
         }
-    </tbody>
-</table>
+
+        <div class="mb-3">
+            <a asp-action="Create" class="admin-btn">Add Loan</a>
+        </div>
+
+        <form method="get" asp-action="Index" class="admin-filter-form">
+            <select name="statusFilter" class="form-select">
+                @foreach (var status in (List<string>)ViewBag.Statuses)
+                {
+                    <option value="@status" selected="@(ViewBag.StatusFilter == status)">
+                        @status
+                    </option>
+                }
+            </select>
+
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Search by book..." class="form-control" />
+
+            <input type="text" name="inventoryFilter" value="@ViewBag.InventoryFilter" placeholder="Copy #" class="form-control" />
+
+            <input type="text" name="userFilter" value="@ViewBag.UserFilter" placeholder="User..." class="form-control" />
+
+            <input type="date" name="dateFilter" value="@ViewBag.DateFilter" class="form-control" />
+
+            <button type="submit" class="admin-btn">Filter</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Book</th>
+                        <th>Copy #</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loan in Model)
+                    {
+                        <tr>
+                            <td>@loan.LoanID</td>
+                            <td>@loan.Copy.Book.Title</td>
+                            <td>@loan.InventoryNum</td>
+                            <td>@(loan.User?.Name ?? loan.UserName ?? "—")</td>
+                            <td>
+                                <span class="badge @(loan.Status == "Активна" ? "role-user" : loan.Status == "Прострочена" ? "role-employee" : "role-admin")">
+                                    @loan.Status
+                                </span>
+                            </td>
+                            <td>@loan.StartDate.ToShortDateString()</td>
+                            <td>@loan.EndDate.ToShortDateString()</td>
+                            <td class="button-group">
+                                <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn-edit btn-blue">Details</a>
+                                @if (loan.Status != "Returned")
+                                {
+                                    <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn-edit btn-yellow">Return</a>
+                                }
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form asp-action="Delete" asp-route-id="@loan.LoanID" method="post" onsubmit="return confirm('Are you sure you want to delete this loan?');">
+                                        <button type="submit" class="btn-delete">Delete</button>
+                                        @Html.AntiForgeryToken()
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

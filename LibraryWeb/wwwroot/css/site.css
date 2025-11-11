@@ -1180,6 +1180,28 @@ main {
     width: 100%;
 }
 
+.btn-blue {
+    text-decoration: none;
+    background: #1b3f71;
+    color: #fff;
+}
+
+    .btn-blue:hover {
+        background: #d2691e; 
+        color: #fff;
+    }
+
+.btn-yellow {
+    text-decoration: none;
+    background: #f6b944; 
+    color: #000;
+}
+
+    .btn-yellow:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
 
 
     /* ======================= FOOTER ======================= */
