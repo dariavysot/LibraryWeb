@@ -98,6 +98,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipID = membership.MembershipID,
+                UserName = user.Name,
                 Amount = type.Price,
                 Date = DateTime.Now,
                 Type = "Членство",
@@ -208,6 +209,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipID = membership.MembershipID,
+                UserName = user.Name,
                 Amount = type.Price,
                 Date = DateTime.Now,
                 Type = "Членство",
