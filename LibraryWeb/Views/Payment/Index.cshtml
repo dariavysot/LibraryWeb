@@ -1,97 +1,91 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Payment>
 
 @{
-    ViewData["Title"] = "Платежі";
+    ViewData["Title"] = "Payments";
 }
 
-<h2 class="mb-4">Список платежів</h2>
+<section class="admin-page">
+    <div class="admin-container">
+        <h2 class="admin-title mb-4">Payments List</h2>
 
-<form method="get" class="row mb-4">
-    <div class="col-md-2">
-        <label class="form-label">Статус</label>
-        <select name="status" class="form-select">
-            <option value="">Усі</option>
-            @foreach (var s in ViewBag.StatusList)
+        @if (TempData["Success"] != null)
+        {
+            <div class="admin-alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="admin-alert-error">@TempData["Error"]</div>
+        }
+
+        <form method="get" class="admin-filter-form mb-4">
+            <select name="status" class="form-select">
+                <option value="">All statuses</option>
+                @foreach (var s in ViewBag.StatusList)
+                {
+                    <option value="@s" selected="@(Context.Request.Query["status"] == s)">
+                        @s
+                    </option>
+                }
+            </select>
+
+            <select name="type" class="form-select">
+                <option value="">All types</option>
+                @foreach (var t in ViewBag.TypeList)
+                {
+                    <option value="@t" selected="@(Context.Request.Query["type"] == t)">
+                        @t
+                    </option>
+                }
+            </select>
+
+            <input type="text" name="userSearch" class="form-control"
+                   placeholder="User ID or Name"
+                   value="@Context.Request.Query["userSearch"]" />
+
+            <input type="date" name="fromDate" class="form-control" value="@Context.Request.Query["fromDate"]" />
+            <input type="date" name="toDate" class="form-control" value="@Context.Request.Query["toDate"]" />
+
+            <button type="submit" class="admin-btn">Filter</button>
+        </form>
+
+        <div class="table-responsive">
+            @if (Model.Any())
             {
-                <option value="@s" selected="@(Context.Request.Query["status"] == s)">
-                    @s
-                </option>
-            }
-        </select>
-    </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>PaymentID</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td>@p.PaymentID</td>
+                                <td>@p.UserName</td>
+                                <td>@p.Amount.ToString("C")</td>
+                                <td>@p.Date.ToShortDateString()</td>
+                                <td>@p.Type</td>
+                                <td>@p.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-    <div class="col-md-2">
-        <label class="form-label">Тип</label>
-        <select name="type" class="form-select">
-            <option value="">Усі</option>
-            @foreach (var t in ViewBag.TypeList)
+                <div class="mt-3 total-amount">
+                    Total Amount: @ViewBag.TotalAmount.ToString("C")
+                </div>
+
+            }
+            else
             {
-                <option value="@t" selected="@(Context.Request.Query["type"] == t)">
-                    @t
-                </option>
+                <p class="text-muted">No payments found for the selected filters.</p>
             }
-        </select>
+        </div>
     </div>
-
-    <div class="col-md-3">
-        <label class="form-label">Користувач (ID або ім'я)</label>
-        <input type="text" name="userSearch" class="form-control"
-               placeholder="Введіть ID або ім'я"
-               value="@Context.Request.Query["userSearch"]" />
-    </div>
-
-    <div class="col-md-2">
-        <label class="form-label">Від дати</label>
-        <input type="date" name="fromDate" class="form-control" value="@Context.Request.Query["fromDate"]" />
-    </div>
-
-    <div class="col-md-2">
-        <label class="form-label">До дати</label>
-        <input type="date" name="toDate" class="form-control" value="@Context.Request.Query["toDate"]" />
-    </div>
-
-    <div class="col-md-1 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100">Фільтрувати</button>
-    </div>
-</form>
-
-@if (Model.Any())
-{
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>PaymentID</th>
-                <th>Користувач</th>
-                <th>Сума</th>
-                <th>Дата</th>
-                <th>Тип</th>
-                <th>Статус</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>@p.PaymentID</td>
-                    <td>@p.UserName</td>
-                    <td>@p.Amount</td>
-                    <td>@p.Date.ToShortDateString()</td>
-                    <td>@p.Type</td>
-                    <td>@p.Status</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p class="text-muted">Немає платежів за заданими критеріями.</p>
-}
-
-@if (Model.Any())
-{
-    <div class="mt-3">
-        <h5><strong>Total amount:</strong> @ViewBag.TotalAmount.ToString("C")</h5>
-    </div>
-}
-
+</section>
