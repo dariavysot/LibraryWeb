@@ -3,6 +3,7 @@ using LibraryWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryWeb.Controllers
@@ -65,6 +66,13 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index");
             }
 
+            ViewBag.Roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Reader", Text = "Reader", Selected = (user.Role == UserRole.Reader) },
+                new SelectListItem { Value = "Employee", Text = "Employee", Selected = (user.Role == UserRole.Employee) },
+                new SelectListItem { Value = "Admin", Text = "Admin", Selected = (user.Role == UserRole.Admin) }
+            };
+
             return View("~/Views/User/Admin/Edit.cshtml", user);
         }
 
@@ -72,6 +80,10 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, User model)
         {
+
+            ModelState.Remove("Login");
+            ModelState.Remove("UserPassword");
+
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Форма заповнена некоректно.";
@@ -92,12 +104,6 @@ namespace LibraryWeb.Controllers
                 user.Phone = model.Phone;
                 user.Role = model.Role;
                 user.Login = model.Login;
-
-                // Якщо введено новий пароль — хешуємо перед збереженням
-                if (!string.IsNullOrWhiteSpace(model.UserPassword))
-                {
-                    user.UserPassword = _passwordHasher.HashPassword(user, model.UserPassword);
-                }
 
                 _context.SaveChanges();
 

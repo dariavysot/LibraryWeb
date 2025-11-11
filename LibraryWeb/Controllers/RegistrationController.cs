@@ -26,23 +26,23 @@ namespace LibraryWeb.Controllers
         public IActionResult Index(User model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
-                ModelState.AddModelError("Name", "Ім’я обов’язкове");
+                ModelState.AddModelError("Name", "Name is required");
             if (string.IsNullOrWhiteSpace(model.Login))
-                ModelState.AddModelError("Login", "Логін обов’язковий");
+                ModelState.AddModelError("Login", "Login is required");
             if (string.IsNullOrWhiteSpace(model.Email))
-                ModelState.AddModelError("Email", "Email обов’язковий");
+                ModelState.AddModelError("Email", "Email is required");
             else if (!Regex.IsMatch(model.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                ModelState.AddModelError("Email", "Введіть коректний Email");
+                ModelState.AddModelError("Email", "Enter a valid Email");
             if (string.IsNullOrWhiteSpace(model.UserPassword))
-                ModelState.AddModelError("UserPassword", "Пароль обов’язковий");
+                ModelState.AddModelError("UserPassword", "Password is required");
 
             if (model.BirthDate == default)
-                ModelState.AddModelError("BirthDate", "Дата народження обов’язкова");
+                ModelState.AddModelError("BirthDate", "Date of birth is required");
             else if (model.BirthDate > DateTime.Today)
-                ModelState.AddModelError("BirthDate", "Дата народження не може бути в майбутньому");
+                ModelState.AddModelError("BirthDate", "Birth date cannot be in the future");
 
             if (_context.Users.Any(u => u.Login == model.Login))
-                ModelState.AddModelError("Login", "Користувач з таким логіном вже існує!");
+                ModelState.AddModelError("Login", "A user with this login already exists!");
 
             if (!ModelState.IsValid)
                 return View("~/Views/User/Register.cshtml", model);
@@ -54,7 +54,7 @@ namespace LibraryWeb.Controllers
             _context.Users.Add(model);
             _context.SaveChanges();
 
-            TempData["Success"] = "Реєстрація успішна!";
+            TempData["Success"] = "Registration successful!";
             return RedirectToAction("Index", "Login");
         }
     }

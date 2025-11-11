@@ -1,22 +1,1176 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+/* ======================= GLOBAL ======================= */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* тіло завжди на весь екран */
 }
+
+/* ======================= MAIN CONTAINER ======================= */
+main {
+    flex: 1 0 auto; /* займає весь доступний простір */
+    padding: 2rem;
+    padding-bottom: 6rem; /* відступ знизу, щоб футер не перекривав контент */
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    main {
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+}
+
+/* ======================= HERO SECTION ======================= */
+.hero-section {
+    background: #fff;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* вирівнюємо контент донизу */
+    width: 100%;
+    min-height: calc(100vh - 80px); /* повна висота екрана мінус футер/хедер */
+    flex-direction: column;
+    padding-bottom: 1rem; /* відступ від нижнього краю */
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* книжки при нижньому краю */
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+    .hero-content {
+        padding: 3rem 4rem;
+    }
+}
+
+/* Додатковий верхній відступ для текстового блоку */
+.text-content {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -2rem; /* зрушуємо блок трохи вище, можна коригувати */
+}
+
+.best-choice {
+    color: #d2691e;
+    font-weight: 600;
+    font-size: 0.8rem; 
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem; /* трохи відступу до заголовка */
+}
+
+.hero-content h1 {
+    font-size: 4rem; /* збільшили з 3rem */
+    font-weight: 800;
+    margin: 1.5rem 0; /* збільшили відступ зверху і знизу */
+}
+
+@media (min-width: 768px) {
+    .best-choice {
+        font-size: 1rem;
+    }
+
+    .hero-content h1 {
+        font-size: 5rem; /* для великих екранів */
+    }
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0 2rem 0;
+}
+
+    .search-form input {
+        border: 1.5px solid #333; /* жирніша і темніша рамка */
+        border-radius: 25px;
+        padding: 0.6rem 1.2rem;
+        width: 250px;
+        margin-right: 0.6rem;
+    }
+
+
+    .search-form button {
+        background: #000;
+        color: #fff;
+        border: none;
+        border-radius: 25px;
+        padding: 0.6rem 1.5rem;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .search-form button:hover {
+            background: #d2691e;
+        }
+
+
+.book-display {
+    display: flex;
+    align-items: flex-end;
+    position: relative; /* щоб книжки могли зміщуватись */
+    height: 280px; /* висота блоку книжок */
+    margin-top: 1rem;
+}
+
+/* Додаємо легкий поворот для кожної книжки */
+.book {
+    width: 85px;
+    height: 540px;
+    color: #fff;
+    font-weight: 730; /* можна зробити жирнішим */
+    font-size: 1.5rem; /* збільшили розмір тексту */
+    text-align: center;
+    writing-mode: vertical-rl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.85);
+    transform-origin: top left; /* точка обертання - нижній лівий кут */
+}
+
+    /* окремі нахили для кожної книги */
+    .book.orange {
+        background: #e86a2f;
+        transform: rotate(16deg); /* нахил вліво */
+        z-index: 3;
+    }
+
+    .book.blue {
+        background: #1b3f71;
+        transform: rotate(6deg); /* центральна книга */
+        z-index: 2;
+    }
+
+    .book.yellow {
+        background: #f6b944;
+        transform: rotate(0deg); /* нахил вправо */
+        z-index: 1;
+    }
+
+/* приклад для великих екранів */
+@media (min-width: 768px) {
+    .book {
+        font-size: 1.7rem; /* ще більший текст на десктопі */
+    }
+}
+
+@media (max-width: 1100px) {
+    .book-display {
+        display: none;
+    }
+}
+
+
+
+.description {
+    color: #444;
+    font-size: 0.95rem;
+}
+
+    .description a {
+        color: #d2691e;
+        text-decoration: none;
+    }
+
+        .description a:hover {
+            text-decoration: underline;
+        }
+
+/* ======================= NAVBAR ======================= */
+.navbar-custom {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid #000; /* жирна нижня лінія */
+    background: #fff;
+}
+
+    /* Логотип з вертикальною лінією справа */
+    .navbar-custom .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-right: 2rem;
+        padding-right: 2rem; /* відступ від лінії */
+        border-right: 2px solid #000; /* вертикальна лінія */
+    }
+
+/* Ліва частина навігації */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+    /* Вертикальні лінії між кнопками */
+    .nav-left a.nav-link:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        right: -1rem;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: #000;
+    }
+
+    /* Стиль кнопок */
+    .nav-left a.nav-link {
+        position: relative;
+        padding: 0 1rem;
+        font-weight: 700; /* жирний текст */
+        font-size: 1.2rem; /* великий текст */
+        color: #000;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .nav-left a.nav-link:hover {
+            color: #d2691e;
+        }
+
+/* Права частина навігації */
+.nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Стиль кнопки Sign up */
+.signup-btn {
+    border: 1px solid #000;
+    border-radius: 20px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 700; /* робимо трохи жирнішим */
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+    .signup-btn:hover {
+        background: #000;
+        color: #fff !important;
+    }
+
+/* Дропдаун користувача теж жирніший */
+.nav-right .dropdown-toggle {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+/* ======================= LOGIN PAGE ======================= */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%; /* займає весь простір між хедером і футером */
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.login-form .form-group {
+    text-align: left;
+}
+
+.login-form label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.login-form input.form-control {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+    .login-form input.form-control:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+    }
+
+.login-btn {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: 0.3s;
+}
+
+    .login-btn:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.login-container a {
+    color: #d2691e;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .login-container a:hover {
+        text-decoration: underline;
+    }
+
+/* ================= AUTH HERO SECTION (REGISTER) ================= */
+.auth-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - 150px);
+}
+
+.auth-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+}
+
+.auth-text {
+    max-width: 500px;
+    text-align: left;
+}
+
+    .auth-text h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+@media (min-width: 768px) {
+    .auth-text h1 {
+        font-size: 4rem;
+    }
+}
+
+.auth-text .description {
+    font-size: 1rem;
+    color: #444;
+}
+
+.auth-form-container {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 450px;
+    margin-top: 1rem;
+}
+
+.auth-text .description {
+    font-size: 1rem;
+    color: #d2691e;
+    font-weight: 600;
+}
+
+
+.auth-form .form-label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.auth-form .form-control {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+    .auth-form .form-control:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+        outline: none;
+    }
+
+.auth-btn {
+    width: 100%;
+    border-radius: 25px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1.1rem;
+}
+
+    .auth-btn:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.auth-login-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.auth-login-link a {
+    color: #d2691e;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+    .auth-login-link a:hover {
+        text-decoration: underline;
+    }
+
+.auth-alert {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ======================= PROFILE PAGE ======================= */
+.profile-page {
+    width: 100%;
+    padding: 3rem 2rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* Заголовок */
+.profile-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Контейнер для карток */
+.profile-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* відстань між картками */
+}
+
+/* Картки */
+.profile-card,
+.membership-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    flex: 1; /* рівна ширина на великих екранах */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .profile-card:hover,
+    .membership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+    /* Заголовки карток */
+    .profile-card h3,
+    .membership-card h3 {
+        font-weight: 800;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    /* Текст карток */
+    .profile-card p,
+    .membership-card p {
+        font-size: 1.1rem;
+        margin-bottom: 0.7rem;
+        color: #444;
+    }
+
+.label {
+    font-weight: 700;
+    color: #000;
+}
+
+/* Адаптивність: поруч на великих екранах */
+@media (min-width: 768px) {
+    .profile-sections {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+/* Дії (кнопки) */
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+    .profile-actions .btn {
+        padding: 0.7rem 2rem;
+        font-weight: 700;
+        border-radius: 25px;
+        transition: all 0.3s;
+    }
+
+    .profile-actions .btn-dark {
+        background: #000;
+        color: #fff;
+        border: none;
+    }
+
+        .profile-actions .btn-dark:hover {
+            background: #d2691e;
+            color: #fff;
+        }
+
+    .profile-actions .btn-outline-dark {
+        border: 2px solid #000;
+        color: #000;
+        background: #fff;
+    }
+
+        .profile-actions .btn-outline-dark:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+/* Повідомлення про успіх */
+.auth-alert {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* ======================= MOBILE ADJUSTMENTS ======================= */
+@media (max-width: 767px) {
+    .profile-title {
+        font-size: 2rem;
+    }
+
+    .profile-card,
+    .membership-card {
+        padding: 1.5rem;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+        .profile-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+}
+
+
+/* ======================= EDIT PROFILE PAGE ======================= */
+.edit-profile-page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* по горизонталі */
+    align-items: center; /* по вертикалі */
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.edit-profile-container {
+    background: #fff;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 800px; /* збільшили ширину контейнера */
+    min-width: 500px; /* мінімальна ширина для маленьких екранів */
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.edit-profile-container {
+    width: 100%;
+    max-width: 500px;
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.edit-profile-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.edit-profile-subtitle {
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.edit-profile-form .form-label {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.edit-profile-form .form-control {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+    .edit-profile-form .form-control:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+    }
+
+.edit-profile-form .btn-primary {
+    width: 100%;
+    border-radius: 25px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .edit-profile-form .btn-primary:hover {
+        background: #d2691e;
+    }
+
+.edit-profile-form .btn-secondary {
+    border-radius: 25px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-left: 0.5rem;
+}
+
+    .edit-profile-form .btn-secondary:hover {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+    }
+
+/* Повідомлення про успіх та помилки */
+.edit-profile-alert {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Адаптивність */
+@media (max-width: 767px) {
+    .edit-profile-container {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* ======================= Access Denied ======================= */
+
+.access-denied-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background: #fff;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.access-denied-container {
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    padding: 3rem 2rem;
+    max-width: 800px;
+}
+
+.access-denied-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.access-denied-text {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.access-btn {
+    display: inline-block;
+    background-color: #d2691e;
+    color: #fff;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+    border: none;
+}
+
+    .access-btn:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+/* ===================== ADMIN PAGE USER MANAGENTNT ===================== */
+.admin-page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    box-sizing: border-box;
+    background: #f9f9f9;
+}
+
+.admin-container {
+    background: #fff;
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    padding: 2.5rem;
+    box-sizing: border-box;
+}
+
+.admin-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.admin-alert-success {
+    background: #e6f4ea;
+    color: #2b7a0b;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.admin-alert-error {
+    background: #fdecea;
+    color: #b71c1c;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Filter form - single row */
+.admin-filter-form {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+    .admin-filter-form .form-control,
+    .admin-filter-form .form-select {
+        border-radius: 25px;
+        padding: 0.6rem 1rem;
+        border: 2px solid #000;
+        transition: all 0.3s;
+        flex: 1; 
+    }
+
+        .admin-filter-form .form-control:focus,
+        .admin-filter-form .form-select:focus {
+            border-color: #d2691e;
+            box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+            outline: none;
+        }
+
+.admin-btn {
+    background: #d2691e;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+    .admin-btn:hover {
+        background: #000;
+        color: #fff;
+    }
+
+.admin-btn {
+    background: #d2691e;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .admin-btn:hover {
+        background: #000;
+        color: #fff;
+    }
+
+/* Table */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.8rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .admin-table thead {
+        background: #000;
+        color: #fff;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #f0f0f0;
+    }
+
+.badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.role-admin {
+    background: #d2691e;
+    color: #fff;
+}
+
+.role-employee {
+    background: #f6b944;
+    color: #000;
+}
+
+.role-user {
+    background: #1b3f71;
+    color: #fff;
+}
+
+/* Action buttons */
+.btn-edit {
+    background: #d2691e;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 25px;
+    font-weight: 700;
+    margin-right: 0.3rem;
+    transition: 0.3s;
+}
+
+    .btn-edit:hover {
+        background: #fff;
+    }
+
+.btn-delete {
+    background: #fff;
+    color: #b71c1c;
+    border: 2px solid #b71c1c;
+    padding: 0.4rem 0.8rem;
+    border-radius: 25px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+    .btn-delete:hover {
+        background: #b71c1c;
+        color: #fff;
+    }
+
+/* Back button */
+.btn-back {
+    display: inline-block;
+    margin-top: 1rem;
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+    .btn-back:hover {
+        background: #d2691e;
+        color: #fff;
+        border-color: #d2691e;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-filter-form {
+        flex-wrap: wrap; /* на мобільних переносимо на декілька рядків */
+    }
+}
+
+
+/* ===================== ADMIN PAGE MANAGE USERS ===================== */
+.edit-profile-subtitle {
+    font-size: 1.1rem;
+    color: #d2691e;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Вирівнювання кнопок */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+    /* Фіксована ширина кнопок */
+    .button-group .btn {
+        width: 150px;
+        text-align: center;
+    }
+
+/* Select стилістично під профіль */
+.edit-profile-form .form-select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+    .edit-profile-form .form-select:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+    }
+
+/* ======================= ADMIN DASHBOARD ======================= */
+.admin-dashboard {
+    width: 100%;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.admin-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+    font-size: 1.2rem;
+    color: #d2691e;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.admin-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .admin-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+    .admin-card h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: #000;
+    }
+
+    .admin-card p {
+        font-size: 1.1rem;
+        color: #444;
+        margin-bottom: 1.5rem;
+    }
+
+.admin-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+    .admin-btn:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.admin-btn-orange {
+    background: #d2691e;
+    color: #fff;
+}
+
+    .admin-btn-orange:hover {
+        background: #000;
+    }
+
+.admin-btn-dark {
+    background: #1b3f71;
+    color: #fff;
+    margin: 0.5rem;
+}
+
+    .admin-btn-dark:hover {
+        background: #d2691e;
+    }
+
+.admin-card.wide {
+    grid-column: span 2;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 2rem;
+    }
+
+    .admin-title {
+        font-size: 2.2rem;
+    }
+
+    .admin-subtitle {
+        font-size: 1rem;
+    }
+
+    .admin-card.wide {
+        grid-column: span 1;
+    }
+}
+
+
+
+    /* ======================= FOOTER ======================= */
+    footer {
+        position: static !important;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid #ccc;
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    /* ======================= FOCUS STYLES ======================= */
+    .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    }

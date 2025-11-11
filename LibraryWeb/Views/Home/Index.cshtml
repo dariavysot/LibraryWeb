@@ -1,38 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Головна бібліотеки";
+    ViewData["Title"] = "The Private Shelf";
 }
 
-<h2>📚 Ласкаво просимо до нашої бібліотеки!</h2>
+@section Hero {
+    <main></main>
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="text-content">
+                <p class="best-choice">BEST CHOICE</p>
+                <h1>THE PRIVATE SHELF</h1>
 
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>Нові книги</h5>
-            <ul>
-                @foreach (var book in ViewBag.NewBooks)
-                {
-                    <li>@book.Title (@book.PublicationYear)</li>
-                }
-            </ul>
+                <form asp-controller="Book" asp-action="Index" method="get" class="search-form">
+                    <input type="text" name="search" placeholder="Enter a title or author..." required />
+                    <button type="submit">Go to catalog →</button>
+                </form>
+
+                <p class="description">
+                    Regular reading allows you to better formulate your own thoughts.
+                    Our <a asp-controller="Home" asp-action="Team">team of professionals</a>
+                    will always help you make up your mind and find a book for fun activities.
+                </p>
+            </div>
+
+            <div class="book-display">
+                <div class="book orange">CLASSIC</div>
+                <div class="book blue">MODERN ART</div>
+                <div class="book yellow">NONFICTION</div>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>Статистика бібліотеки</h5>
-            <p>Загальна кількість книг: <strong>@ViewBag.TotalBooks</strong></p>
-            <p>Кількість користувачів: <strong>@ViewBag.TotalUsers</strong></p>
-            <p>Активні позики: <strong>@ViewBag.ActiveLoans</strong></p>
-        </div>
-    </div>
-</div>
-
-<div class="mt-3">
-    @if (User?.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <p>Ви залогінені!</p>
-    }
-    else
-    {
-        <p>Ви не залогінені.</p>
-    }
-</div>
+}
