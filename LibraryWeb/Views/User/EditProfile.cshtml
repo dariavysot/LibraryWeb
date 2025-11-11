@@ -1,68 +1,79 @@
 ﻿@model LibraryWeb.Models.User
 @{
-    ViewData["Title"] = "Редагування";
+    ViewData["Title"] = "Edit profile";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="edit-profile-page">
+    <div class="edit-profile-center">
+        <div class="edit-profile-container">
+            <h2 class="edit-profile-title">@ViewData["Title"]</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-<!-- Блок для глобальних повідомлень про помилки -->
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            @* Повідомлення про успіх *@
+            @if (TempData["Success"] != null)
             {
-                <li>@error.ErrorMessage</li>
+                <div class="edit-profile-alert alert alert-success">
+                    @TempData["Success"]
+                </div>
             }
-        </ul>
-    </div>
-}
 
-<form asp-action="Index" asp-controller="EditProfile" method="post">
-    <div class="mb-3">
-        <label class="form-label">Ім'я</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+            @* Повідомлення про помилки моделі *@
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="edit-profile-alert alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
 
-    <div class="mb-3">
-        <label class="form-label">Логін</label>
-        <input asp-for="Login" class="form-control" />
-        <span asp-validation-for="Login" class="text-danger"></span>
-    </div>
+            <form asp-action="Index" asp-controller="EditProfile" method="post" class="edit-profile-form">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
 
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+                <div class="mb-3">
+                    <label class="form-label">Login</label>
+                    <input asp-for="Login" class="form-control" />
+                    <span asp-validation-for="Login" class="text-danger"></span>
+                </div>
 
-    <div class="mb-3">
-        <label class="form-label">Дата народження</label>
-        <input asp-for="BirthDate" type="date" class="form-control" />
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
 
-    <div class="mb-3">
-        <label class="form-label">Телефон</label>
-        <input asp-for="Phone" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
+                <div class="mb-3">
+                    <label class="form-label">Birth Date</label>
+                    <input asp-for="BirthDate" type="date" class="form-control" />
+                    <span asp-validation-for="BirthDate" class="text-danger"></span>
+                </div>
 
-    <div class="mb-3">
-        <label class="form-label">Пароль</label>
-        <input asp-for="UserPassword" type="password" class="form-control" />
-        <span asp-validation-for="UserPassword" class="text-danger"></span>
-    </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
 
-    <button type="submit" class="btn btn-primary">Зберегти</button>
-    <a asp-controller="Profile" asp-action="Index" class="btn btn-secondary ms-2">Відміна</a>
-</form>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input asp-for="UserPassword" type="password" class="form-control" />
+                    <span asp-validation-for="UserPassword" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-controller="Profile" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

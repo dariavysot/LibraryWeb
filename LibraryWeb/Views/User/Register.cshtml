@@ -1,69 +1,82 @@
 ﻿@model LibraryWeb.Models.User
 
 @{
-    ViewData["Title"] = "Регістрація";
-}
-<h2>Реєстрація</h2>
-
-<!-- Повідомлення про успіх -->
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
+    ViewData["Title"] = "Registration";
 }
 
-<!-- Повідомлення про глобальні помилки -->
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
-            }
-        </ul>
-    </div>
-}
+<main class="hero-section auth-hero">
+    <section class="hero-section auth-hero">
+        <div class="hero-content auth-content">
+            <div class="text-content auth-text">
+                <h1>CREATE YOUR ACCOUNT</h1>
+                <p class="description">Join The Private Shelf and start exploring your favorite books today!</p>
+            </div>
 
-<form asp-action="Index" asp-controller="Registration" method="post">
-    <div class="mb-3">
-        <label class="form-label">Ім’я</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+            <div class="auth-form-container">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success auth-alert">@TempData["Success"]</div>
+                }
 
-    <div class="mb-3">
-        <label class="form-label">Логін</label>
-        <input asp-for="Login" class="form-control" />
-        <span asp-validation-for="Login" class="text-danger"></span>
-    </div>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger auth-alert">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
 
-    <div class="mb-3">
-        <label class="form-label">Пароль</label>
-        <input asp-for="UserPassword" type="password" class="form-control" />
-        <span asp-validation-for="UserPassword" class="text-danger"></span>
-    </div>
+                <form asp-action="Index" asp-controller="Registration" method="post" class="auth-form">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
 
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input asp-for="Email" type="email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input asp-for="Login" class="form-control" placeholder="Choose a login name" />
+                        <span asp-validation-for="Login" class="text-danger"></span>
+                    </div>
 
-    <div class="mb-3">
-        <label class="form-label">Телефон</label>
-        <input asp-for="Phone" type="text" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label>Дата народження</label>
-        <input asp-for="BirthDate" type="date" class="form-control" />
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input asp-for="UserPassword" type="password" class="form-control" placeholder="Create a password" />
+                        <span asp-validation-for="UserPassword" class="text-danger"></span>
+                    </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Зареєструватися</button>
-</form>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email address" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
 
-<p><a asp-controller="Login" asp-action="Index">Увійти</a></p>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input asp-for="Phone" type="text" class="form-control" placeholder="Enter your phone number" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Birth Date</label>
+                        <input asp-for="BirthDate" type="date" class="form-control" />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Register</button>
+                </form>
+
+                <p class="auth-login-link">
+					Already have an account? <a asp-controller="Login" asp-action="Index">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

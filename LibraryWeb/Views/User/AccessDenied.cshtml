@@ -1,8 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Доступ заборонено";
+    ViewData["Title"] = "Access Denied";
 }
 
-<h2>Доступ заборонено</h2>
-<p>У вас немає прав для перегляду цієї сторінки.</p>
+<div class="access-denied-page">
+    <div class="access-denied-container">
+        <h1 class="access-denied-title">Access Denied</h1>
+        <p class="access-denied-text">
+            You don’t have permission to view this page.
+            Please check your account or return to your profile.
+        </p>
 
-<a asp-controller="Profile" asp-action="Index" class="btn btn-primary mt-3">Повернутися до профілю</a>
+        <a asp-controller="Profile" asp-action="Index" class="btn access-btn">Back to Profile</a>
+    </div>
+</div>
