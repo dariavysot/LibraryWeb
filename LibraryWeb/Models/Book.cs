@@ -30,6 +30,12 @@ namespace LibraryWeb.Models
         [MaxLength(100)]
         public string Genre { get; set; } = string.Empty;
 
+        [MaxLength(2000)]
+        public string Description { get; set; } = string.Empty;
+
+        [MaxLength(500)]
+        public string? CoverImagePath { get; set; }
+
         public DateTime DateAdded { get; set; } = DateTime.Now;
 
         // Зв’язки

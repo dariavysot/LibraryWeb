@@ -3,6 +3,8 @@ using LibraryWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http; 
+using System.IO;
 
 namespace LibraryWeb.Controllers
 {
@@ -73,6 +75,7 @@ namespace LibraryWeb.Controllers
             if (book == null)
                 return NotFound();
 
+            ViewBag.CopyCount = book.Copies.Count;
             return View("~/Views/Book/Details.cshtml", book);
         }
 
@@ -81,28 +84,42 @@ namespace LibraryWeb.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
+            var model = new Book();
             return View("~/Views/Book/Create.cshtml");
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Book model, int copyCount)
+        public IActionResult Create(Book model, int copyCount, IFormFile? CoverImage)
         {
             // Серверна валідація
             if (model.PublicationYear != null && model.PublicationYear > DateTime.Now.Year)
-            {
                 ModelState.AddModelError("PublicationYear", "Рік видання не може бути більшим за поточний.");
-            }
 
             if (copyCount < 1)
-            {
                 ViewBag.CopyCountError = "Кількість примірників має бути не менше 1.";
-            }
 
             if (!ModelState.IsValid || copyCount < 1)
                 return View("~/Views/Book/Create.cshtml", model);
 
+            // --- Збереження обкладинки ---
+            if (CoverImage != null && CoverImage.Length > 0)
+            {
+                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/covers");
+                if (!Directory.Exists(uploads))
+                    Directory.CreateDirectory(uploads);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(CoverImage.FileName)}";
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    CoverImage.CopyTo(stream);
+                }
+
+                model.CoverImagePath = $"/images/covers/{fileName}";
+            }
 
             model.DateAdded = DateTime.Now;
             _context.Books.Add(model);
@@ -111,17 +128,15 @@ namespace LibraryWeb.Controllers
             // Додаємо копії
             for (int i = 0; i < copyCount; i++)
             {
-                var copy = new Copy
+                _context.Copies.Add(new Copy
                 {
                     BookID = model.BookID,
                     Condition = "Нова",
                     Status = "Доступна",
-                };
-                _context.Copies.Add(copy);
+                });
             }
 
             _context.SaveChanges();
-
             TempData["Success"] = $"Книгу '{model.Title}' додано ({copyCount} примірників).";
             return RedirectToAction("Index");
         }
@@ -144,7 +159,7 @@ namespace LibraryWeb.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Book model, int copyCount)
+        public IActionResult Edit(int id, Book model, int copyCount, IFormFile? CoverImage)
         {
             var book = _context.Books
                 .Include(b => b.Copies)
@@ -154,19 +169,33 @@ namespace LibraryWeb.Controllers
                 return NotFound();
 
             if (model.PublicationYear != null && model.PublicationYear > DateTime.Now.Year)
-            {
                 ModelState.AddModelError("PublicationYear", "Рік видання не може бути більшим за поточний.");
-            }
 
-            if (copyCount < 1)
+            if (copyCount < book.Copies.Count) // не дозволяємо зменшувати
+                ModelState.AddModelError("CopyCount", "Не можна зменшити кількість копій, які вже позичені.");
+
+            if (!ModelState.IsValid)
+                return View("~/Views/Book/Edit.cshtml", book);
+
+            // --- Збереження нової обкладинки ---
+            if (CoverImage != null && CoverImage.Length > 0)
             {
-                ViewBag.CopyCountError = "Кількість примірників має бути не менше 1.";
+                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/covers");
+                if (!Directory.Exists(uploads))
+                    Directory.CreateDirectory(uploads);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(CoverImage.FileName)}";
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    CoverImage.CopyTo(stream);
+                }
+
+                book.CoverImagePath = $"/images/covers/{fileName}";
             }
 
-            if (!ModelState.IsValid || copyCount < 1)
-                return View("~/Views/Book/Edit.cshtml", model);
-
-            // Оновлюємо поля книги
+            // --- Оновлення полів книги ---
             book.Title = model.Title;
             book.Author = model.Author;
             book.Type = model.Type;
@@ -175,43 +204,19 @@ namespace LibraryWeb.Controllers
             book.PublishingHouse = model.PublishingHouse;
             book.PublicationYear = model.PublicationYear;
             book.Genre = model.Genre;
+            book.Description = model.Description;
 
-            // Кількість примірників
+            // --- Додавання нових копій, якщо потрібно ---
             int currentCount = book.Copies.Count;
-
             if (copyCount > currentCount)
             {
-                // Додаємо нові копії
                 for (int i = 0; i < copyCount - currentCount; i++)
                 {
-                    _context.Copies.Add(new Copy
-                    {
-                        BookID = book.BookID,
-                        Condition = "Нова",
-                        Status = "Доступна"
-                    });
+                    _context.Copies.Add(new Copy { BookID = book.BookID, Condition = "Нова", Status = "Доступна" });
                 }
-            }
-            else if (copyCount < currentCount)
-            {
-                // Видаляємо зайві (тільки доступні)
-                var removableCopies = book.Copies
-                    .Where(c => c.Status == "Доступна")
-                    .Take(currentCount - copyCount)
-                    .ToList();
-
-                if (removableCopies.Count < (currentCount - copyCount))
-                {
-                    ModelState.AddModelError("", "Не можна зменшити кількість, бо деякі примірники позичені.");
-                    ViewBag.CopyCount = book.Copies.Count;
-                    return View("~/Views/Book/Edit.cshtml", book);
-                }
-
-                _context.Copies.RemoveRange(removableCopies);
             }
 
             _context.SaveChanges();
-
             TempData["Success"] = "Книгу успішно оновлено!";
             return RedirectToAction("Index");
         }
