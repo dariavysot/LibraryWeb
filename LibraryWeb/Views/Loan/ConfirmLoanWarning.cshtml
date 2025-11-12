@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Підтвердження видачі книги";
+    var userLogin = ViewBag.UserLogin as string;
+    var bookTitle = ViewBag.BookTitle as string;
+    var reservedBy = ViewBag.ReservationUser as string;
+    var reservationStartStr = ViewBag.ReservationStart as string;
+    var reservationEndStr = ViewBag.ReservationEnd as string;
+
+    DateTime? reservationStart = null;
+    DateTime? reservationEnd = null;
+
+    if (DateTime.TryParse(reservationStartStr, out DateTime startParsed))
+    {
+        reservationStart = startParsed;
+    }
+    if (DateTime.TryParse(reservationEndStr, out DateTime endParsed))
+    {
+        reservationEnd = endParsed;
+    }
+}
+
+<h2>Підтвердження видачі книги</h2>
+
+<p>
+    Книга <strong>@bookTitle</strong> зараз доступна,
+    але її зарезервував користувач <strong>@reservedBy</strong>.
+</p>
+
+@if (reservationStart.HasValue && reservationEnd.HasValue)
+{
+    <p>
+        Резервація активна з <strong>@reservationStart.Value.ToString("yyyy-MM-dd")</strong>
+        по <strong>@reservationEnd.Value.ToString("yyyy-MM-dd")</strong>.<br />
+        Ви можете видати книгу зараз, але потрібно буде повернути її не пізніше цієї дати.
+    </p>
+}
+
+<form asp-action="ConfirmLoanWarningPost" method="post">
+    <input type="hidden" name="UserLogin" value="@userLogin" />
+    <input type="hidden" name="BookTitle" value="@bookTitle" />
+
+    <p>Бажаєте підтвердити короткострокову позику?</p>
+
+    <button type="submit" class="btn btn-primary">Так, підтвердити</button>
+    <a asp-action="Create" class="btn btn-secondary">Скасувати</a>
+</form>

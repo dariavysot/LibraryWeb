@@ -55,9 +55,13 @@ namespace LibraryWeb.Controllers
             {
                 search = search.ToLower();
                 loans = loans.Where(l =>
-                    (l.User != null && l.User.Name.ToLower().Contains(search)) ||
+                    (l.User != null && (
+                        l.User.Name.ToLower().Contains(search) ||
+                        l.User.Login.ToLower().Contains(search)
+                    )) ||
                     (l.UserName != null && l.UserName.ToLower().Contains(search)) ||
-                    l.Copy.Book.Title.ToLower().Contains(search));
+                    l.Copy.Book.Title.ToLower().Contains(search)
+                );
             }
 
             if (!string.IsNullOrWhiteSpace(inventoryFilter))
@@ -72,7 +76,10 @@ namespace LibraryWeb.Controllers
             {
                 userFilter = userFilter.ToLower();
                 loans = loans.Where(l =>
-                    (l.User != null && l.User.Name.ToLower().Contains(userFilter)) ||
+                    (l.User != null && (
+                        l.User.Name.ToLower().Contains(userFilter) ||
+                        l.User.Login.ToLower().Contains(userFilter)
+                    )) ||
                     (l.UserName != null && l.UserName.ToLower().Contains(userFilter))
                 );
             }
@@ -110,6 +117,11 @@ namespace LibraryWeb.Controllers
                 .Where(b => b.Copies.Any(c => c.Status == "Доступна"))
                 .ToList();
 
+            ViewBag.PrefilledUserLogin = TempData["PrefilledUserLogin"];
+            ViewBag.PrefilledBookTitle = TempData["PrefilledBookTitle"];
+            if (TempData["Error"] != null)
+                ViewBag.Error = TempData["Error"];
+
             return View();
         }
 
@@ -117,9 +129,14 @@ namespace LibraryWeb.Controllers
         [Authorize(Roles = "Admin,Employee")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(int UserID, int selectedBookId)
+        public IActionResult Create(string UserLogin, string selectedBookTitle, DateTime EndDate)
         {
-            var user = _context.Users.Include(u => u.Membership).FirstOrDefault(u => u.UserID == UserID);
+            var debug = new List<string>();
+            
+            var user = _context.Users
+                .Include(u => u.Membership)
+                .FirstOrDefault(u => u.Login == UserLogin);
+
             if (user == null)
             {
                 TempData["Error"] = "Оберіть користувача.";
@@ -133,66 +150,160 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("CreateMembershipPrompt");
             }
 
-            var loanStart = DateTime.Now;
-            var loanEnd = loanStart.AddDays(14);
+            var book = _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefault(b => b.Title == selectedBookTitle);
 
-            // Отримуємо всі доступні примірники обраної книги
-            var availableCopies = _context.Copies
-                .Include(c => c.Book)
-                .Where(c => c.BookID == selectedBookId && c.Status == "Доступна")
-                .ToList();
-
-            Copy? copyToLoan = null;
-
-            foreach (var copy in availableCopies)
+            if (book == null)
             {
-                var reservation = _context.Reservations
-                    .Include(r => r.User)
-                    .FirstOrDefault(r =>
-                        r.InventoryNum == copy.InventoryNum &&
-                        loanStart <= r.EndDate && r.StartDate <= loanEnd);
-
-                if (reservation == null)
-                {
-                    // Примірник вільний — можна видати
-                    copyToLoan = copy;
-                    break;
-                }
-                else if (reservation.UserID == user.UserID)
-                {
-                    // Резервація на того ж користувача — видаляємо та беремо цей примірник
-                    _context.Reservations.Remove(reservation);
-                    copyToLoan = copy;
-                    break;
-                }
-                // Інакше примірник заброньований іншим — пропускаємо
-            }
-
-            if (copyToLoan == null)
-            {
-                TempData["Error"] = "Усі примірники цієї книги зарезервовані іншими користувачами на обраний період.";
+                TempData["Error"] = "Книга не знайдена.";
                 return RedirectToAction("Create");
             }
 
-            // Створюємо позику
-            var loan = new Loan
+            var loanStart = DateTime.Now.Date;
+            var loanEnd = EndDate.Date;
+
+            if (loanEnd <= loanStart)
             {
-                UserID = UserID,
-                UserName = user.Name,
-                InventoryNum = copyToLoan.InventoryNum,
-                Status = "Активна",
-                StartDate = loanStart,
-                EndDate = loanEnd
-            };
+                TempData["Error"] = "Дата закінчення повинна бути пізніше за сьогодні.";
+                return RedirectToAction("Create");
+            }
 
-            copyToLoan.Status = "Позичена";
+            //debug.Add($"▶ Перевіряємо книгу '{book.Title}' для користувача '{user.Name}' ({user.Login})");
+            //debug.Add($"Дати позики: {loanStart:yyyy-MM-dd} → {loanEnd:yyyy-MM-dd}");
 
-            _context.Loans.Add(loan);
-            _context.SaveChanges();
+            Copy? selectedCopy = null;
+            Reservation? conflictingReservation = null;
 
-            TempData["Success"] = $"Позика для книги '{copyToLoan.Book.Title}' створена!";
-            return RedirectToAction("Index");
+            var copies = book.Copies.ToList();
+
+            foreach (var copy in copies)
+            {
+                //debug.Add($"Перевіряємо копію InventoryNum={copy.InventoryNum}, статус='{copy.Status}'");
+
+                // Беремо всі активні (оплачені) резервації на цю копію
+                var reservations = _context.Reservations
+                    .Include(r => r.User)
+                    .Where(r => r.InventoryNum == copy.InventoryNum && r.Status == "Активна")
+                    .ToList();
+
+                bool hasConflict = false;
+
+                foreach (var res in reservations)
+                {
+                   // debug.Add($"🔹 Резервація ID={res.ReservationID}: {res.StartDate:yyyy-MM-dd} → {res.EndDate:yyyy-MM-dd}, користувач={res.User?.Name ?? "?"}");
+
+                    // Перевірка перетину дат
+                    if (res.StartDate <= loanEnd && res.EndDate >= loanStart)
+                    {
+                        hasConflict = true;
+                        conflictingReservation = res;
+                        debug.Add($"❌ Конфлікт: резервація перетинається з датами позики");
+                        break;
+                    }
+
+                }
+
+                // Якщо є конфлікт або копія не доступна
+                if (hasConflict || copy.Status != "Доступна")
+                {
+                   // debug.Add($"❌ Копія {copy.InventoryNum} недоступна через статус або активну резервацію");
+                    continue;
+                }
+
+                // Якщо немає конфлікту і копія доступна
+                selectedCopy = copy;
+                //debug.Add($"✅ Копія {copy.InventoryNum} вільна — вибрана для позики.");
+                break;
+            }
+
+            // --- 4. Якщо немає вільних копій, але є конфліктна резервація ---
+            // --- Якщо немає вільних копій, але є конфліктна резервація ---
+            if (selectedCopy == null && conflictingReservation != null)
+            {
+                //TempData["Debug"] = string.Join("<br>", debug);
+
+                return RedirectToAction("ConfirmLoanWarning", new
+                {
+                    userLogin = UserLogin,
+                    bookTitle = selectedBookTitle,
+                    reservationUser = conflictingReservation.User?.Name ?? "інший користувач",
+                    reservationStart = conflictingReservation.StartDate.ToString("yyyy-MM-dd"),
+                    reservationEnd = conflictingReservation.EndDate.ToString("yyyy-MM-dd")
+                });
+            }
+
+
+            // --- 5. Якщо є вільна копія — створюємо позику ---
+            if (selectedCopy != null)
+            {
+                var loan = new Loan
+                {
+                    UserID = user.UserID,
+                    UserName = user.Name,
+                    InventoryNum = selectedCopy.InventoryNum,
+                    Status = "Активна",
+                    StartDate = loanStart,
+                    EndDate = loanEnd
+                };
+
+                selectedCopy.Status = "Позичена";
+
+                _context.Loans.Add(loan);
+                _context.SaveChanges();
+
+                // Видаляємо резервацію користувача на цю книгу, якщо є
+                var existingReservation = _context.Reservations
+                    .FirstOrDefault(r => r.UserID == user.UserID &&
+                                         r.Copy.BookID == book.BookID);
+
+                if (existingReservation != null)
+                {
+                    _context.Reservations.Remove(existingReservation);
+                    _context.SaveChanges();
+                }
+
+                TempData["Success"] = $"Позика для книги '{book.Title}' створена!";
+                TempData["Debug"] = string.Join("<br>", debug);
+                return RedirectToAction("Index");
+            }
+
+            // --- 6. Якщо нічого не підходить (резервацій і копій) ---
+            TempData["Error"] = "Усі примірники цієї книги зараз позичені або зарезервовані.";
+            TempData["Debug"] = string.Join("<br>", debug);
+            return RedirectToAction("Create");
         }
+
+
+        // --- підтвердження попередження ---
+        [HttpGet("confirm-loan-warning")]
+        public IActionResult ConfirmLoanWarning(
+            string userLogin,
+            string bookTitle,
+            string reservationUser,
+            string reservationStart,
+            string reservationEnd)
+        {
+            ViewBag.UserLogin = userLogin;
+            ViewBag.BookTitle = bookTitle;
+            ViewBag.ReservationUser = reservationUser;
+            ViewBag.ReservationStart = reservationStart;
+            ViewBag.ReservationEnd = reservationEnd;
+
+            return View("~/Views/Loan/ConfirmLoanWarning.cshtml");
+        }
+
+
+        [HttpPost("confirm-loan-warning")]
+        public IActionResult ConfirmLoanWarningPost(string UserLogin, string BookTitle)
+        {
+            TempData["PrefilledUserLogin"] = UserLogin;
+            TempData["PrefilledBookTitle"] = BookTitle;
+
+            // повертаємо на сторінку створення позики
+            return RedirectToAction("Create");
+        }
+
 
         // --- Повернення (GET) ---
         [Authorize(Roles = "Admin,Employee")]
