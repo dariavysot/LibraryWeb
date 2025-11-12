@@ -169,6 +169,19 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Create");
             }
 
+            var existingLoan = _context.Loans
+                .Include(l => l.Copy)
+                .ThenInclude(c => c.Book)
+                .FirstOrDefault(l => l.UserID == user.UserID
+                    && l.Copy.BookID == book.BookID
+                    && (l.Status == "Активна" || l.Status == "Прострочена"));
+
+            if (existingLoan != null)
+            {
+                TempData["Error"] = $"Користувач '{user.Name}' вже має активну або прострочену позику на книгу '{book.Title}'.";
+                return RedirectToAction("Create");
+            }
+
             //debug.Add($"▶ Перевіряємо книгу '{book.Title}' для користувача '{user.Name}' ({user.Login})");
             //debug.Add($"Дати позики: {loanStart:yyyy-MM-dd} → {loanEnd:yyyy-MM-dd}");
 
