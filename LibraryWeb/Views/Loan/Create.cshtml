@@ -3,7 +3,6 @@
     var users = ViewBag.Users as List<LibraryWeb.Models.User>;
     var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
 
-    // Якщо повернулись зі ConfirmLoanWarning, підставляємо значення
     var prefillUser = TempData["UserLogin"] as string ?? "";
     var prefillBook = TempData["BookTitle"] as string ?? "";
 }
@@ -11,7 +10,9 @@
 <div class="loan-page">
     <div class="loan-container">
         <h2 class="loan-title">Create a New Loan</h2>
-        <p class="loan-subtitle">Fill in the details for the new loan</p>
+        <p class="loan-subtitle">Fill in the details for the new loan.<a href="#"></a>
+            A standard loan lasts 14 days.
+        </p>
 
         @if (TempData["Error"] != null)
         {
@@ -21,53 +22,45 @@
         {
             <div class="loan-alert loan-alert-success">@TempData["Success"]</div>
         }
-        @if (TempData["Debug"] != null)
-        {
-            <div class="loan-alert loan-alert-info">@Html.Raw(TempData["Debug"])</div>
-        }
 
-        <div class="loan-content">
-            <form asp-controller="Loan" asp-action="Create" method="post" class="loan-form">
-                @Html.AntiForgeryToken()
+        <form asp-controller="Loan" asp-action="Create" method="post" class="loan-form">
+            @Html.AntiForgeryToken()
 
-                <div class="loan-form-group">
-                    <label for="userInput" class="loan-label">User (only registered users)</label>
-                    <input list="usersList" id="userInput" name="UserLogin" class="loan-input" placeholder="Start typing user name or login..." value="@prefillUser" />
-                    <datalist id="usersList">
-                        @foreach (var u in (users ?? Enumerable.Empty<LibraryWeb.Models.User>()).Where(u => u.Role == LibraryWeb.Models.UserRole.User))
-                        {
-                            <option value="@u.Login">@u.Name (@u.Login)</option>
-                        }
-                    </datalist>
-                </div>
-
-                <div class="loan-form-group">
-                    <label for="bookInput" class="loan-label">Book</label>
-                    <input list="booksList" id="bookInput" name="selectedBookTitle" class="loan-input"
-                           placeholder="Start typing book title..." value="@prefillBook" />
-                    <datalist id="booksList">
-                        @foreach (var book in (books ?? Enumerable.Empty<LibraryWeb.Models.Book>()))
-                        {
-                            <option value="@book.Title">@book.Title</option>
-                        }
-                    </datalist>
-                </div>
-
-                <div class="loan-form-group">
-                    <label for="endDateInput" class="loan-label">End Date</label>
-                    <input type="date" id="endDateInput" name="EndDate" class="loan-input" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
-                    <small class="loan-note">Select the end date for this loan manually.</small>
-                </div>
-
-                <div class="loan-actions">
-                    <button type="submit" class="loan-btn">Create Loan</button>
-                    <a asp-action="Index" class="loan-btn loan-btn-outline">Back</a>
-                </div>
-            </form>
-
-            <div class="loan-calendar-container">
-                <div id="calendarContainer"></div>
+            <div class="loan-form-group">
+                <label for="userInput" class="loan-label">User</label>
+                <input list="usersList" id="userInput" name="UserLogin" class="loan-input"
+                       placeholder="Start typing user name or login..." value="@prefillUser" />
+                <datalist id="usersList">
+                    @foreach (var u in (users ?? Enumerable.Empty<LibraryWeb.Models.User>()).Where(u => u.Role == LibraryWeb.Models.UserRole.User))
+                    {
+                        <option value="@u.Login">@u.Name (@u.Login)</option>
+                    }
+                </datalist>
             </div>
-        </div>
+
+            <div class="loan-form-group">
+                <label for="bookInput" class="loan-label">Book</label>
+                <input list="booksList" id="bookInput" name="selectedBookTitle" class="loan-input"
+                       placeholder="Start typing book title..." value="@prefillBook" />
+                <datalist id="booksList">
+                    @foreach (var book in (books ?? Enumerable.Empty<LibraryWeb.Models.Book>()))
+                    {
+                        <option value="@book.Title">@book.Title</option>
+                    }
+                </datalist>
+            </div>
+
+            <div class="loan-form-group">
+                <label for="endDateInput" class="loan-label">End Date</label>
+                <input type="date" id="endDateInput" name="EndDate" class="loan-input"
+                       min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                <small class="loan-note">Select the return date manually</small>
+            </div>
+
+            <div class="loan-actions">
+                <button type="submit" class="loan-btn loan-btn-primary">Create Loan</button>
+                <a asp-action="Index" class="loan-btn loan-btn-outline">Back</a>
+            </div>
+        </form>
     </div>
 </div>

@@ -1206,50 +1206,45 @@ main {
 .loan-page {
     display: flex;
     justify-content: center;
-    padding: 2rem 1rem;
-    background: #f9f9f9;
-    min-height: 90vh;
+    align-items: flex-start;
+    background: #f9f9f9; /* твій фон */
+    min-height: 100vh;
+    padding: 3rem 1rem;
 }
 
 .loan-container {
     background: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    max-width: 1100px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 2.5rem 3rem;
+    max-width: 700px;
     width: 100%;
+    transition: all 0.3s ease;
 }
 
-.loan-content {
-    display: flex;
-    gap: 2rem;
-}
+    .loan-container:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
 
 .loan-title {
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #000;
+    font-size: 2.2rem;
     font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #000;
 }
 
 .loan-subtitle {
     text-align: center;
     color: #d2691e;
-    margin-bottom: 1.5rem;
     font-weight: 600;
-}
-
-.loan-content {
-    display: flex;
-    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .loan-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    flex: 1;
+    gap: 1.2rem;
 }
 
 .loan-form-group {
@@ -1259,39 +1254,53 @@ main {
 
 .loan-label {
     font-weight: 700;
+    color: #000;
     margin-bottom: 0.5rem;
 }
 
 .loan-input {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
+    padding: 0.7rem 1.2rem;
+    border-radius: 30px;
     border: 2px solid #000;
     font-size: 1rem;
+    transition: all 0.2s ease;
 }
 
     .loan-input:focus {
         border-color: #d2691e;
+        box-shadow: 0 0 0 3px rgba(210,105,30,0.15);
         outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
     }
+
+.loan-note {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.3rem;
+}
 
 .loan-actions {
     display: flex;
+    justify-content: center;
     gap: 1rem;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
 }
 
 .loan-btn {
-    padding: 0.6rem 2rem;
-    border-radius: 25px;
+    padding: 0.7rem 2.2rem;
+    border-radius: 30px;
     font-weight: 700;
-    background: #000;
-    color: #fff;
-    border: none;
+    font-size: 1rem;
     cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
 }
 
-    .loan-btn:hover {
+.loan-btn-primary {
+    background: #000;
+    color: #fff;
+}
+
+    .loan-btn-primary:hover {
         background: #d2691e;
     }
 
@@ -1299,6 +1308,7 @@ main {
     background: #fff;
     color: #000;
     border: 2px solid #000;
+    text-decoration: none;
 }
 
     .loan-btn-outline:hover {
@@ -1306,32 +1316,43 @@ main {
         color: #fff;
     }
 
-.loan-calendar-container {
-    flex: 2;
-}
-
-.calendar-month {
-    margin-bottom: 2rem;
-}
-
-.calendar-month-year {
+.loan-alert {
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
     text-align: center;
-    font-weight: 700;
-    margin-bottom: 5px;
-    font-size: 1.2rem;
 }
 
-.calendar-header, .loan-calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
+.loan-alert-error {
+    background: #ffe5e5;
+    color: #c0392b;
+    border: 1px solid #c0392b;
 }
 
-    .loan-calendar div {
-        min-height: 40px;
-        line-height: 40px;
+.loan-alert-success {
+    background: #e8f7e9;
+    color: #2e8b57;
+    border: 1px solid #2e8b57;
+}
+
+@media (max-width: 768px) {
+    .loan-container {
+        padding: 2rem;
     }
 
+    .loan-title {
+        font-size: 1.8rem;
+    }
+
+    .loan-btn {
+        width: 100%;
+    }
+
+    .loan-actions {
+        flex-direction: column;
+    }
+}
 
 
 
