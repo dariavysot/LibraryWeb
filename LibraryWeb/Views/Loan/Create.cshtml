@@ -3,9 +3,10 @@
     var users = ViewBag.Users as List<LibraryWeb.Models.User>;
     var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
 
-    var prefillUser = TempData["UserLogin"] as string ?? "";
-    var prefillBook = TempData["BookTitle"] as string ?? "";
+    var prefillUser = ViewBag.PrefilledUserLogin as string ?? "";
+    var prefillBook = ViewBag.PrefilledBookTitle as string ?? "";
 }
+
 
 <div class="loan-page">
     <div class="loan-container">

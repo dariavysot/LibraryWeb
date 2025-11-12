@@ -117,8 +117,8 @@ namespace LibraryWeb.Controllers
                 .Where(b => b.Copies.Any(c => c.Status == "Доступна"))
                 .ToList();
 
-            ViewBag.PrefilledUserLogin = TempData["PrefilledUserLogin"];
-            ViewBag.PrefilledBookTitle = TempData["PrefilledBookTitle"];
+            ViewBag.PrefilledUserLogin = TempData["PrefilledUserLogin"] as string;
+            ViewBag.PrefilledBookTitle = TempData["PrefilledBookTitle"] as string;
             if (TempData["Error"] != null)
                 ViewBag.Error = TempData["Error"];
 
@@ -182,9 +182,6 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Create");
             }
 
-            //debug.Add($"▶ Перевіряємо книгу '{book.Title}' для користувача '{user.Name}' ({user.Login})");
-            //debug.Add($"Дати позики: {loanStart:yyyy-MM-dd} → {loanEnd:yyyy-MM-dd}");
-
             Copy? selectedCopy = null;
             Reservation? conflictingReservation = null;
 
@@ -192,7 +189,6 @@ namespace LibraryWeb.Controllers
 
             foreach (var copy in copies)
             {
-                //debug.Add($"Перевіряємо копію InventoryNum={copy.InventoryNum}, статус='{copy.Status}'");
 
                 // Беремо всі активні (оплачені) резервації на цю копію
                 var reservations = _context.Reservations
@@ -205,14 +201,12 @@ namespace LibraryWeb.Controllers
 
                 foreach (var res in reservations)
                 {
-                   // debug.Add($"🔹 Резервація ID={res.ReservationID}: {res.StartDate:yyyy-MM-dd} → {res.EndDate:yyyy-MM-dd}, користувач={res.User?.Name ?? "?"}");
 
                     // Перевірка перетину дат
                     if (res.StartDate <= loanEnd && res.EndDate >= loanStart)
                     {
                         hasConflict = true;
                         conflictingReservation = res;
-                        //debug.Add($"❌ Конфлікт: резервація перетинається з датами позики");
                         break;
                     }
 
@@ -220,7 +214,6 @@ namespace LibraryWeb.Controllers
                     if (daysUntilStart > 0 && daysUntilStart <= 10)
                     {
                         upcomingReservation = res;
-                        //debug.Add($"⚠️ Резервація починається через {daysUntilStart:F0} днів ({res.StartDate:yyyy-MM-dd})");
                     }
 
                 }
@@ -228,7 +221,6 @@ namespace LibraryWeb.Controllers
                 // Якщо є конфлікт або копія не доступна
                 if (hasConflict || copy.Status != "Доступна")
                 {
-                   // debug.Add($"❌ Копія {copy.InventoryNum} недоступна через статус або активну резервацію");
                     continue;
                 }
 
@@ -248,12 +240,10 @@ namespace LibraryWeb.Controllers
 
 
                 // Якщо немає конфлікту і копія доступна
-                selectedCopy = copy;
-                //debug.Add($"✅ Копія {copy.InventoryNum} вільна — вибрана для позики.");
+                selectedCopy = copy;;
                 break;
             }
 
-            // --- 4. Якщо немає вільних копій, але є конфліктна резервація ---
             // --- Якщо немає вільних копій, але є конфліктна резервація ---
             if (selectedCopy == null && conflictingReservation != null)
             {
