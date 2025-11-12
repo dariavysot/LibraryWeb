@@ -1355,6 +1355,56 @@ main {
 }
 
 
+.loan-warning-container {
+    background: linear-gradient(145deg, #ffffff, #f8f8f8);
+    border: 2px solid #d2691e;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.loan-warning-box {
+    background: #fff6e5;
+    border: 2px solid #ffcd8c;
+    border-left: 6px solid #d2691e;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.8rem;
+    line-height: 1.6;
+    font-weight: 500;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.loan-title {
+    color: #000;
+    text-align: center;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+}
+
+.loan-subtitle {
+    text-align: center;
+    color: #b3541e;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.loan-question {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    text-align: center;
+    color: #000;
+}
+
+.loan-btn,
+.loan-btn-outline {
+    text-decoration: none;
+    transition: transform 0.15s ease-in-out, background 0.15s ease-in-out;
+}
+
+    .loan-btn:hover,
+    .loan-btn-outline:hover {
+        transform: translateY(-2px);
+    }
 
     /* ======================= FOOTER ======================= */
     footer {

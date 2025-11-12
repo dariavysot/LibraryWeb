@@ -1,5 +1,6 @@
 ﻿@{
-    ViewData["Title"] = "Підтвердження видачі книги";
+    ViewData["Title"] = "Confirm Book Loan";
+
     var userLogin = ViewBag.UserLogin as string;
     var bookTitle = ViewBag.BookTitle as string;
     var reservedBy = ViewBag.ReservationUser as string;
@@ -19,28 +20,40 @@
     }
 }
 
-<h2>Підтвердження видачі книги</h2>
+<div class="loan-page">
+    <div class="loan-container loan-warning-container">
+        <h2 class="loan-title">⚠️ Confirm Book Loan</h2>
+        <p class="loan-subtitle">This book is currently available, but reserved by another user.</p>
 
-<p>
-    Книга <strong>@bookTitle</strong> зараз доступна,
-    але її зарезервував користувач <strong>@reservedBy</strong>.
-</p>
+        <div class="loan-warning-box">
+            <p>
+                The book <strong>@bookTitle</strong> has been reserved by
+                <strong style="color:#b3541e;">@reservedBy</strong>.
+            </p>
 
-@if (reservationStart.HasValue && reservationEnd.HasValue)
-{
-    <p>
-        Резервація активна з <strong>@reservationStart.Value.ToString("yyyy-MM-dd")</strong>
-        по <strong>@reservationEnd.Value.ToString("yyyy-MM-dd")</strong>.<br />
-        Ви можете видати книгу зараз, але потрібно буде повернути її не пізніше цієї дати.
-    </p>
-}
+            @if (reservationStart.HasValue && reservationEnd.HasValue)
+            {
+                <p>
+                    Reservation period:
+                    <strong>@reservationStart.Value</strong> →
+                    <strong>@reservationEnd.Value</strong>.
+                    <br />
+                    You may issue this book now, but it must be returned before the reservation begins.
+                </p>
+            }
+        </div>
 
-<form asp-action="ConfirmLoanWarningPost" method="post">
-    <input type="hidden" name="UserLogin" value="@userLogin" />
-    <input type="hidden" name="BookTitle" value="@bookTitle" />
+        <form asp-action="ConfirmLoanWarningPost" method="post" class="loan-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="UserLogin" value="@userLogin" />
+            <input type="hidden" name="BookTitle" value="@bookTitle" />
 
-    <p>Бажаєте підтвердити короткострокову позику?</p>
+            <p class="loan-question">Do you want to confirm a short-term loan?</p>
 
-    <button type="submit" class="btn btn-primary">Так, підтвердити</button>
-    <a asp-action="Create" class="btn btn-secondary">Скасувати</a>
-</form>
+            <div class="loan-actions">
+                <button type="submit" class="loan-btn loan-btn-primary">Yes, Confirm</button>
+                <a asp-action="Create" class="loan-btn loan-btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
