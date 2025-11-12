@@ -820,15 +820,20 @@ main {
 }
 
 .admin-alert-success {
-    background: #e6f4ea;
-    color: #2b7a0b;
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
     text-align: center;
+    background: #e8f7e9;
+    color: #2e8b57;
+    border: 1px solid #2e8b57;
 }
 
 .admin-alert-error {
+    background: #ffe5e5;
+    color: #c0392b;
+    border: 1px solid #c0392b;
     background: #fdecea;
     color: #b71c1c;
     padding: 0.8rem 1rem;
@@ -1254,8 +1259,15 @@ main {
 
 .loan-label {
     font-weight: 700;
+    font-size: 1.3rem;
     color: #000;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.3px;
+}
+
+.loan-info {
+    font-size: 1.2rem;
+    color: #333; 
 }
 
 .loan-input {
