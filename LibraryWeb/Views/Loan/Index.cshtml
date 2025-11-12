@@ -69,11 +69,12 @@
                             <td>@loan.StartDate.ToShortDateString()</td>
                             <td>@loan.EndDate.ToShortDateString()</td>
                             <td class="button-group">
-                                <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn-edit btn-blue">Details</a>
-                                @if (loan.Status != "Returned")
+                                @if (loan.Status != "Повернено")
                                 {
                                     <a asp-action="Return" asp-route-id="@loan.LoanID" class="btn-edit btn-yellow">Return</a>
                                 }
+
+                                <a asp-action="Details" asp-route-id="@loan.LoanID" class="btn-edit btn-blue">Details</a>
 
                                 @if (User.IsInRole("Admin"))
                                 {
