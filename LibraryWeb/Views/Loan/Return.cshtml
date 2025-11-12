@@ -1,45 +1,53 @@
 ﻿@model LibraryWeb.Models.Loan
 
 @{
-    ViewData["Title"] = "Повернення книги";
+    ViewData["Title"] = "Return Book";
 }
 
-<h2>Повернення книги</h2>
+<div class="loan-page">
+    <div class="loan-container">
+        <h2 class="loan-title">Return Book</h2>
+        <p class="loan-subtitle">Please confirm the return details below.</p>
 
-<form asp-action="ReturnConfirmed" asp-route-id="@Model.LoanID" method="post">
-    <div class="form-group mb-3">
-        <label>Книга:</label>
-        <p class="form-control-plaintext">@Model.Copy.Book.Title</p>
+        <form asp-action="ReturnConfirmed" asp-route-id="@Model.LoanID" method="post" class="loan-form">
+            <div class="loan-form-group">
+                <label class="loan-label">Book</label>
+                <p class="loan-info">@Model.Copy.Book.Title</p>
+            </div>
+
+            <div class="loan-form-group">
+                <label class="loan-label">Reader</label>
+                <p class="loan-info">@Model.User?.Name</p>
+            </div>
+
+            <div class="loan-form-group">
+                <label class="loan-label">Loan Date</label>
+                <p class="loan-info">@Model.StartDate.ToShortDateString()</p>
+            </div>
+
+            <div class="loan-form-group">
+                <label class="loan-label">Planned Return Date</label>
+                <p class="loan-info">@Model.EndDate.ToShortDateString()</p>
+            </div>
+
+            <div class="loan-form-group">
+                <label for="returnDate" class="loan-label">Actual Return Date</label>
+                <input type="date" id="returnDate" name="returnDate"
+                       class="loan-input" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="loan-form-group">
+                <label for="condition" class="loan-label">Book Condition</label>
+                <select id="condition" name="condition" class="loan-input" required>
+                    <option value="Добра">Good</option>
+                    <option value="Пошкоджена">Damaged</option>
+                </select>
+            </div>
+
+            <div class="loan-actions">
+                <button type="submit" class="loan-btn loan-btn-primary">Confirm Return</button>
+                <a asp-action="Index" class="loan-btn loan-btn-outline">Back</a>
+            </div>
+        </form>
     </div>
-
-    <div class="form-group mb-3">
-        <label>Читач:</label>
-        <p class="form-control-plaintext">@Model.User?.Name</p>
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Дата позики:</label>
-        <p class="form-control-plaintext">@Model.StartDate.ToShortDateString()</p>
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Планова дата повернення:</label>
-        <p class="form-control-plaintext">@Model.EndDate.ToShortDateString()</p>
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Фактична дата повернення:</label>
-        <input type="date" name="returnDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Стан книги:</label>
-        <select name="condition" class="form-control" required>
-            <option value="Добра">Добра</option>
-            <option value="Пошкоджена">Пошкоджена</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-success">Підтвердити повернення</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-</form>
+</div>
