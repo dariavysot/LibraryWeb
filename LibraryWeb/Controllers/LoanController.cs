@@ -188,6 +188,7 @@ namespace LibraryWeb.Controllers
                     .ToList();
 
                 bool hasConflict = false;
+                Reservation? upcomingReservation = null;
 
                 foreach (var res in reservations)
                 {
@@ -198,8 +199,15 @@ namespace LibraryWeb.Controllers
                     {
                         hasConflict = true;
                         conflictingReservation = res;
-                        debug.Add($"❌ Конфлікт: резервація перетинається з датами позики");
+                        //debug.Add($"❌ Конфлікт: резервація перетинається з датами позики");
                         break;
+                    }
+
+                    var daysUntilStart = (res.StartDate - DateTime.Now.Date).TotalDays;
+                    if (daysUntilStart > 0 && daysUntilStart <= 10)
+                    {
+                        upcomingReservation = res;
+                        //debug.Add($"⚠️ Резервація починається через {daysUntilStart:F0} днів ({res.StartDate:yyyy-MM-dd})");
                     }
 
                 }
@@ -210,6 +218,21 @@ namespace LibraryWeb.Controllers
                    // debug.Add($"❌ Копія {copy.InventoryNum} недоступна через статус або активну резервацію");
                     continue;
                 }
+
+                if (upcomingReservation != null)
+                {
+                    TempData["Debug"] = string.Join("<br>", debug);
+
+                    return RedirectToAction("ConfirmLoanWarning", new
+                    {
+                        userLogin = UserLogin,
+                        bookTitle = selectedBookTitle,
+                        reservationUser = upcomingReservation.User?.Name ?? "інший користувач",
+                        reservationStart = upcomingReservation.StartDate.ToString("yyyy-MM-dd"),
+                        reservationEnd = upcomingReservation.EndDate.ToString("yyyy-MM-dd")
+                    });
+                }
+
 
                 // Якщо немає конфлікту і копія доступна
                 selectedCopy = copy;
