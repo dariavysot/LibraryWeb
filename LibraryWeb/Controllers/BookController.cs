@@ -50,17 +50,20 @@ namespace LibraryWeb.Controllers
             ViewBag.Genre = genre;
             ViewBag.Year = year;
             ViewBag.Genres = _context.Books
+                .Where(b => !string.IsNullOrEmpty(b.Genre))
                 .Select(b => b.Genre)
-                .Where(g => g != null && g != "")
                 .Distinct()
                 .OrderBy(g => g)
                 .ToList();
             ViewBag.Years = _context.Books
+                .Where(b => b.PublicationYear != null)
                 .Select(b => b.PublicationYear)
-                .Where(y => y != null)
                 .Distinct()
                 .OrderByDescending(y => y)
                 .ToList();
+
+            // --- Права користувача ---
+            ViewBag.IsAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
 
             return View("~/Views/Book/Index.cshtml", books.ToList());
         }
