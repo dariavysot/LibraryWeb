@@ -1,59 +1,67 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Copy>
 
 @{
-    ViewData["Title"] = "Примірники книги";
+    ViewData["Title"] = "Book Copies";
     var bookTitle = ViewBag.BookTitle as string;
     var bookId = ViewBag.BookId;
     var availableCount = Model.Count(c => c.Status == "Доступна");
 }
 
-<h2>Примірники книги: @bookTitle</h2>
+<div class="copies-page">
+    <div class="copies-container">
+        <h2 class="copies-title">Copies of: @bookTitle</h2>
+        <p class="copies-subtitle">List of available and borrowed copies of this book</p>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Інвентарний номер</th>
-            <th>Стан</th>
-            <th>Статус</th>
-            <th>Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var copy in Model)
-        {
-            <tr>
-                <td>@copy.InventoryNum</td>
-                <td>@copy.Condition</td>
-                <td>@copy.Status</td>
-                <td>
-                    @if (copy.Status == "Доступна")
+        <div class="table-responsive">
+            <table class="copies-table">
+                <thead>
+                    <tr>
+                        <th>Inventory #</th>
+                        <th>Condition</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var copy in Model)
                     {
-                        <form asp-action="Delete" asp-controller="Copies" asp-route-id="@copy.InventoryNum" method="post" style="display:inline"
-                              onsubmit="return confirm('@(availableCount == 1
-                                                                                       ? "Це останній доступний примірник книги. Після видалення дані про книгу будуть видалені. Ви впевнені?"
-                                                                                       : "Видалити цей примірник?")');">
-                    <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
-                </form>
+                        <tr>
+                            <td>@copy.InventoryNum</td>
+                            <td>@copy.Condition</td>
+                            <td class="@(copy.Status == "Доступна" ? "status-available" : "status-borrowed")">@copy.Status</td>
+                            <td>
+                                @if (copy.Status == "Доступна")
+                                {
+                                    <form asp-action="Delete" asp-controller="Copies" asp-route-id="@copy.InventoryNum"
+                                          method="post" style="display:inline"
+                                          onsubmit="return confirm('@(availableCount == 1
+                                                                                        ? "This is the last available copy. Deleting it will remove book data. Are you sure?"
+                                                                                        : "Delete this copy?")');">
+                                <button type="submit" class="copies-btn-delete">Delete</button>
+                            </form>
+                                                        }
+                                else
+                                {
+                                    <span class="text-muted">Cannot delete (borrowed)</span>
                                 }
-                    else
-                    {
-                        <span class="text-muted">Неможливо видалити (позичено)</span>
+                            </td>
+                        </tr>
                     }
-                </td>
-            </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="copies-actions">
+            <a asp-controller="Book" asp-action="Details" asp-route-id="@bookId" class="copies-btn-back">← Back to Book</a>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="copies-alert copies-alert-success">@TempData["Success"]</div>
         }
-    </tbody>
-</table>
-
-<p>
-    <a asp-controller="Book" asp-action="Details" asp-route-id="@bookId" class="btn btn-secondary">⬅ Назад до книги</a>
-</p>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success mt-3">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-}
+        @if (TempData["Error"] != null)
+        {
+            <div class="copies-alert copies-alert-error">@TempData["Error"]</div>
+        }
+    </div>
+</div>

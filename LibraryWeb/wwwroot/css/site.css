@@ -1715,6 +1715,162 @@ main {
         color: #fff;
     }
 
+/* ======================= COPIES PAGE ======================= */
+.copies-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #f9f9f9;
+    min-height: 100vh;
+    padding: 3rem 1rem;
+    box-sizing: border-box;
+}
+
+.copies-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 2.5rem 3rem;
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+    .copies-container:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+.copies-title {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #000;
+}
+
+.copies-subtitle {
+    text-align: center;
+    color: #d2691e;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* ===== Table ===== */
+.copies-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .copies-table th {
+        background: #000;
+        color: #fff;
+        padding: 0.9rem 1.2rem;
+        text-align: left;
+        font-weight: 700;
+    }
+
+    .copies-table td {
+        padding: 0.8rem 1.2rem;
+        border-bottom: 1px solid #ddd;
+        color: #333;
+    }
+
+    .copies-table tr:hover {
+        background: #f6f6f6;
+    }
+
+/* Status colors */
+.status-available {
+    color: #2e8b57;
+    font-weight: 700;
+}
+
+.status-borrowed {
+    color: #888;
+    font-weight: 600;
+}
+
+/* ===== Buttons ===== */
+.copies-btn-delete {
+    background: #fff;
+    color: #b71c1c;
+    border: 2px solid #b71c1c;
+    border-radius: 25px;
+    padding: 0.4rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .copies-btn-delete:hover {
+        background: #b71c1c;
+        color: #fff;
+    }
+
+.copies-actions {
+    display: flex;
+    justify-content: flex-start; /* кнопка зліва */
+    margin-top: 1.5rem;
+}
+
+.copies-btn-back {
+    text-decoration: none;
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+    .copies-btn-back:hover {
+        background: #000;
+        color: #fff;
+    }
+
+/* ===== Alerts ===== */
+.copies-alert {
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.copies-alert-success {
+    background: #e8f7e9;
+    color: #2e8b57;
+    border: 1px solid #2e8b57;
+}
+
+.copies-alert-error {
+    background: #fdecea;
+    color: #b71c1c;
+    border: 1px solid #b71c1c;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .copies-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .copies-table th, .copies-table td {
+        padding: 0.7rem;
+    }
+
+    .copies-title {
+        font-size: 1.8rem;
+    }
+
+    .copies-btn-back {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 
 
 
