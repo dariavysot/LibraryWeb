@@ -44,7 +44,7 @@
             <div class="catalog-grid">
                 @foreach (var book in Model)
                 {
-                    var availableCopies = book.Copies?.Count(c => c.Status == "Available") ?? 0;
+                    var availableCopies = book.Copies?.Count(c => c.Status == "Доступна") ?? 0;
 
                     <div class="catalog-card">
                         <div class="catalog-card-image">
@@ -68,15 +68,16 @@
                                 <a asp-action="Edit" asp-route-id="@book.BookID" class="book-btn-blue">Edit</a>
                                 <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@book.BookID" class="book-btn-secondary">Copies</a>
                             }
-                            else if (availableCopies > 0)
-                            {
-                                <a asp-controller="Reservation" asp-action="Create" asp-route-selectedBookId="@book.BookID" class="book-btn-primary">
-                                    Reserve
-                                </a>
-                            }
                             else
                             {
-                                <span class="catalog-unavailable">No copies available</span>
+                                <a asp-controller="Reservation" asp-action="Create" asp-route-selectedBookId="@book.BookID" class="book-btn-blue">
+                                    Reserve
+                                </a>
+
+                                @if (availableCopies == 0)
+                                {
+                                    <span class="catalog-unavailable">No copies available</span>
+                                }
                             }
                         </div>
                     </div>
