@@ -1417,6 +1417,132 @@ main {
     .loan-btn-outline:hover {
         transform: translateY(-2px);
     }
+/* ======================= BOOK EDIT AND ADD ======================= */
+/* Загальний контейнер сторінки */
+.book-page {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Заголовок та підзаголовок */
+.book-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #000;
+}
+
+.book-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #d2691e;
+    margin-bottom: 1.5rem;
+}
+
+/* Контент форми */
+.book-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Рядки форми */
+.book-form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Групи полів */
+.book-form-group {
+    flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Мітки полів */
+.book-label {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Поля введення */
+.book-input {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    .book-input:focus {
+        border-color: #d2691e;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+    }
+
+/* Прев’ю обкладинки */
+.book-cover-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+    .book-cover-preview img {
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+/* Кнопки */
+.book-form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.book-btn-primary {
+    background-color: #000;
+    color: #fff;
+    border-radius: 25px;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .book-btn-primary:hover {
+        background-color: #d2691e;
+    }
+
+.book-btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 2px solid #000;
+    border-radius: 25px;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+    .book-btn-secondary:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+
 
     /* ======================= FOOTER ======================= */
     footer {

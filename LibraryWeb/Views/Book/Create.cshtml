@@ -1,86 +1,109 @@
 ﻿@model LibraryWeb.Models.Book
 
 @{
-    ViewData["Title"] = "Додати книгу";
+    ViewData["Title"] = "Add Book";
     var currentYear = DateTime.Now.Year;
 }
 
-<h2 class="mb-3">➕ Додати нову книгу</h2>
+<div class="book-page">
+    <h2 class="book-title">Add a New Book</h2>
+    <p class="book-subtitle">Fill in the details for the new book entry.</p>
 
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label class="form-label">Назва</label>
-        <input asp-for="Title" class="form-control" required />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="book-form">
+        <!-- Row 1: Title & Author -->
+        <div class="book-form-row">
+            <div class="book-form-group">
+                <label class="book-label">Title</label>
+                <input asp-for="Title" class="book-input" placeholder="Enter the book title" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
 
-    <div class="mb-3">
-        <label class="form-label">Автор</label>
-        <input asp-for="Author" class="form-control" required />
-        <span asp-validation-for="Author" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Тип</label>
-        <input asp-for="Type" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="Genre">Жанр</label>
-        <input asp-for="Genre" class="form-control" />
-        <span asp-validation-for="Genre" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">ISBN</label>
-        <input asp-for="ISBN" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Мова</label>
-        <input asp-for="Language" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Видавництво</label>
-        <input asp-for="PublishingHouse" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Рік видання</label>
-        <input asp-for="PublicationYear" type="number" min="1" max="@currentYear" class="form-control" />
-        <span asp-validation-for="PublicationYear" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Description">Description</label>
-        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>Cover Image</label>
-        <input type="file" name="CoverImage" class="form-control" />
-    </div>
-
-    @if (!string.IsNullOrEmpty(Model?.CoverImagePath))
-    {
-        <div class="mt-2">
-            <img src="@Model.CoverImagePath" alt="Cover" style="max-height:200px;" />
+            <div class="book-form-group">
+                <label class="book-label">Author</label>
+                <input asp-for="Author" class="book-input" placeholder="Enter the author's name" required />
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
         </div>
-    }
 
-   <div class="mb-3">
-        <label class="form-label">Кількість примірників</label>
-        <input name="copyCount" type="number" min="1" value="1" class="form-control" required />
-        @if (ViewBag.CopyCountError != null)
+        <!-- Row 2: Type & Genre -->
+        <div class="book-form-row">
+            <div class="book-form-group">
+                <label class="book-label">Type</label>
+                <input asp-for="Type" class="book-input" placeholder="e.g., Book, Textbook, Anthology" />
+            </div>
+
+            <div class="book-form-group">
+                <label class="book-label">Genre</label>
+                <input asp-for="Genre" class="book-input" placeholder="e.g., Fiction, History, Romance" />
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Row 3: ISBN & Language -->
+        <div class="book-form-row">
+            <div class="book-form-group">
+                <label class="book-label">ISBN</label>
+                <input asp-for="ISBN" class="book-input" placeholder="Enter ISBN number" />
+            </div>
+
+            <div class="book-form-group">
+                <label class="book-label">Language</label>
+                <input asp-for="Language" class="book-input" placeholder="e.g., English, Czech, Ukrainian" />
+            </div>
+        </div>
+
+        <!-- Row 4: Publishing House & Publication Year -->
+        <div class="book-form-row">
+            <div class="book-form-group">
+                <label class="book-label">Publishing House</label>
+                <input asp-for="PublishingHouse" class="book-input" placeholder="Enter publisher name" />
+            </div>
+
+            <div class="book-form-group">
+                <label class="book-label">Publication Year</label>
+                <input asp-for="PublicationYear" type="number" min="1" max="@currentYear" class="book-input" placeholder="Enter year of publication" />
+                <span asp-validation-for="PublicationYear" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="book-form-group">
+            <label class="book-label">Description</label>
+            <textarea asp-for="Description" class="book-input" rows="4" placeholder="Write a brief description of the book"></textarea>
+        </div>
+
+        <!-- Row 5: Cover Image & Copies -->
+        <div class="book-form-row">
+            <div class="book-form-group">
+                <label class="book-label">Cover Image</label>
+                <input type="file" name="CoverImage" class="book-input" />
+            </div>
+
+            <div class="book-form-group">
+                <label class="book-label">Number of Copies</label>
+                <input name="copyCount" type="number" min="1" value="1" class="book-input" placeholder="Enter number of available copies" required />
+                @if (ViewBag.CopyCountError != null)
+                {
+                    <span class="text-danger">@ViewBag.CopyCountError</span>
+                }
+            </div>
+        </div>
+
+        <!-- Cover preview -->
+        @if (!string.IsNullOrEmpty(Model?.CoverImagePath))
         {
-            <span class="text-danger">@ViewBag.CopyCountError</span>
+            <div class="book-cover-preview">
+                <img src="@Model.CoverImagePath" alt="Cover" />
+            </div>
         }
-    </div>
 
-    <button type="submit" class="btn btn-success">Зберегти</button>
-    <a asp-controller="Book" asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
-</form>
+        <!-- Buttons -->
+        <div class="book-form-buttons">
+            <button type="submit" class="book-btn-primary">Save</button>
+            <a asp-action="Index" class="book-btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
