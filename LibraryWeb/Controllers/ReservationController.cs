@@ -65,10 +65,31 @@ namespace LibraryWeb.Controllers
             }
             int userId = int.Parse(userIdClaim.Value);
 
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users
+                .Include(u => u.Membership)
+                .FirstOrDefaultAsync(u => u.UserID == userId);
+
             if (user == null)
             {
                 TempData["Error"] = "Користувач не знайдений.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // --- Перевірка на активне членство ---
+            if (user.Membership == null || user.Membership.EndDate < DateTime.Now || user.Membership.Status != "Active")
+            {
+                TempData["Error"] = "Ви не можете створити резервацію без активного членства.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // --- Перевірка, що користувач не резервує ту саму книгу вдруге ---
+            bool alreadyReserved = await _context.Reservations
+                .Include(r => r.Copy)
+                .AnyAsync(r => r.UserID == userId && r.Copy.BookID == selectedBookId && r.Status != "Cancelled");
+
+            if (alreadyReserved)
+            {
+                TempData["Error"] = "Ви вже створили резервацію для цієї книги.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -104,7 +125,6 @@ namespace LibraryWeb.Controllers
             decimal dailyRate = 20m;
             decimal totalAmount = totalDays * dailyRate;
 
-            // --- Створюємо Reservation ---
             var reservation = new Reservation
             {
                 UserID = user.UserID,
@@ -116,7 +136,6 @@ namespace LibraryWeb.Controllers
                 Amount = totalAmount
             };
 
-            // --- Створюємо Payment і прив'язуємо до Reservation через навігаційне властивість ---
             var payment = new Payment
             {
                 UserID = user.UserID,
@@ -133,7 +152,6 @@ namespace LibraryWeb.Controllers
             TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена. Сума до оплати: {totalAmount} грн";
             return RedirectToAction("Index");
         }
-
 
         [HttpGet("details/{id}")]
         public IActionResult Details(int id)
