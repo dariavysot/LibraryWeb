@@ -1,87 +1,87 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Book>
 
 @{
-    ViewData["Title"] = "Каталог книг";
+    ViewData["Title"] = "Book Catalog";
     bool isAdminOrEmployee = ViewBag.IsAdminOrEmployee ?? false;
 }
 
-<h2 class="mb-3">📚 Каталог книг</h2>
+<div class="catalog-page">
+    <div class="catalog-container">
+        <h2 class="catalog-title">Book Catalog</h2>
+        <p class="catalog-subtitle">Discover our collection and explore your next favorite book</p>
 
-<form method="get" class="mb-3">
-    <div class="row g-2 align-items-center">
-        <div class="col-md-5">
-            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук за назвою або автором..." />
-        </div>
+        <form method="get" class="catalog-filter">
+            <input type="text" name="search" value="@ViewBag.Search" class="filter-input"
+                   placeholder="Search by title or author..." />
 
-        <div class="col-md-3">
-            <select name="genre" class="form-select">
-                <option value="">Усі жанри</option>
+            <select name="genre" class="filter-select">
+                <option value="">All Genres</option>
                 @foreach (var g in ViewBag.Genres)
                 {
                     <option value="@g" selected="@(ViewBag.Genre == g)">@g</option>
                 }
             </select>
-        </div>
 
-        <div class="col-md-2">
-            <select name="year" class="form-select">
-                <option value="">Усі роки</option>
+            <select name="year" class="filter-select">
+                <option value="">All Years</option>
                 @foreach (var y in ViewBag.Years)
                 {
                     <option value="@y" selected="@(ViewBag.Year == y)">@y</option>
                 }
             </select>
-        </div>
 
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">🔍 Пошук</button>
-        </div>
-    </div>
-</form>
+            <button type="submit" class="book-btn-primary">Search</button>
+        </form>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-warning mt-3">
-        Нічого не знайдено за вибраними параметрами.
-    </div>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var book in Model)
+        @if (!Model.Any())
         {
-            var availableCopies = book.Copies?.Count(c => c.Status == "Доступна") ?? 0;
+            <div class="catalog-empty">
+                <p>No books found for your selection.</p>
+            </div>
+        }
+        else
+        {
+            <div class="catalog-grid">
+                @foreach (var book in Model)
+                {
+                    var availableCopies = book.Copies?.Count(c => c.Status == "Available") ?? 0;
 
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <img src="@book.CoverImagePath" class="card-img-top" alt="@book.Title" style="height:200px; object-fit:cover;" />
-                    <div class="card-body">
-                        <h5 class="card-title">@book.Title</h5>
-                        <p class="card-text">@book.Author</p>
-                        <p class="card-text"><small class="text-muted">@book.Genre, @book.PublicationYear</small></p>
-                        <p class="card-text">Доступні примірники: @availableCopies</p>
-                    </div>
-                    <div class="card-footer">
-                        <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookID" class="btn btn-primary btn-sm">Деталі</a>
+                    <div class="catalog-card">
+                        <div class="catalog-card-image">
+                            <img src="@book.CoverImagePath" alt="@book.Title" />
+                        </div>
 
-                        @if (isAdminOrEmployee)
-                        {
-                            <a asp-action="Edit" asp-route-id="@book.BookID" class="btn btn-warning btn-sm">Редагувати</a>
-                            <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@book.BookID" class="btn btn-info btn-sm">Примірники</a>
-                        }
-                        else if (availableCopies > 0)
-                        {
-                            <a asp-controller="Reservation" asp-action="Create" asp-route-selectedBookId="@book.BookID" class="btn btn-success btn-sm">
-                                Зарезервувати
-                            </a>
-                        }
-                        else
-                        {
-                            <span class="text-muted">Немає доступних примірників</span>
-                        }
+                        <div class="catalog-card-content">
+                            <h4>@book.Title</h4>
+                            <p class="catalog-author">@book.Author</p>
+                            <p class="catalog-meta">@book.Genre • @book.PublicationYear</p>
+                            <p class="catalog-availability">
+                                <strong>Available copies:</strong> @availableCopies
+                            </p>
+                        </div>
+
+                        <div class="catalog-card-actions">
+                            <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookID" class="book-btn-primary">Details</a>
+
+                            @if (isAdminOrEmployee)
+                            {
+                                <a asp-action="Edit" asp-route-id="@book.BookID" class="book-btn-blue">Edit</a>
+                                <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@book.BookID" class="book-btn-secondary">Copies</a>
+                            }
+                            else if (availableCopies > 0)
+                            {
+                                <a asp-controller="Reservation" asp-action="Create" asp-route-selectedBookId="@book.BookID" class="book-btn-primary">
+                                    Reserve
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="catalog-unavailable">No copies available</span>
+                            }
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         }
     </div>
-}
+</div>
