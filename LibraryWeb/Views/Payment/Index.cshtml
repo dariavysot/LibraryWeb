@@ -4,57 +4,101 @@
     ViewData["Title"] = "Payments";
 }
 
-<section class="admin-page">
-    <div class="admin-container">
-        <h2 class="admin-title mb-4">Payments List</h2>
+<main class="loan-main-page">
+    <div class="loan-main-container">
+        <h2 class="loan-main-title">Payments List</h2>
+        <p class="loan-main-subtitle">View and filter all completed and pending payments</p>
 
         @if (TempData["Success"] != null)
         {
-            <div class="admin-alert-success">@TempData["Success"]</div>
+            <div class="loan-alert loan-alert-success">@TempData["Success"]</div>
         }
         @if (TempData["Error"] != null)
         {
-            <div class="admin-alert-error">@TempData["Error"]</div>
+            <div class="loan-alert loan-alert-warning">@TempData["Error"]</div>
         }
 
-        <form method="get" class="admin-filter-form mb-4">
-            <select name="status" class="form-select">
-                <option value="">All statuses</option>
-                @foreach (var s in ViewBag.StatusList)
-                {
+        <!-- FILTER FORM -->
+        <form method="get" class="loan-form">
+
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Status</label>
+                    <select name="status" class="loan-main-select">
+                        <option value="">All statuses</option>
+                        @foreach (var s in ViewBag.StatusList)
+                        {
                     <option value="@s" selected="@(Context.Request.Query["status"] == s)">
-                        @s
-                    </option>
-                }
-            </select>
+                                @s
+                            </option>
+                        }
+                    </select>
+                </div>
 
-            <select name="type" class="form-select">
-                <option value="">All types</option>
-                @foreach (var t in ViewBag.TypeList)
-                {
+                <div class="book-form-group">
+                    <label class="loan-main-label">Type</label>
+                    <select name="type" class="loan-main-select">
+                        <option value="">All types</option>
+                        @foreach (var t in ViewBag.TypeList)
+                        {
                     <option value="@t" selected="@(Context.Request.Query["type"] == t)">
-                        @t
-                    </option>
-                }
-            </select>
+                                @t
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
 
-            <input type="text" name="userSearch" class="form-control"
-                   placeholder="User ID or Name"
-                   value="@Context.Request.Query["userSearch"]" />
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Payment ID</label>
+                    <input type="text"
+                           class="loan-main-input"
+                           name="paymentId"
+                           placeholder="Search by Payment ID"
+                           value="@Context.Request.Query["paymentId"]" />
+                </div>
 
-            <input type="date" name="fromDate" class="form-control" value="@Context.Request.Query["fromDate"]" />
-            <input type="date" name="toDate" class="form-control" value="@Context.Request.Query["toDate"]" />
+                <div class="book-form-group">
+                    <label class="loan-main-label">User Search</label>
+                    <input type="text"
+                           class="loan-main-input"
+                           name="userSearch"
+                           placeholder="Search by User ID or Name"
+                           value="@Context.Request.Query["userSearch"]" />
+                </div>
+            </div>
 
-            <button type="submit" class="admin-btn">Filter</button>
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Date From</label>
+                    <input type="date" class="loan-main-input" 
+                           name="fromDate" 
+                           value="@Context.Request.Query["fromDate"]" />
+                </div>
+
+                <div class="book-form-group">
+                    <label class="loan-main-label">Date To</label>
+                    <input type="date" class="loan-main-input" 
+                           name="toDate" 
+                           value="@Context.Request.Query["toDate"]" />
+                </div>
+            </div>
+
+            <div class="loan-main-form-actions">
+                <button type="submit" class="loan-main-btn loan-main-btn-primary">Filter</button>
+                <a href="/admin/payments" class="loan-main-btn loan-main-btn-outline">Reset</a>
+            </div>
         </form>
 
-        <div class="table-responsive">
+        <!-- TABLE -->
+        <div class="table-responsive" style="margin-top: 1.5rem;">
             @if (Model.Any())
             {
-                <table class="admin-table">
+                <table class="loan-main-table">
                     <thead>
                         <tr>
-                            <th>PaymentID</th>
+                            <th>Payment ID</th>
                             <th>User</th>
                             <th>Amount</th>
                             <th>Date</th>
@@ -80,12 +124,11 @@
                 <div class="mt-3 total-amount">
                     Total Amount: @ViewBag.TotalAmount.ToString("C")
                 </div>
-
             }
             else
             {
-                <p class="text-muted">No payments found for the selected filters.</p>
+                <div class="loan-alert loan-alert-warning">No payments found for the selected filters.</div>
             }
         </div>
     </div>
-</section>
+</main>

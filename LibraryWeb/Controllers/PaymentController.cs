@@ -18,7 +18,7 @@ namespace LibraryWeb.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Index(string? status, string? type, string? userSearch, DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> Index(string? status, string? type, string? paymentId, string? userSearch, DateTime? fromDate, DateTime? toDate)
         {
             var query = _context.Payments.Include(p => p.User).AsQueryable();
 
@@ -27,6 +27,15 @@ namespace LibraryWeb.Controllers
 
             if (!string.IsNullOrEmpty(type))
                 query = query.Where(p => p.Type == type);
+
+            // --- Search by Payment ID ---
+            if (!string.IsNullOrEmpty(paymentId))
+            {
+                if (int.TryParse(paymentId, out int pid))
+                    query = query.Where(p => p.PaymentID == pid);
+                else
+                    query = query.Where(p => p.PaymentID.ToString().Contains(paymentId));
+            }
 
             if (!string.IsNullOrEmpty(userSearch))
             {
