@@ -30,23 +30,6 @@ namespace LibraryWeb.Controllers
             return View(reservations);
         }
 
-        // --- Деталі резервації ---
-        [HttpGet("details/{id}")]
-        public IActionResult Details(int id)
-        {
-            var reservation = _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Copy)
-                .ThenInclude(c => c.Book)
-                .Include(r => r.Payment)
-                .FirstOrDefault(r => r.ReservationID == id);
-
-            if (reservation == null)
-                return NotFound();
-
-            return View(reservation);
-        }
-
         [Authorize(Roles = "Admin")]
         // --- Видалення резервації (для адміна) ---
         [HttpPost("delete/{id}")]

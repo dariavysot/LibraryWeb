@@ -29,7 +29,6 @@
                 <td>@r.Status</td>
                 <td>@r.Amount</td>
                 <td>
-                    <a href="/admin/reservations/details/@r.ReservationID" class="btn btn-primary btn-sm">Деталі</a>
 
                     <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
                         @Html.AntiForgeryToken()
