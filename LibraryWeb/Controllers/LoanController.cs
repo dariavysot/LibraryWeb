@@ -20,7 +20,14 @@ namespace LibraryWeb.Controllers
 
         // --- Список всіх позик ---
         [HttpGet("")]
-        public IActionResult Index(string? statusFilter, string search = "", string? inventoryFilter = "", string? userFilter = "", DateTime? dateFilter = null)
+        public IActionResult Index(
+    string? statusFilter,
+    string? searchId = "",
+    string? searchUser = "",
+    string? searchBook = "",
+    string? searchInventory = "",
+    DateTime? dateFrom = null,
+    DateTime? dateTo = null)
         {
             var today = DateTime.Today;
 
@@ -37,59 +44,66 @@ namespace LibraryWeb.Controllers
             ViewBag.Statuses = statuses;
             ViewBag.StatusFilter = statusFilter ?? "Усі";
 
-            ViewBag.Search = search;
-            ViewBag.InventoryFilter = inventoryFilter;
-            ViewBag.UserFilter = userFilter;
-            ViewBag.DateFilter = dateFilter?.ToString("yyyy-MM-dd");
+
+            // Передаємо значення фільтрів назад у ViewBag
+            ViewBag.SearchId = searchId;
+            ViewBag.SearchUser = searchUser;
+            ViewBag.SearchBook = searchBook;
+            ViewBag.SearchInventory = searchInventory;
+            ViewBag.DateFrom = dateFrom?.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = dateTo?.ToString("yyyy-MM-dd");
 
             var loans = _context.Loans
                 .Include(l => l.User)
                 .Include(l => l.Copy)
-                .ThenInclude(c => c.Book)
+                    .ThenInclude(c => c.Book)
                 .AsQueryable();
 
+            // --- Фільтруємо по статусу
             if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "Усі")
                 loans = loans.Where(l => l.Status == statusFilter);
 
-            if (!string.IsNullOrWhiteSpace(search))
+            // --- Фільтр по ID бронювання
+            if (!string.IsNullOrWhiteSpace(searchId) && int.TryParse(searchId, out int loanId))
+                loans = loans.Where(l => l.LoanID == loanId);
+
+            // --- Фільтр по користувачу
+            if (!string.IsNullOrWhiteSpace(searchUser))
             {
-                search = search.ToLower();
+                var searchLower = searchUser.ToLower();
                 loans = loans.Where(l =>
                     (l.User != null && (
-                        l.User.Name.ToLower().Contains(search) ||
-                        l.User.Login.ToLower().Contains(search)
+                        l.User.Name.ToLower().Contains(searchLower) ||
+                        l.User.Login.ToLower().Contains(searchLower)
                     )) ||
-                    (l.UserName != null && l.UserName.ToLower().Contains(search)) ||
-                    l.Copy.Book.Title.ToLower().Contains(search)
+                    (l.UserName != null && l.UserName.ToLower().Contains(searchLower))
                 );
             }
 
-            if (!string.IsNullOrWhiteSpace(inventoryFilter))
+            // --- Фільтр по книзі
+            if (!string.IsNullOrWhiteSpace(searchBook))
             {
-                if (int.TryParse(inventoryFilter, out int inventoryNum))
-                {
-                    loans = loans.Where(l => l.InventoryNum == inventoryNum);
-                }
+                var searchLower = searchBook.ToLower();
+                loans = loans.Where(l => l.Copy.Book.Title.ToLower().Contains(searchLower));
             }
 
-            if (!string.IsNullOrWhiteSpace(userFilter))
-            {
-                userFilter = userFilter.ToLower();
-                loans = loans.Where(l =>
-                    (l.User != null && (
-                        l.User.Name.ToLower().Contains(userFilter) ||
-                        l.User.Login.ToLower().Contains(userFilter)
-                    )) ||
-                    (l.UserName != null && l.UserName.ToLower().Contains(userFilter))
-                );
-            }
+            // --- Фільтр по інвентарному номеру
+            if (!string.IsNullOrWhiteSpace(searchInventory) && int.TryParse(searchInventory, out int inventoryNum))
+                loans = loans.Where(l => l.InventoryNum == inventoryNum);
 
-            if (dateFilter.HasValue)
-            {
-                loans = loans.Where(l => l.StartDate <= dateFilter && l.EndDate >= dateFilter);
-            }
+            // --- Фільтр по датам
+            if (dateFrom.HasValue)
+                loans = loans.Where(l => l.StartDate >= dateFrom.Value);
+            if (dateTo.HasValue)
+                loans = loans.Where(l => l.EndDate <= dateTo.Value);
 
-            return View("~/Views/Loan/Index.cshtml", loans.ToList());
+            var result = loans.ToList();
+
+            // --- Показуємо повідомлення, якщо нічого не знайдено
+            if (!result.Any())
+                TempData["Warning"] = "Нічого не знайдено за вашими критеріями.";
+
+            return View("~/Views/Loan/Index.cshtml", result);
         }
 
         // --- Деталі ---
@@ -226,7 +240,6 @@ namespace LibraryWeb.Controllers
 
                 if (upcomingReservation != null)
                 {
-                    TempData["Debug"] = string.Join("<br>", debug);
 
                     return RedirectToAction("ConfirmLoanWarning", new
                     {
