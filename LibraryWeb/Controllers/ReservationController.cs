@@ -76,7 +76,7 @@ namespace LibraryWeb.Controllers
             }
 
             // --- Перевірка на активне членство ---
-            if (user.Membership == null || user.Membership.EndDate < DateTime.Now || user.Membership.Status != "Active")
+            if (user.Membership == null || user.Membership.EndDate < DateTime.Now || user.Membership.Status != "Активне")
             {
                 TempData["Error"] = "Ви не можете створити резервацію без активного членства.";
                 return RedirectToAction("Index", "Home");
@@ -85,7 +85,7 @@ namespace LibraryWeb.Controllers
             // --- Перевірка, що користувач не резервує ту саму книгу вдруге ---
             bool alreadyReserved = await _context.Reservations
                 .Include(r => r.Copy)
-                .AnyAsync(r => r.UserID == userId && r.Copy.BookID == selectedBookId && r.Status != "Cancelled");
+                .AnyAsync(r => r.UserID == userId && r.Copy.BookID == selectedBookId);
 
             if (alreadyReserved)
             {

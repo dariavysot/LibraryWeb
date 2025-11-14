@@ -10,29 +10,46 @@
 }
 
 <form method="get" class="mb-3">
-    <div class="row">
-
+    <div class="row mb-2">
         <div class="col-md-3">
-            <label>Пошук</label>
-            <input type="text" name="search" value="@ViewBag.Search"
+            <label>ID резервації</label>
+            <input type="text" name="searchId" value="@ViewBag.SearchId"
                    class="form-control"
-                   placeholder="Назва книги, ID, інв. номер, користувач..." />
+                   placeholder="Введіть ID" />
         </div>
 
+        <div class="col-md-3">
+            <label>Ім’я / Логін користувача</label>
+            <input type="text" name="searchUser" value="@ViewBag.SearchUser"
+                   class="form-control"
+                   placeholder="Ім’я або логін" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-3">
+            <label>Назва книги</label>
+            <input type="text" name="searchBook" value="@ViewBag.SearchBook"
+                   class="form-control"
+                   placeholder="Назва книги" />
+        </div>
+
+        <div class="col-md-3">
+            <label>Інвентарний номер</label>
+            <input type="text" name="searchInventory" value="@ViewBag.SearchInventory"
+                   class="form-control"
+                   placeholder="Інв. номер" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
         <div class="col-md-2">
             <label>Статус</label>
             <select name="status" class="form-control">
                 <option value="">Всі</option>
-
-                <option value="Очікує оплату"
-                        selected="@(ViewBag.Status == "Очікує оплату")">
-                    Очікує оплату
-                </option>
-
-                <option value="Активна"
-                        selected="@(ViewBag.Status == "Активна")">
-                    Активна
-                </option>
+                <option value="Очікує оплату" selected="@(ViewBag.Status == "Очікує оплату")">Очікує оплату</option>
+                <option value="Активна" selected="@(ViewBag.Status == "Активна")">Активна</option>
+                <option value="Скасована" selected="@(ViewBag.Status == "Скасована")">Активна</option>
             </select>
         </div>
 
@@ -46,11 +63,10 @@
             <input type="date" name="dateTo" value="@ViewBag.DateTo" class="form-control" />
         </div>
 
-        <div class="col-md-3 d-flex align-items-end">
+        <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-primary me-2" type="submit">Пошук</button>
             <a href="/admin/reservations" class="btn btn-secondary">Скинути</a>
         </div>
-
     </div>
 </form>
 
@@ -73,6 +89,7 @@ else
                 <th>Кінець</th>
                 <th>Статус</th>
                 <th>Сума</th>
+                <th>Дія</th>
                 <th></th>
             </tr>
         </thead>
