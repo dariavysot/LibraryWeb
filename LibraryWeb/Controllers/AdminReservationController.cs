@@ -18,6 +18,7 @@ namespace LibraryWeb.Controllers
         [Authorize(Roles = "Admin,Employee")]
         [HttpGet("")]
         public IActionResult Index(
+    string? statusFilter,
     string? searchId,
     string? searchUser,
     string? searchBook,
@@ -66,8 +67,15 @@ namespace LibraryWeb.Controllers
                 query = query.Where(r => r.InventoryNum.ToString().Contains(searchInventory));
 
             // --- Фільтр по статусу ---
-            if (!string.IsNullOrWhiteSpace(status))
-                query = query.Where(r => r.Status == status);
+            var statuses = new List<string> { "Усі", "Очікує оплату", "Активна", "Скасована" };
+            ViewBag.Statuses = statuses;
+            ViewBag.StatusFilter = statusFilter ?? "Усі";
+
+
+            if (!string.IsNullOrWhiteSpace(statusFilter) && statusFilter != "Усі")
+            {
+                query = query.Where(r => r.Status == statusFilter);
+            }
 
             // --- Фільтр по датах ---
             if (dateFrom.HasValue)

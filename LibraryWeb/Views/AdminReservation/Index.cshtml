@@ -1,119 +1,118 @@
 ﻿@model List<LibraryWeb.Models.Reservation>
 
-<h2>Усі резервації</h2>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success mt-3">
-        @TempData["Success"]
-    </div>
+@{
+    ViewData["Title"] = "Reservations";
 }
 
-<form method="get" class="mb-3">
-    <div class="row mb-2">
-        <div class="col-md-3">
-            <label>ID резервації</label>
-            <input type="text" name="searchId" value="@ViewBag.SearchId"
-                   class="form-control"
-                   placeholder="Введіть ID" />
-        </div>
+<main class="loan-main-page">
+    <div class="loan-main-container">
+        <h2 class="loan-main-title">Reservations List</h2> 
+        <p class="loan-main-subtitle">Manage all library reservations</p>
 
-        <div class="col-md-3">
-            <label>Ім’я / Логін користувача</label>
-            <input type="text" name="searchUser" value="@ViewBag.SearchUser"
-                   class="form-control"
-                   placeholder="Ім’я або логін" />
-        </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="loan-alert loan-alert-success">@TempData["Success"]</div>
+        }
+
+        <form method="get" class="loan-form">
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Reservation ID</label>
+                    <input type="text" name="searchId" value="@ViewBag.SearchId" class="loan-main-input" placeholder="Search by reservation ID" />
+                </div>
+                <div class="book-form-group">
+                    <label class="loan-main-label">User Name / Login</label>
+                    <input type="text" name="searchUser" value="@ViewBag.SearchUser" class="loan-main-input" placeholder="Search by Name or login" />
+                </div>
+            </div>
+
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Book Title</label>
+                    <input type="text" name="searchBook" value="@ViewBag.SearchBook" class="loan-main-input" placeholder="Search by Book title" />
+                </div>
+                <div class="book-form-group">
+                    <label class="loan-main-label">Inventory Number</label>
+                    <input type="text" name="searchInventory" value="@ViewBag.SearchInventory" class="loan-main-input" placeholder="Search by Inventory #" />
+                </div>
+            </div>
+
+            <div class="loan-main-form-row">
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Status</label>
+                    <select name="statusFilter" class="loan-main-select">
+                        @foreach (var status in (List<string>)ViewBag.Statuses)
+                        {
+                            <option value="@status" selected="@(ViewBag.StatusFilter == status)">
+                                @status
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Date From</label>
+                    <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="loan-main-input" />
+                </div>
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Date To</label>
+                    <input type="date" name="dateTo" value="@ViewBag.DateTo" class="loan-main-input" />
+                </div>
+            </div>
+
+            <div class="loan-main-form-actions">
+                <button type="submit" class="loan-main-btn loan-main-btn-primary">Search</button>
+                <a href="/admin/reservations" class="loan-main-btn loan-main-btn-outline">Reset</a>
+            </div>
+        </form>
+
+        @if (!Model.Any())
+        {
+            <div class="loan-alert loan-alert-warning">No results found for your query.</div>
+        }
+        else
+        {
+            <div class="table-responsive" style="margin-top:1.5rem;">
+                <table class="loan-main-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Book</th>
+                            <th>Inventory #</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td>@r.ReservationID</td>
+                                <td>@r.User?.Name</td>
+                                <td>@r.Copy?.Book?.Title</td>
+                                <td>@r.InventoryNum</td>
+                                <td>@r.StartDate.ToShortDateString()</td>
+                                <td>@r.EndDate.ToShortDateString()</td>
+                                <td>
+                                    <span class="loan-main-badge @(r.Status == "Активна" ? "loan-main-active" : r.Status == "Очікує оплату" ? "loan-main-overdue" : "loan-main-returned")">
+                                        @r.Status
+                                    </span>
+                                </td>
+                                <td>@r.Amount</td>
+                                <td>
+                                    <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button class="loan-main-action-btn loan-main-btn-delete" onclick="return confirm('Delete this reservation?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-
-    <div class="row mb-2">
-        <div class="col-md-3">
-            <label>Назва книги</label>
-            <input type="text" name="searchBook" value="@ViewBag.SearchBook"
-                   class="form-control"
-                   placeholder="Назва книги" />
-        </div>
-
-        <div class="col-md-3">
-            <label>Інвентарний номер</label>
-            <input type="text" name="searchInventory" value="@ViewBag.SearchInventory"
-                   class="form-control"
-                   placeholder="Інв. номер" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-md-2">
-            <label>Статус</label>
-            <select name="status" class="form-control">
-                <option value="">Всі</option>
-                <option value="Очікує оплату" selected="@(ViewBag.Status == "Очікує оплату")">Очікує оплату</option>
-                <option value="Активна" selected="@(ViewBag.Status == "Активна")">Активна</option>
-                <option value="Скасована" selected="@(ViewBag.Status == "Скасована")">Активна</option>
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <label>Дата від</label>
-            <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="form-control" />
-        </div>
-
-        <div class="col-md-2">
-            <label>Дата до</label>
-            <input type="date" name="dateTo" value="@ViewBag.DateTo" class="form-control" />
-        </div>
-
-        <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-primary me-2" type="submit">Пошук</button>
-            <a href="/admin/reservations" class="btn btn-secondary">Скинути</a>
-        </div>
-    </div>
-</form>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-warning mt-3">
-        Немає результатів за вашим запитом.
-    </div>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Користувач</th>
-                <th>Книга</th>
-                <th>Інвентарний №</th>
-                <th>Початок</th>
-                <th>Кінець</th>
-                <th>Статус</th>
-                <th>Сума</th>
-                <th>Дія</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var r in Model)
-            {
-                <tr>
-                    <td>@r.ReservationID</td>
-                    <td>@r.User?.Name</td>
-                    <td>@r.Copy?.Book?.Title</td>
-                    <td>@r.InventoryNum</td>
-                    <td>@r.StartDate.ToShortDateString()</td>
-                    <td>@r.EndDate.ToShortDateString()</td>
-                    <td>@r.Status</td>
-                    <td>@r.Amount</td>
-                    <td>
-                        <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
-                            @Html.AntiForgeryToken()
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Видалити резервацію?')">Видалити</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
+</main>
