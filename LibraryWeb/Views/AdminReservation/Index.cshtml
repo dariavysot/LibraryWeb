@@ -1,0 +1,42 @@
+﻿@model List<LibraryWeb.Models.Reservation>
+
+<h2>Усі резервації</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Користувач</th>
+            <th>Книга</th>
+            <th>Інвентарний №</th>
+            <th>Початок</th>
+            <th>Кінець</th>
+            <th>Статус</th>
+            <th>Сума</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ReservationID</td>
+                <td>@r.User?.Name</td>
+				<td>@r.Copy?.Book?.Title</td>
+				<td>@r.InventoryNum</td>
+                <td>@r.StartDate.ToShortDateString()</td>
+                <td>@r.EndDate.ToShortDateString()</td>
+                <td>@r.Status</td>
+                <td>@r.Amount</td>
+                <td>
+                    <a href="/admin/reservations/details/@r.ReservationID" class="btn btn-primary btn-sm">Деталі</a>
+
+                    <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Видалити резервацію?')">Видалити</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

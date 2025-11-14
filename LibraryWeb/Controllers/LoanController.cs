@@ -259,8 +259,6 @@ namespace LibraryWeb.Controllers
                 });
             }
 
-
-            // --- 5. Якщо є вільна копія — створюємо позику ---
             if (selectedCopy != null)
             {
                 var loan = new Loan
@@ -294,7 +292,6 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index");
             }
 
-            // --- 6. Якщо нічого не підходить (резервацій і копій) ---
             TempData["Error"] = "Усі примірники цієї книги зараз позичені або зарезервовані.";
             TempData["Debug"] = string.Join("<br>", debug);
             return RedirectToAction("Create");

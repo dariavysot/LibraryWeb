@@ -70,6 +70,7 @@ namespace LibraryWeb.Controllers
             ViewBag.TotalUsers = _context.Users.Count();
             ViewBag.ActiveLoans = _context.Loans.Count(l => l.Status == "Активна" || l.Status == "Прострочена");
             ViewBag.TotalMemberships = _context.MembershipTypes.Count();
+            ViewBag.TotalReservations = _context.Reservations.Count();
 
             return View();
         }
@@ -81,6 +82,7 @@ namespace LibraryWeb.Controllers
             ViewBag.ActiveLoans = _context.Loans.Count(l => l.Status == "Активна" || l.Status == "Прострочена");
             ViewBag.TotalBooks = _context.Copies.Count();
             ViewBag.ActiveMemberships = _context.Memberships.Count(m => m.EndDate > DateTime.Now);
+            ViewBag.TotalReservations = _context.Reservations.Count();
 
             return View();
         }
