@@ -2,40 +2,94 @@
 
 <h2>Усі резервації</h2>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Користувач</th>
-            <th>Книга</th>
-            <th>Інвентарний №</th>
-            <th>Початок</th>
-            <th>Кінець</th>
-            <th>Статус</th>
-            <th>Сума</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var r in Model)
-        {
-            <tr>
-                <td>@r.ReservationID</td>
-                <td>@r.User?.Name</td>
-				<td>@r.Copy?.Book?.Title</td>
-				<td>@r.InventoryNum</td>
-                <td>@r.StartDate.ToShortDateString()</td>
-                <td>@r.EndDate.ToShortDateString()</td>
-                <td>@r.Status</td>
-                <td>@r.Amount</td>
-                <td>
+<form method="get" class="mb-3">
+    <div class="row">
 
-                    <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button class="btn btn-danger btn-sm" onclick="return confirm('Видалити резервацію?')">Видалити</button>
-                    </form>
-                </td>
+        <div class="col-md-3">
+            <label>Пошук</label>
+            <input type="text" name="search" value="@ViewBag.Search"
+                   class="form-control"
+                   placeholder="Назва книги, ID, інв. номер, користувач..." />
+        </div>
+
+        <div class="col-md-2">
+            <label>Статус</label>
+            <select name="status" class="form-control">
+                <option value="">Всі</option>
+
+                <option value="Очікує оплату"
+                        selected="@(ViewBag.Status == "Очікує оплату")">
+                    Очікує оплату
+                </option>
+
+                <option value="Активна"
+                        selected="@(ViewBag.Status == "Активна")">
+                    Активна
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Дата від</label>
+            <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+            <label>Дата до</label>
+            <input type="date" name="dateTo" value="@ViewBag.DateTo" class="form-control" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary me-2" type="submit">Пошук</button>
+            <a href="/admin/reservations" class="btn btn-secondary">Скинути</a>
+        </div>
+
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning mt-3">
+        Немає результатів за вашим запитом.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Користувач</th>
+                <th>Книга</th>
+                <th>Інвентарний №</th>
+                <th>Початок</th>
+                <th>Кінець</th>
+                <th>Статус</th>
+                <th>Сума</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.ReservationID</td>
+                    <td>@r.User?.Name</td>
+                    <td>@r.Copy?.Book?.Title</td>
+                    <td>@r.InventoryNum</td>
+                    <td>@r.StartDate.ToShortDateString()</td>
+                    <td>@r.EndDate.ToShortDateString()</td>
+                    <td>@r.Status</td>
+                    <td>@r.Amount</td>
+                    <td>
+                        <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Видалити резервацію?')">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

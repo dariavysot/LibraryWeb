@@ -14,21 +14,58 @@ namespace LibraryWeb.Controllers
         {
             _context = context;
         }
+
         [Authorize(Roles = "Admin,Employee")]
-        // --- Список усіх резервацій ---
         [HttpGet("")]
-        public IActionResult Index()
+        public IActionResult Index(string? search, string? status, DateTime? dateFrom, DateTime? dateTo)
         {
-            var reservations = _context.Reservations
+            var query = _context.Reservations
                 .Include(r => r.User)
                 .Include(r => r.Copy)
                 .ThenInclude(c => c.Book)
                 .Include(r => r.Payment)
+                .AsQueryable();
+
+            // --- Пошук по тексту ---
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(r =>
+                    r.ReservationID.ToString().Contains(search) ||
+                    (r.UserName != null && r.UserName.Contains(search)) ||                      // Імʼя з самої резервації
+                    (r.User != null && r.User.Name.Contains(search)) ||                         // Імʼя з таблиці Users
+                    (r.Copy != null && r.Copy.Book != null && r.Copy.Book.Title.Contains(search)) || // Назва книги
+                    r.InventoryNum.ToString().Contains(search)                                  // Інвентарний номер
+                );
+            }
+            // --- Фільтр по статусу ---
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(r => r.Status == status);
+            }
+
+            // --- Фільтр по датах ---
+            if (dateFrom.HasValue)
+            {
+                query = query.Where(r => r.StartDate >= dateFrom.Value);
+            }
+
+            if (dateTo.HasValue)
+            {
+                query = query.Where(r => r.EndDate <= dateTo.Value);
+            }
+
+            var reservations = query
                 .OrderByDescending(r => r.StartDate)
                 .ToList();
 
+            // Зберігаємо значення для форми
+            ViewBag.Search = search;
+            ViewBag.DateFrom = dateFrom?.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = dateTo?.ToString("yyyy-MM-dd");
+
             return View(reservations);
         }
+
 
         [Authorize(Roles = "Admin")]
         // --- Видалення резервації (для адміна) ---
