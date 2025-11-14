@@ -32,7 +32,7 @@ namespace LibraryWeb.Controllers
             {
                 query = query.Where(u =>
                     (u.Name != null && u.Name.Contains(search)) ||
-                    (u.Email != null && u.Email.Contains(search))
+                     (u.Login != null && u.Login.Contains(search))
                 );
             }
 
