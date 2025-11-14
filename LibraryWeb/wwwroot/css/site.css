@@ -1131,8 +1131,26 @@ main {
 }
 
     .admin-btn-dark:hover {
-        background: #d2691e;
+        background: #f6b944;
     }
+
+/* Reset button */
+.admin-btn-reset {
+    background: #1b3f71;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .admin-btn-reset:hover {
+        background: #f6b944;
+        color: #fff;
+    }
+
 
 .admin-card.wide {
     grid-column: span 2;
@@ -1711,7 +1729,7 @@ main {
 }
 
     .book-btn-edit:hover {
-        background: #0056b3;
+        background: #f6b944;
         color: #fff;
     }
 
@@ -2095,8 +2113,271 @@ main {
     font-style: italic;
 }
 
+/* ======================= LOAN PAGE ======================= */
+.loan-main-page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #f9f9f9;
+    padding: 3rem 1rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
 
+.loan-main-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 2.5rem 3rem;
+    max-width: 1400px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
 
+    .loan-main-container:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+.loan-main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #000;
+}
+
+.loan-main-subtitle {
+    font-size: 1.3rem;
+    text-align: center;
+    color: #d2691e;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* ======================= ALERTS ======================= */
+.loan-alert {
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.loan-alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.loan-alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* ======================= FORM ROWS ======================= */
+.loan-main-form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.loan-main-form-group {
+    flex: 1;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+.loan-main-label {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;
+    margin-bottom: 0.4rem;
+}
+
+/* Контейнер кнопок */
+.loan-main-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end; /* вирівнювання по правому краю */
+    margin-top: 0.5rem;
+}
+
+/* Зробимо форму компактнішою */
+.loan-form .book-form-row,
+.loan-form .loan-main-form-row {
+    gap: 0.8rem; /* зменшили відстань між полями */
+    margin-bottom: 0.8rem;
+}
+
+.loan-form .book-form-group,
+.loan-form .loan-main-form-group {
+    flex: 1 1 45%; /* поля займають менше місця */
+}
+
+/* ======================= INPUTS & SELECTS ======================= */
+.loan-main-input,
+.loan-main-select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    border: 2px solid #000;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+    .loan-main-input:focus,
+    .loan-main-select:focus {
+        border-color: #d2691e;
+        box-shadow: 0 0 0 0.2rem rgba(210,105,30,0.25);
+        outline: none;
+    }
+
+/* ======================= BUTTONS ======================= */
+.loan-main-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loan-main-btn-primary {
+    background: #d2691e;
+    color: #fff;
+}
+
+    .loan-main-btn-primary:hover {
+        background: #000;
+        color: #fff;
+    }
+
+.loan-main-btn-outline {
+    background: #1b3f71;
+    color: #fff;
+}
+
+    .loan-main-btn-outline:hover {
+        background: #f6b944;
+        color: #fff;
+    }
+
+/* ======================= TABLE ======================= */
+.loan-main-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+
+    .loan-main-table th,
+    .loan-main-table td {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .loan-main-table thead {
+        background: #000;
+        color: #fff;
+    }
+
+    .loan-main-table tbody tr:hover {
+        background: #f0f0f0;
+    }
+
+/* ======================= BADGES ======================= */
+.loan-main-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.loan-main-active {
+    background: #1b3f71;
+    color: #fff;
+}
+
+.loan-main-overdue {
+    background: #f6b944;
+    color: #000;
+}
+
+.loan-main-returned {
+    background: #d2691e;
+    color: #fff;
+}
+
+/* ======================= ACTION BUTTONS ======================= */
+.loan-main-action-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    margin-right: 0.5rem;
+    text-decoration: none;
+}
+
+.loan-main-btn-return {
+    background: #f6b944;
+    color: #000;
+}
+
+    .loan-main-btn-return:hover {
+        background: #d2691e;
+        color: #fff;
+    }
+
+.loan-main-btn-delete {
+    background: #fff;
+    color: #b71c1c;
+    border: 2px solid #b71c1c;
+}
+
+    .loan-main-btn-delete:hover {
+        background: #b71c1c;
+        color: #fff;
+    }
+
+/* ======================= RESPONSIVE ======================= */
+@media (max-width: 768px) {
+    .loan-main-container {
+        padding: 2rem;
+    }
+
+    .loan-main-title {
+        font-size: 2rem;
+    }
+
+    .loan-main-btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .book-form-row {
+        flex-direction: column;
+    }
+
+    .loan-main-form-actions {
+        flex-direction: column; /* кнопки під полями */
+        align-items: stretch;
+    }
+
+        .loan-main-form-actions .loan-main-btn {
+            width: 100%;
+        }
+}
 
     /* ======================= FOOTER ======================= */
     footer {
