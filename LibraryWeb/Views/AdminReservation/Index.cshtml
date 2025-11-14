@@ -2,6 +2,13 @@
 
 <h2>Усі резервації</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">
+        @TempData["Success"]
+    </div>
+}
+
 <form method="get" class="mb-3">
     <div class="row">
 
