@@ -1332,6 +1332,7 @@ main {
 
     .loan-btn-primary:hover {
         background: #d2691e;
+        color: #fff;
     }
 
 .loan-btn-outline {
@@ -2178,7 +2179,7 @@ main {
 .loan-main-form-row {
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     margin-bottom: 1rem;
 }
 

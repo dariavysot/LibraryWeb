@@ -21,7 +21,7 @@ namespace LibraryWeb.Controllers
         // --- Список всіх позик ---
         [HttpGet("")]
         public IActionResult Index(
-    string? statusFilter,
+    string? statusFilter = "Усі",
     string? searchId = "",
     string? searchUser = "",
     string? searchBook = "",
@@ -32,20 +32,22 @@ namespace LibraryWeb.Controllers
             var today = DateTime.Today;
 
             // --- Оновлення прострочених ---
-            var activeLoans = _context.Loans.Where(l => l.Status == "Активна").ToList();
-            foreach (var loan in activeLoans)
+            var overdueLoans = _context.Loans
+                .Where(l => l.Status == "Активна" && l.EndDate < today)
+                .ToList();
+
+            if (overdueLoans.Any())
             {
-                if (loan.EndDate < today)
+                foreach (var loan in overdueLoans)
                     loan.Status = "Прострочена";
+
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
 
             var statuses = new List<string> { "Усі", "Активна", "Прострочена", "Повернено" };
             ViewBag.Statuses = statuses;
-            ViewBag.StatusFilter = statusFilter ?? "Усі";
+            ViewBag.StatusFilter = statusFilter;
 
-
-            // Передаємо значення фільтрів назад у ViewBag
             ViewBag.SearchId = searchId;
             ViewBag.SearchUser = searchUser;
             ViewBag.SearchBook = searchBook;
@@ -59,11 +61,11 @@ namespace LibraryWeb.Controllers
                     .ThenInclude(c => c.Book)
                 .AsQueryable();
 
-            // --- Фільтруємо по статусу
+            // --- Фільтр по статусу ---
             if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "Усі")
                 loans = loans.Where(l => l.Status == statusFilter);
 
-            // --- Фільтр по ID бронювання
+            // --- Фільтр по ID ---
             if (!string.IsNullOrWhiteSpace(searchId) && int.TryParse(searchId, out int loanId))
                 loans = loans.Where(l => l.LoanID == loanId);
 
@@ -73,18 +75,20 @@ namespace LibraryWeb.Controllers
                 var searchLower = searchUser.ToLower();
                 loans = loans.Where(l =>
                     (l.User != null && (
-                        l.User.Name.ToLower().Contains(searchLower) ||
-                        l.User.Login.ToLower().Contains(searchLower)
+                        (l.User.Name != null && l.User.Name.ToLower().Contains(searchLower)) ||
+                        (l.User.Login != null && l.User.Login.ToLower().Contains(searchLower))
                     )) ||
                     (l.UserName != null && l.UserName.ToLower().Contains(searchLower))
                 );
             }
 
-            // --- Фільтр по книзі
+            // --- Фільтр по книзі 
             if (!string.IsNullOrWhiteSpace(searchBook))
             {
                 var searchLower = searchBook.ToLower();
-                loans = loans.Where(l => l.Copy.Book.Title.ToLower().Contains(searchLower));
+                loans = loans.Where(l =>
+                    l.Copy.Book.Title.ToLower().Contains(searchLower)
+                );
             }
 
             // --- Фільтр по інвентарному номеру
@@ -97,13 +101,7 @@ namespace LibraryWeb.Controllers
             if (dateTo.HasValue)
                 loans = loans.Where(l => l.EndDate <= dateTo.Value);
 
-            var result = loans.ToList();
-
-            // --- Показуємо повідомлення, якщо нічого не знайдено
-            if (!result.Any())
-                TempData["Warning"] = "Нічого не знайдено за вашими критеріями.";
-
-            return View("~/Views/Loan/Index.cshtml", result);
+            return View("~/Views/Loan/Index.cshtml", loans.ToList());
         }
 
         // --- Деталі ---

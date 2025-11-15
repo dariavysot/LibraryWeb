@@ -72,7 +72,12 @@
                 <a href="/loans" class="loan-main-btn loan-main-btn-outline">Reset</a>
             </div>
         </form>
-
+        @if (!Model.Any())
+        {
+            <div class="loan-alert loan-alert-warning">No results found for your query.</div>
+        }
+        else
+        {
         <div class="table-responsive" style="margin-top:2rem;">
             <table class="loan-main-table">
                 <thead>
@@ -121,5 +126,6 @@
                 </tbody>
             </table>
         </div>
+        }
     </div>
 </main>

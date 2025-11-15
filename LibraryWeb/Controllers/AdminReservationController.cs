@@ -19,63 +19,74 @@ namespace LibraryWeb.Controllers
         [HttpGet("")]
         public IActionResult Index(
     string? statusFilter,
-    string? searchId,
-    string? searchUser,
-    string? searchBook,
-    string? searchInventory,
-    string? status,
-    DateTime? dateFrom,
-    DateTime? dateTo)
+    string? searchId = "",
+    string? searchUser = "",
+    string? searchBook = "",
+    string? searchInventory = "",
+    DateTime? dateFrom = null,
+    DateTime? dateTo = null)
         {
-            var outdatedReservations = _context.Reservations
-               .Where(r => r.EndDate < DateTime.Today && r.Status != "Скасована")
-               .ToList();
+            var today = DateTime.Today;
 
-            if (outdatedReservations.Any())
+            var outdated = _context.Reservations
+                .Where(r => r.EndDate < today && r.Status != "Скасована")
+                .ToList();
+
+            if (outdated.Any())
             {
-                foreach (var r in outdatedReservations)
-                {
+                foreach (var r in outdated)
                     r.Status = "Скасована";
-                }
+
                 _context.SaveChanges();
             }
 
             var query = _context.Reservations
                 .Include(r => r.User)
-                .Include(r => r.Copy)
-                .ThenInclude(c => c.Book)
+                .Include(r => r.Copy).ThenInclude(c => c.Book)
                 .Include(r => r.Payment)
                 .AsQueryable();
 
             // --- Пошук по ID резервації ---
-            if (!string.IsNullOrWhiteSpace(searchId))
-                query = query.Where(r => r.ReservationID.ToString().Contains(searchId));
+            if (!string.IsNullOrWhiteSpace(searchId) && int.TryParse(searchId, out int resId))
+                query = query.Where(r => r.ReservationID == resId);
 
             // --- Пошук по користувачу ---
             if (!string.IsNullOrWhiteSpace(searchUser))
+            {
+                var userLower = searchUser.ToLower();
                 query = query.Where(r =>
-                    (r.UserName != null && r.UserName.Contains(searchUser)) ||
-                    (r.User != null && r.User.Name.Contains(searchUser))
+                    (r.User != null && (
+                        r.User.Name.ToLower().Contains(userLower) ||
+                        r.User.Login.ToLower().Contains(userLower)
+                    )) ||
+                    (r.UserName != null && r.UserName.ToLower().Contains(userLower))
                 );
+            }
 
             // --- Пошук по книзі ---
             if (!string.IsNullOrWhiteSpace(searchBook))
-                query = query.Where(r => r.Copy != null && r.Copy.Book != null && r.Copy.Book.Title.Contains(searchBook));
+            {
+                var bookLower = searchBook.ToLower();
+                query = query.Where(r =>
+                    r.Copy != null &&
+                    r.Copy.Book != null &&
+                    r.Copy.Book.Title.ToLower().Contains(bookLower));
+            }
 
             // --- Пошук по інвентарному номеру ---
-            if (!string.IsNullOrWhiteSpace(searchInventory))
-                query = query.Where(r => r.InventoryNum.ToString().Contains(searchInventory));
+            if (!string.IsNullOrWhiteSpace(searchInventory) &&
+                int.TryParse(searchInventory, out int invNumber))
+            {
+                query = query.Where(r => r.InventoryNum == invNumber);
+            }
 
             // --- Фільтр по статусу ---
             var statuses = new List<string> { "Усі", "Очікує оплату", "Активна", "Скасована" };
             ViewBag.Statuses = statuses;
             ViewBag.StatusFilter = statusFilter ?? "Усі";
 
-
             if (!string.IsNullOrWhiteSpace(statusFilter) && statusFilter != "Усі")
-            {
                 query = query.Where(r => r.Status == statusFilter);
-            }
 
             // --- Фільтр по датах ---
             if (dateFrom.HasValue)
@@ -84,18 +95,20 @@ namespace LibraryWeb.Controllers
             if (dateTo.HasValue)
                 query = query.Where(r => r.EndDate <= dateTo.Value);
 
-            var reservations = query.OrderByDescending(r => r.StartDate).ToList();
+            var reservations = query
+                .OrderByDescending(r => r.StartDate)
+                .ToList();
 
             ViewBag.SearchId = searchId;
             ViewBag.SearchUser = searchUser;
             ViewBag.SearchBook = searchBook;
             ViewBag.SearchInventory = searchInventory;
-            ViewBag.Status = status;
             ViewBag.DateFrom = dateFrom?.ToString("yyyy-MM-dd");
             ViewBag.DateTo = dateTo?.ToString("yyyy-MM-dd");
 
             return View(reservations);
         }
+
 
 
         [Authorize(Roles = "Admin")]
