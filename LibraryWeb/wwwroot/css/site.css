@@ -207,7 +207,6 @@ main {
         font-weight: 800;
         margin-right: 2rem;
         padding-right: 2rem; /* відступ від лінії */
-        border-right: 2px solid #000; /* вертикальна лінія */
     }
 
 /* Ліва частина навігації */
@@ -216,17 +215,6 @@ main {
     align-items: center;
     gap: 2rem;
 }
-
-    /* Вертикальні лінії між кнопками */
-    .nav-left a.nav-link:not(:last-child)::after {
-        content: "";
-        position: absolute;
-        right: -1rem;
-        top: 0;
-        height: 100%;
-        width: 2px;
-        background-color: #000;
-    }
 
     /* Стиль кнопок */
     .nav-left a.nav-link {
@@ -243,6 +231,34 @@ main {
             color: #d2691e;
         }
 
+/* ОБГОРТКА ЛІВОЇ ЧАСТИНИ НАВІГАЦІЇ */
+.nav-left-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Логотип + вертикальна лінія справа */
+.logo-wrapper .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding-right: 2rem;
+    border-right: 2px solid #000;
+    margin-right: 2rem;
+}
+
+/* Вертикальні лінії між пунктами меню */
+.nav-left-wrapper .nav-left a.nav-link:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -1rem;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #000;
+}
+
+
 /* Права частина навігації */
 .nav-right {
     margin-left: auto;
@@ -251,26 +267,159 @@ main {
     gap: 1rem;
 }
 
+/* Контейнер пошуку */
+.nav-search {
+    display: flex;
+    align-items: center;
+    border: 2px solid #000;
+    border-radius: 25px;
+    overflow: hidden;
+    margin-right: 1rem;
+    transition: all 0.3s;
+}
+
+.nav-search-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+    .nav-search-wrapper::after {
+        content: "";
+        width: 2px;
+        height: 35px;
+        background: #000;
+        margin-left: 1rem;
+    }
+
+/* Поле пошуку */
+.nav-search-input {
+    border: none;
+    padding: 0.4rem 1.3rem;
+    outline: none;
+    font-size: 1rem;
+    width: 150px;
+    transition: width 0.3s ease;
+}
+
+/* Кнопка */
+.nav-search-btn {
+    border: none;
+    background: transparent; 
+    color: #000;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    transition: all 0.3s;
+}
+
+/* ПІДСВІЧУВАННЯ — як на твоїх інпутах */
+.nav-search:hover,
+.nav-search:focus-within {
+    border-color: #d2691e;
+    box-shadow: 0 0 6px rgba(210,105,30,0.4);
+}
+
+    /* Розширення поля при наведенні */
+    .nav-search:hover .nav-search-input,
+    .nav-search:focus-within .nav-search-input {
+        width: 350px;
+    }
+
+/* Hover на іконку */
+.nav-search-btn:hover {
+    color: #d2691e;
+}
+
+/* Аватарка користувача */
+.nav-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+
+/* Dropdown профілю */
+.nav-right .dropdown-menu {
+    min-width: 200px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+
 /* Стиль кнопки Sign up */
 .signup-btn {
-    border: 1px solid #000;
+    border: 2px solid #000;
     border-radius: 20px;
     padding: 0.4rem 0.9rem;
-    font-weight: 700; /* робимо трохи жирнішим */
+    font-weight: 700;
     font-size: 1.1rem;
     transition: all 0.3s;
+    text-decoration: none;
+    color: #d2691e !important;
 }
 
     .signup-btn:hover {
         background: #000;
         color: #fff !important;
+        text-decoration: underline;
     }
 
-/* Дропдаун користувача теж жирніший */
+
+
+/* ======= DROPDOWN (USER MENU) ======= */
+
+/* Контейнер дропдауна */
+.nav-right .dropdown {
+    position: relative;
+}
+
+/* Кнопка (ім'я користувача) */
 .nav-right .dropdown-toggle {
     font-weight: 800;
     font-size: 1.1rem;
+    color: #000 !important;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    transition: 0.3s;
 }
+
+    .nav-right .dropdown-toggle:hover {
+        color: #d2691e !important;
+    }
+
+/* Меню */
+.nav-right .dropdown-menu {
+    border: 2px solid #000;
+    border-radius: 14px;
+    padding: 0.5rem 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    background: #fff;
+    overflow: hidden;
+}
+
+/* Елементи меню */
+.nav-right .dropdown-item {
+    font-weight: 700;
+    padding: 0.7rem 1.2rem;
+    font-size: 1.05rem;
+    transition: 0.25s;
+}
+
+    /* Hover елементів меню */
+    .nav-right .dropdown-item:hover {
+        background: #d2691e;
+        color: #fff !important;
+    }
+
+/* Divider стилізуємо щоб був тонким і чистим */
+.nav-right .dropdown-divider {
+    border-top: 2px solid #000 !important;
+    margin: 0.3rem 0;
+}
+
 
 /* ======================= LOGIN PAGE ======================= */
 .login-page {
@@ -1079,6 +1228,13 @@ main {
     padding: 2rem;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+}
+/* Вертикальні Quick Actions */
+.quick-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-row: span 2;
 }
 
     .admin-card:hover {
