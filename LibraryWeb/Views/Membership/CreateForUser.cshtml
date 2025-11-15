@@ -1,19 +1,62 @@
 ﻿@{
-    ViewData["Title"] = "Оформити членство для користувача";
+    ViewData["Title"] = "Assign Membership";
     var user = ViewBag.User as LibraryWeb.Models.User;
     var membershipTypes = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>;
 }
 
-<h2>@ViewData["Title"]</h2>
+<main class="assign-membership-page">
+    <div class="assign-membership-container">
+        <h2 class="admin-title">Assign Membership</h2>
+        <p class="admin-subtitle">Choose a membership type for the selected user</p>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+        @if (TempData["Error"] != null)
+        {
+            <div class="assign-membership-alert assign-membership-alert-error">@TempData["Error"]</div>
+        }
+
+        <div class="assign-membership-user-card">
+            <div class="assign-membership-user-icon">👤</div>
+
+            <div class="assign-membership-user-info">
+                <p class="assign-membership-user-label">Selected User</p>
+                <p class="assign-membership-user-name">@user?.Name</p>
+            </div>
+        </div>
 
 
-<p>Користувач: <strong>@user?.Name</strong></p>
+        @if (membershipTypes != null && membershipTypes.Any())
+        {
+            <div class="assign-membership-card-grid">
+                @foreach (var type in membershipTypes)
+                {
+                    <div class="admin-card">
+                        <h3 class="assign-membership-card-title">@type.Name</h3>
 
-@await Component.InvokeAsync("MembershipList", new { types = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>, user = ViewBag.User as LibraryWeb.Models.User })
+                        <div class="assign-membership-card-info">
+                            <p><strong>Price:</strong> <span>@type.Price.ToString("C")</span></p>
+                            <p><strong>Duration:</strong> <span>@type.DurationMonths month(s)</span></p>
+                        </div>
 
-<a asp-controller="Loan" asp-action="Index" class="btn btn-secondary mt-3">Назад</a>
+                        <form asp-controller="Membership"
+                              asp-action="CreateForUser"
+                              asp-route-userId="@user?.UserID"
+                              method="post">
+                            <input type="hidden" name="membershipTypeId" value="@type.MembershipTypeID" />
+                            <button type="submit" class="assign-membership-btn">
+                                Assign Membership
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="assign-membership-empty">There are no membership types available.</p>
+        }
+
+        <div class="assign-membership-actions">
+            <a asp-controller="Loan" asp-action="Create" class="assign-membership-back">Back</a>
+        </div>
+    </div>
+</main>

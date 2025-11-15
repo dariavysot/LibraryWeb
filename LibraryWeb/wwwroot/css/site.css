@@ -2380,6 +2380,176 @@ main {
         }
 }
 
+/* ===================== ASSIGN MEMBERSHIP PAGE ===================== */
+
+.assign-membership-page {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.assign-membership-container {
+    width: 100%;
+    max-width: 1200px;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Titles */
+.assign-membership-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    color: #000;
+}
+
+.assign-membership-subtitle {
+    font-size: 1.1rem;
+    color: #d2691e;
+    margin-bottom: 2rem;
+}
+
+/* Alerts */
+.assign-membership-alert {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.assign-membership-alert-error {
+    background: #ffd7d7;
+    color: #b30000;
+}
+
+/* User card */
+.assign-membership-user-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    padding: 1.2rem 1.6rem;
+    border-radius: 18px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-left: 6px solid #d2691e; /* візуальний акцент */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .assign-membership-user-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 0 rgba(210,105,30,0.3);
+    }
+
+/* User icon */
+.assign-membership-user-icon {
+    font-size: 2.2rem;
+    background: #f0e6df;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    color: #d2691e;
+    font-weight: 700;
+}
+
+/* Text styling */
+.assign-membership-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.assign-membership-user-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+.assign-membership-user-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+    color: #000;
+}
+
+/* Card grid */
+.assign-membership-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Membership card */
+.assign-membership-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .assign-membership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+.assign-membership-card-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+}
+
+.assign-membership-card-info p {
+    font-size: 1rem;
+    margin: 0.3rem 0;
+}
+
+/* Buttons */
+.assign-membership-btn {
+    padding: 0.6rem 1.3rem;
+    border-radius: 25px;
+    background: #d2691e;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.assign-membership-btn:hover {
+    background: #000;
+}
+
+.assign-membership-back {
+    display: inline-block;
+    margin-top: 1rem;
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+    padding: 0.7rem 1.7rem;
+    border-radius: 25px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+    .assign-membership-back:hover {
+        background: #d2691e;
+        color: #fff;
+        border-color: #d2691e;
+    }
+
+/* Empty message */
+.assign-membership-empty {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+
     /* ======================= FOOTER ======================= */
     footer {
         position: static !important;
