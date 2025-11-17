@@ -21,7 +21,7 @@
 
             <div class="nav-left-wrapper">
                 <nav class="nav-left">
-                    <a class="nav-link text-dark" asp-controller="Home" asp-action="@(
+                    <a class="nav-link" asp-controller="Home" asp-action="@(
                                                                                         (User?.Identity?.IsAuthenticated ?? false)
                                                                                             ? (User.IsInRole("Admin") ? "AdminDashboard"
                                                                                             : User.IsInRole("Employee") ? "EmployeeDashboard"
@@ -33,16 +33,17 @@
                     {
                         @if (User.IsInRole("Admin"))
                         {
-                            <a class="nav-link text-dark" asp-controller="Book" asp-action="Index">Books</a>
-                            <a class="nav-link text-dark" asp-controller="Loan" asp-action="Index">Loans</a>
-                            <a class="nav-link text-dark" asp-controller="AdminReservation" asp-action="Index">Reservations</a>
-                            <a class="nav-link text-dark" asp-controller="Payment" asp-action="Index">Payments</a>
+                            <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
+                            <a class="nav-link" asp-controller="Loan" asp-action="Index">Loans</a>
+                            <a class="nav-link" asp-controller="AdminReservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="Payment" asp-action="Index">Payments</a>
                         }
                         else if (User.IsInRole("Employee"))
                         {
                             <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
                             <a class="nav-link" asp-controller="Loan" asp-action="Index">Loans</a>
-                            <a class="nav-link" asp-controller="Reservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="AdminReservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="Payment" asp-action="Index">Payments</a>
                         }
                         else
                         {
