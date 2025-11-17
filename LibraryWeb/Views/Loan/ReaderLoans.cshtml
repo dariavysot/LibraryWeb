@@ -1,0 +1,40 @@
+﻿@model List<LibraryWeb.Models.Loan>
+
+@{
+    ViewData["Title"] = "My Loans";
+}
+
+<h2 class="mb-4">My Loans</h2>
+
+@if (!Model.Any())
+{
+    <p>You currently have no loans.</p>
+}
+else
+{
+    <table class="table table-bordered shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Book</th>
+                <th>Inventory #</th>
+                <th>Status</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Return date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td>@loan.Copy?.Book?.Title</td>
+                    <td>@loan.InventoryNum</td>
+                    <td>@loan.Status</td>
+                    <td>@loan.StartDate.ToShortDateString()</td>
+                    <td>@loan.EndDate.ToShortDateString()</td>
+                    <td>@(loan.ReturnDate?.ToShortDateString() ?? "—")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
