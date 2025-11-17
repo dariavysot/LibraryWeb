@@ -84,8 +84,12 @@ namespace LibraryWeb.Controllers
 
             // --- Перевірка, що користувач не резервує ту саму книгу вдруге ---
             bool alreadyReserved = await _context.Reservations
-                .Include(r => r.Copy)
-                .AnyAsync(r => r.UserID == userId && r.Copy.BookID == selectedBookId);
+             .Include(r => r.Copy)
+             .AnyAsync(r =>
+                 r.UserID == userId &&
+                 r.Copy.BookID == selectedBookId &&
+                 (r.Status == "Очікує оплату" || r.Status == "Активна")
+             );
 
             if (alreadyReserved)
             {
@@ -111,8 +115,11 @@ namespace LibraryWeb.Controllers
 
             bool conflict = await _context.Reservations.AnyAsync(r =>
                 r.InventoryNum == copy.InventoryNum &&
-                ((startDate >= r.StartDate && startDate < r.EndDate) ||
-                 (endDate > r.StartDate && endDate <= r.EndDate)));
+                (r.Status == "Активна" || r.Status == "Очікує оплату") &&
+                (
+                    (startDate >= r.StartDate && startDate < r.EndDate) ||
+                    (endDate > r.StartDate && endDate <= r.EndDate)
+                ));
 
             if (conflict)
             {
@@ -122,7 +129,7 @@ namespace LibraryWeb.Controllers
 
             int totalDays = (endDate - startDate).Days;
             if (totalDays <= 0) totalDays = 1;
-            decimal dailyRate = 20m;
+            decimal dailyRate = 50m;
             decimal totalAmount = totalDays * dailyRate;
 
             var reservation = new Reservation
@@ -174,14 +181,31 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var reservation = _context.Reservations.FirstOrDefault(r => r.ReservationID == id);
-            if (reservation == null) return NotFound();
+            var reservation = _context.Reservations
+                .Include(r => r.Payment)
+                .FirstOrDefault(r => r.ReservationID == id);
 
-            _context.Reservations.Remove(reservation);
-            _context.SaveChanges();
+            if (reservation == null)
+                return NotFound();
 
-            TempData["Success"] = "Резервація успішно видалена!";
+            // Якщо резервація вже була скасована — нічого не робимо
+            if (reservation.Status != "Скасована")
+            {
+                reservation.Status = "Скасована";
+
+                // Якщо є платіж, що очікує оплату → скасовуємо його
+                if (reservation.Payment != null &&
+                    reservation.Payment.Status == "Очікує оплату")
+                {
+                    reservation.Payment.Status = "Скасований";
+                }
+
+                _context.SaveChanges();
+            }
+
+            TempData["Success"] = "Резервація успішно скасована!";
             return RedirectToAction("Index");
         }
+
     }
 }

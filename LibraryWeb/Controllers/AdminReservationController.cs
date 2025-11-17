@@ -29,14 +29,22 @@ namespace LibraryWeb.Controllers
             var today = DateTime.Today;
 
             var outdated = _context.Reservations
-                .Where(r => r.EndDate < today && r.Status != "Скасована")
+                .Include(r => r.Payment)
+                .Where(r => r.EndDate < today && r.Status != "Термін дії закінчився" && r.Status != "Скасована")
                 .ToList();
 
             if (outdated.Any())
             {
                 foreach (var r in outdated)
-                    r.Status = "Скасована";
+                {
+                    r.Status = "Термін дії закінчився";
 
+                    // Якщо існує платіж, змінюємо статус
+                    if (r.Payment != null && r.Payment.Status == "Очікує оплату")
+                    {
+                        r.Payment.Status = "Скасований";
+                    }
+                }
                 _context.SaveChanges();
             }
 
@@ -81,7 +89,7 @@ namespace LibraryWeb.Controllers
             }
 
             // --- Фільтр по статусу ---
-            var statuses = new List<string> { "Усі", "Очікує оплату", "Активна", "Скасована" };
+            var statuses = new List<string> { "Усі", "Очікує оплату", "Активна", "Скасована", "Термін дії закінчився" };
             ViewBag.Statuses = statuses;
             ViewBag.StatusFilter = statusFilter ?? "Усі";
 
