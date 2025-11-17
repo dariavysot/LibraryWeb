@@ -2506,9 +2506,18 @@ main {
         color: #fff;
     }
 
-/* ======================= RESPONSIVE ======================= */
-@media (max-width: 768px) {
-    .loan-main-container {
+.loan-main-btn-info {
+    background: #1b3f71;
+    color: #fff;
+}
+    .loan-main-btn-info:hover {
+        background: #f6b944;
+        color: #fff;
+    }
+
+    /* ======================= RESPONSIVE ======================= */
+    @media (max-width: 768px) {
+        .loan-main-container {
         padding: 2rem;
     }
 

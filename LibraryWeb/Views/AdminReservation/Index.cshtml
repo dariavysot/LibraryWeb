@@ -103,10 +103,41 @@
                                 </td>
                                 <td>@r.Amount</td>
                                 <td>
+                                    @if (r.Payment != null && r.Payment.Status == "Очікує оплату")
+                                    {
+                                        <form method="post"
+                                              action="/payment/confirm/@r.Payment.PaymentID"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button class="loan-main-action-btn loan-main-btn-info"
+                                                    onclick="return confirm('Confirm payment?')">
+                                                💳 Pay
+                                            </button>
+                                        </form>
+                                    }
+    
+                                    @if (r.Status != "Скасована" && r.Status != "Термін дії закінчився")
+                                    {
+                                        <form method="post"
+                                              action="/reservations/delete/@r.ReservationID"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button class="loan-main-action-btn loan-main-btn-return"
+                                                    onclick="return confirm('Cancel this reservation?')">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        
+
                                     <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
                                         @Html.AntiForgeryToken()
                                         <button class="loan-main-action-btn loan-main-btn-delete" onclick="return confirm('Delete this reservation?')">Delete</button>
-                                    </form>
+										</form>
+									}
                                 </td>
                             </tr>
                         }

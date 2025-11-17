@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace LibraryWeb.Controllers
 {
-    [Authorize(Roles = "User")]
     [Route("reservations")]
     public class ReservationController : Controller
     {
