@@ -16,7 +16,7 @@
         {
             var m = ViewBag.ActiveMembership;
             <a asp-controller="Membership"
-               asp-action="Details"
+               asp-action="Index"
                asp-route-id="@m.MembershipID"
                class="stat-card stat-membership-link">
 
@@ -148,18 +148,13 @@
 
             <div class="membership-actions">
 
-                <a asp-controller="Membership"
-                   asp-action="Details"
-                   asp-route-id="@m.MembershipID"
-                   class="reader-btn">Details</a>
-
                 @if (ViewBag.MembershipPaymentPending == true)
                 {
                     <form asp-controller="Payment"
                           asp-action="ConfirmMembershipPayment"
                           asp-route-paymentId="@m.Payment.PaymentID"
                           method="post">
-                        <button class="reader-btn reader-btn-primary">Pay</button>
+                        <button class="reader-btn reader-btn-primary">💳 Pay</button>
                     </form>
                 }
 
