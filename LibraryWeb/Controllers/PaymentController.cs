@@ -154,7 +154,7 @@ namespace LibraryWeb.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Оплата успішно підтверджена.";
-            return RedirectToAction("Details", "Membership", new { id = payment.Membership.MembershipID });
+            return RedirectToAction("Index", "Membership", new { id = payment.Membership.MembershipID });
         }
 
     }

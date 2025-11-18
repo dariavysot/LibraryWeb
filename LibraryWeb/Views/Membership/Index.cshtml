@@ -1,12 +1,13 @@
 ﻿@model LibraryWeb.Models.Membership
 
 @{
-    ViewData["Title"] = "Моє членство";
+    ViewData["Title"] = "My membership";
 }
 
 <div class="profile-page">
     <div class="profile-container">
         <h2 class="profile-title">@ViewData["Title"]</h2>
+        <p class="admin-subtitle">Stay connected with the library through your membership</p>
 
         @if (TempData["Success"] != null)
         {
