@@ -1,51 +1,51 @@
 ﻿@model LibraryWeb.Models.Membership
 
 @{
-    ViewData["Title"] = "Оформити членство";
+    ViewData["Title"] = "Assign Membership";
     var membershipTypes = ViewBag.MembershipTypes as List<LibraryWeb.Models.MembershipType>;
 }
 
-<h2>@ViewData["Title"]</h2>
+<main class="assign-membership-page">
+    <div class="assign-membership-container">
+        <h2 class="admin-title">Assign Membership</h2>
+        <p class="admin-subtitle">Choose a membership type to activate your library access</p>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+        @if (TempData["Error"] != null)
+        {
+            <div class="assign-membership-alert assign-membership-alert-error">@TempData["Error"]</div>
+        }
 
-@if (membershipTypes != null && membershipTypes.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Назва</th>
-                <th>Ціна</th>
-                <th>Тривалість</th>
-                <th>Дія</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var type in membershipTypes)
-            {
-                <tr>
-                    <td>@type.Name</td>
-                    <td>@type.Price.ToString("C")</td>
-                    <td>@type.DurationMonths @((type.DurationMonths == 1) ? "місяць" : "місяців")</td>
-                    <td>
-                        <form asp-action="Create" method="post" style="display:inline">
+        @if (membershipTypes != null && membershipTypes.Any())
+        {
+            <div class="assign-membership-card-grid">
+                @foreach (var type in membershipTypes)
+                {
+                    <div class="admin-card">
+                        <h3 class="assign-membership-card-title">@type.Name</h3>
+
+                        <div class="assign-membership-card-info">
+                            <p><strong>Price:</strong> <span>@type.Price.ToString("C")</span></p>
+                            <p><strong>Duration:</strong> <span>@type.DurationMonths month(s)</span></p>
+                        </div>
+
+                        <form asp-action="Create" method="post">
                             <input type="hidden" name="MembershipTypeID" value="@type.MembershipTypeID" />
-                            <button type="submit" class="btn btn-success">
-                                Оформити
+
+                            <button type="submit" class="assign-membership-btn">
+                                Activate Membership
                             </button>
                         </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Немає доступних типів членства.</p>
-}
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="assign-membership-empty">There are no membership types available.</p>
+        }
 
-<a asp-action="Index" class="btn btn-secondary">Назад</a>
+        <div class="assign-membership-actions">
+            <a asp-action="Index" class="assign-membership-back">Back</a>
+        </div>
+    </div>
+</main>
