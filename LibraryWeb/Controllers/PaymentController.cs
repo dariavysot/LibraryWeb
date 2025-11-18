@@ -59,7 +59,7 @@ namespace LibraryWeb.Controllers
 
             var payments = await query.OrderByDescending(p => p.Date).ToListAsync();
             ViewBag.TotalAmount = payments.Sum(p => p.Amount);
-            ViewBag.StatusList = new List<string> { "Оплачено", "Очікує оплату" };
+            ViewBag.StatusList = new List<string> { "Оплачено", "Очікує оплату", "Скасований" };
             ViewBag.TypeList = _context.Payments.Select(p => p.Type).Distinct().ToList();
 
             return View(payments);
