@@ -2715,6 +2715,304 @@ main {
 }
 
 
+/* ======================= READER DASHBOARD ======================= */ 
+.reader-dashboard {
+    width: 100%;
+    padding: 3rem 4rem;
+    background: #fff;
+}
+
+.reader-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.2rem;
+}
+
+.reader-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #d2691e;
+    margin-bottom: 2.5rem;
+}
+
+/* === STATS IMPROVED === */
+
+.reader-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card,
+.stat-membership-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem 1.2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .stat-card h4,
+    .stat-membership-link h4 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: #000;
+    }
+
+    .stat-card p,
+    .stat-membership-link p {
+        font-size: 1.2rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+.stat-yellow {
+    border-left: 5px solid #f6b944;
+}
+
+.stat-warning {
+    border-left: 5px solid #d2691e;
+}
+
+.stat-blue {
+    border-left: 5px solid #1b3f71;
+}
+
+.stat-membership-link {
+    display: block;
+    color: #1e8b36 !important;
+    text-decoration: none;
+}
+
+    .stat-membership-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+/* === SECTION BLOCKS === */
+
+.reader-section {
+    margin-bottom: 3rem;
+}
+
+    .reader-section h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+    }
+
+    /* Картка секції на всю ширину */
+    .reader-section.wide-card {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+/* === LOAN CARDS (carousel) === */
+
+.loan-cards-scroll {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scroll-snap-type: x mandatory;
+}
+
+.loan-card {
+    flex: 0 0 240px; /* трішки ширше */
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    scroll-snap-align: start;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .loan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+.loan-cards-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.loan-cards-scroll::-webkit-scrollbar-thumb {
+    background: #d2691e;
+    border-radius: 4px;
+}
+
+.loan-cards-scroll::-webkit-scrollbar-track {
+    background: #f3f3f3;
+}
+
+
+
+.loan-cover {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+}
+
+.loan-author {
+    font-size: .9rem;
+    color: #555;
+}
+
+/* Статус бронювань */
+.loan-page-status {
+    font-weight: 700;
+    margin-top: 0.5rem;
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+    .loan-page-status.status-active {
+        background-color: #1b3f71; /* синій для активних */
+    }
+
+    .loan-page-status.status-overdue {
+        background-color: #d2691e; /* оранжевий для прострочених */
+    }
+
+/* === RESERVATION CARD GRID === */
+.reservation-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+/* === INDIVIDUAL RESERVATION CARD === */
+.reservation-card {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .reservation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+    .reservation-cover {
+        width: 100%;
+        height: 260px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: .8rem;
+    }
+
+/* Зробимо всю картку клікабельною */
+.reservation-card-link {
+    text-decoration: none; /* прибираємо підкреслення */
+    color: inherit; /* текст зберігає кольори картки */
+    display: block;
+}
+
+    .reservation-card-link:hover .reservation-card {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+/* Header for reservation section */
+.reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Add Reservation button */
+.btn-add-reservation {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+    .btn-add-reservation:hover {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
+
+.reservation-author {
+    font-size: .9rem;
+    color: #666;
+}
+
+.reservation-date {
+    font-weight: 600;
+    margin: .5rem 0;
+}
+
+
+/* === MEMBERSHIP CARD === */
+.membership-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.membership-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+/* BUTTONS */
+
+.reader-btn, .reader-btn-small {
+    background: #d2691e;
+    color: #fff;
+    padding: .5rem 1.2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    display: inline-block;
+    transition: .3s;
+    border: none;
+}
+
+    .reader-btn:hover, .reader-btn-small:hover {
+        background: #1b3f71;
+        color: #fff;
+    }
+
+.reader-btn-primary {
+    background: #1b3f71;
+}
+
+.reader-btn-danger {
+    background: #b11e1e;
+}
+
+.reader-btn-success {
+    background: #1e8b36;
+}
+
+.empty-text {
+    color: #666;
+}
+
     /* ======================= FOOTER ======================= */
     footer {
         position: static !important;
