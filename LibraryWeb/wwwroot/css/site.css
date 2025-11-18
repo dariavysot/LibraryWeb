@@ -2863,8 +2863,9 @@ main {
 }
 
 .loan-author {
-    font-size: .9rem;
-    color: #555;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 0.3rem;
 }
 
 /* Статус бронювань */
@@ -2956,8 +2957,9 @@ main {
     }
 
 .reservation-author {
-    font-size: .9rem;
     color: #666;
+    font-style: italic;
+    margin-bottom: 0.3rem;
 }
 
 .reservation-date {
@@ -3011,6 +3013,130 @@ main {
 
 .empty-text {
     color: #666;
+}
+
+/* ======================= LOAN LIST PAGE ====================== */
+
+/* Заголовок секції */
+.loan-section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 2rem 0 1rem;
+    color: #000;
+}
+
+/* Сітка для карток */
+.loan-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Горизонтальна картка */
+.loan-card.horizontal-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    display: flex;
+    text-align: left;
+    gap: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .loan-card.horizontal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 3px 0px rgba(210,105,30,0.5);
+    }
+
+/* Ліва частина (обкладинка) */
+.loan-left {
+    flex: 0 0 140px;
+}
+
+.loan-card.horizontal-card .loan-cover {
+    width: 140px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Права частина */
+.loan-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Автор */
+.loan-author {
+    font-size: .9rem;
+    color: #555;
+    margin: 0.3rem 0;
+}
+
+/* Дата і статус */
+.loan-right .loan-dates {
+    margin: .5rem 0;
+    color: #444;
+    font-size: 0.9rem;
+    line-height: 1.4rem;
+}
+
+.loan-right .loan-status {
+    display: inline-block;
+    font-weight: 700;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #fff;
+    margin: .3rem 0;
+}
+
+.status-overdue {
+    background-color: #d2691e;
+}
+
+.status-active {
+    background-color: #1b3f71;
+}
+
+.status-returned {
+    background-color: #1e8b36;
+}
+
+/* Кнопка Details */
+.loan-card .btn {
+    margin-top: 0.6rem;
+    border-radius: 25px;
+    padding: .45rem 1.2rem;
+    background: #d2691e;
+    border: none;
+    transition: 0.3s;
+    color: #fff;
+}
+
+    .loan-card .btn:hover {
+        background: #1b3f71;
+    }
+
+/* Адаптивність */
+@media (max-width: 600px) {
+    .loan-card.horizontal-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .loan-left {
+        flex: none;
+    }
+
+    .loan-card.horizontal-card .loan-cover {
+        width: 100%;
+        height: 240px;
+    }
 }
 
     /* ======================= FOOTER ======================= */
