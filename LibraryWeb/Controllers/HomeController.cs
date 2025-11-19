@@ -180,5 +180,12 @@ namespace LibraryWeb.Controllers
             return View("~/Views/Home/ReaderDashboard.cshtml");
         }
 
+        [HttpGet("/about")]
+        public IActionResult About()
+        {
+            return View();
+        }
+
+
     }
 }
