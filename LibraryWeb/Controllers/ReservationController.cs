@@ -54,7 +54,7 @@ namespace LibraryWeb.Controllers
         // --- Створення резервації (POST) ---
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int selectedBookId, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> Create(string selectedBookTitle, DateTime startDate, DateTime endDate)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -74,21 +74,34 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // --- Перевірка на активне членство ---
+            // --- Перевірка членства ---
             if (user.Membership == null || user.Membership.EndDate < DateTime.Now || user.Membership.Status != "Активне")
             {
                 TempData["Error"] = "Ви не можете створити резервацію без активного членства.";
                 return RedirectToAction("Index", "Home");
             }
 
-            // --- Перевірка, що користувач не резервує ту саму книгу вдруге ---
+            // --- Знаходимо книгу за назвою ---
+            var book = await _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefaultAsync(b => b.Title == selectedBookTitle);
+
+            if (book == null)
+            {
+                TempData["Error"] = "Книга не знайдена. Переконайтесь, що ви вибрали її зі списку.";
+                return RedirectToAction("Create");
+            }
+
+            int selectedBookId = book.BookID;
+
+            // --- Перевірка на повторну резервацію ---
             bool alreadyReserved = await _context.Reservations
-             .Include(r => r.Copy)
-             .AnyAsync(r =>
-                 r.UserID == userId &&
-                 r.Copy.BookID == selectedBookId &&
-                 (r.Status == "Очікує оплату" || r.Status == "Активна")
-             );
+                .Include(r => r.Copy)
+                .AnyAsync(r =>
+                    r.UserID == userId &&
+                    r.Copy.BookID == selectedBookId &&
+                    (r.Status == "Очікує оплату" || r.Status == "Активна")
+                );
 
             if (alreadyReserved)
             {
@@ -96,45 +109,60 @@ namespace LibraryWeb.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var copy = await _context.Copies
-                .Include(c => c.Book)
-                .FirstOrDefaultAsync(c => c.BookID == selectedBookId && c.Status == "Доступна");
-
-            if (copy == null)
-            {
-                TempData["Error"] = "Немає доступних примірників цієї книги.";
-                return RedirectToAction("Index");
-            }
-
+            // --- Перевірка дат ---
             if (endDate <= startDate)
             {
                 TempData["Error"] = "Дата завершення має бути пізнішою за дату початку.";
                 return RedirectToAction("Create");
             }
 
-            bool conflict = await _context.Reservations.AnyAsync(r =>
-                r.InventoryNum == copy.InventoryNum &&
-                (r.Status == "Активна" || r.Status == "Очікує оплату") &&
-                (
-                    (startDate >= r.StartDate && startDate < r.EndDate) ||
-                    (endDate > r.StartDate && endDate <= r.EndDate)
-                ));
+            // --- Доступні копії ---
+            var copies = await _context.Copies
+                .Include(c => c.Book)
+                .Where(c => c.BookID == selectedBookId && c.Status == "Доступна")
+                .ToListAsync();
 
-            if (conflict)
+            if (!copies.Any())
             {
-                TempData["Error"] = "Цей примірник вже зарезервований на обраний проміжок.";
+                TempData["Error"] = "Немає доступних примірників цієї книги.";
                 return RedirectToAction("Index");
             }
 
+            // --- Пошук копії без конфліктів по датах ---
+            Copy? selectedCopy = null;
+
+            foreach (var copy in copies)
+            {
+                bool conflict = await _context.Reservations.AnyAsync(r =>
+                    r.InventoryNum == copy.InventoryNum &&
+                    (r.Status == "Активна" || r.Status == "Очікує оплату") &&
+                    (startDate < r.EndDate && endDate > r.StartDate)
+                );
+
+                if (!conflict)
+                {
+                    selectedCopy = copy;
+                    break;
+                }
+            }
+
+            if (selectedCopy == null)
+            {
+                TempData["Error"] = "Немає доступних копій на обраний період.";
+                return RedirectToAction("Index");
+            }
+
+            // --- Розрахунок ---
             int totalDays = (endDate - startDate).Days;
             if (totalDays <= 0) totalDays = 1;
-            decimal dailyRate = 50m;
-            decimal totalAmount = totalDays * dailyRate;
 
+            decimal totalAmount = totalDays * 50m;
+
+            // --- Створення резервації ---
             var reservation = new Reservation
             {
                 UserID = user.UserID,
-                InventoryNum = copy.InventoryNum,
+                InventoryNum = selectedCopy.InventoryNum,
                 UserName = user.Name,
                 StartDate = startDate,
                 EndDate = endDate,
@@ -155,7 +183,7 @@ namespace LibraryWeb.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Резервація для книги '{copy.Book.Title}' створена. Сума до оплати: {totalAmount} грн";
+            TempData["Success"] = $"Резервація створена!";
             return RedirectToAction("Index");
         }
 
