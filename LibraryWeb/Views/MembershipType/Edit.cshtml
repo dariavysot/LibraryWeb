@@ -1,35 +1,54 @@
 ﻿@model LibraryWeb.Models.MembershipType
 
 @{
-    ViewData["Title"] = "Редагувати тип";
+    ViewData["Title"] = "Edit Membership Type";
 }
 
-<h2>@ViewData["Title"]</h2>
+<section class="admin-page">
+    <div class="admin-container">
+        <h2 class="admin-title">@ViewData["Title"]</h2>
+        <p class="edit-profile-subtitle" style="text-align:center; margin-bottom:2rem;">
+            Currently Editing: <strong>@Model.Name</strong>
+        </p>
 
-<form asp-action="Edit" asp-route-id="@Model.MembershipTypeID" method="post">
-    <input type="hidden" asp-for="MembershipTypeID" />
+        @if (TempData["Success"] != null)
+        {
+            <div class="admin-alert-success">@TempData["Success"]</div>
+        }
 
-    <div class="mb-3">
-        <label class="form-label">Назва</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        @if (TempData["Error"] != null)
+        {
+            <div class="admin-alert-error">@TempData["Error"]</div>
+        }
+
+        <form asp-action="Edit" asp-route-id="@Model.MembershipTypeID" method="post" class="edit-profile-form">
+            <input type="hidden" asp-for="MembershipTypeID" />
+
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price</label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Duration (months)</label>
+                <input asp-for="DurationMonths" class="form-control" type="number" />
+                <span asp-validation-for="DurationMonths" class="text-danger"></span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label class="form-label">Ціна</label>
-        <input asp-for="Price" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Тривалість</label>
-        <input asp-for="DurationMonths" class="form-control" type="number" />
-        <span asp-validation-for="DurationMonths" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Зберегти</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-</form>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -1,68 +1,153 @@
 ﻿@model IEnumerable<LibraryWeb.Models.Reservation>
 
 @{
-    ViewData["Title"] = "Список резервацій";
+    ViewData["Title"] = "My Reservations";
+
+    var forPayReservations = Model.Where(r => r.Status == "Очікує оплату").ToList();
+    var activeReservations = Model.Where(r => r.Status == "Активна").ToList();
+    var canceledStatuses = new[] { "Скасована", "Термін дії закінчився" };
+    var canceledReservations = Model.Where(r => canceledStatuses.Contains(r.Status)).ToList();
+
 }
 
-<h2>Список резервацій</h2>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+<h2 class="loan-main-title">My Reservations</h2>
+<p class="loan-main-subtitle">All your reservations in one place — organized and easy to follow.</p>
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+<div class="button-group mb-3">
+    <a asp-action="Create" class="loan-main-btn loan-main-btn-primary">Add New Reservation</a>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Користувач</th>
-            <th>Книга</th>
-            <th>Дата початку</th>
-            <th>Дата завершення</th>
-            <th>Статус резервації</th>
-            <th>Статус оплати</th>
-            <th>Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var reservation in Model)
-        {
-            <tr>
-                <td>@reservation.User?.Name</td>
-                <td>@reservation.Copy.Book.Title</td>
-                <td>@reservation.StartDate.ToShortDateString()</td>
-                <td>@reservation.EndDate.ToShortDateString()</td>
-                <td>@reservation.Status</td>
-                <td>@reservation.Payment?.Status</td>
-                <td>
-                    <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="btn btn-sm btn-info">Деталі</a>
-                    @* Кнопка для оплати *@
-                    @if (reservation.Payment != null && reservation.Payment.Status == "Очікує оплату")
-                    {
-                        <form asp-controller="Payment" asp-action="ConfirmPayment" asp-route-paymentId="@reservation.Payment.PaymentID" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-sm btn-success">💳 Оплатити</button>
-                        </form>
-                    }
-                    else if (reservation.Payment == null)
-                    {
-                        <form asp-controller="Payment" asp-action="CreatePaymentForReservation" method="post" style="display:inline">
-                            <input type="hidden" name="reservationId" value="@reservation.ReservationID" />
-                            <button type="submit" class="btn btn-sm btn-primary">Створити оплату</button>
-                        </form>
-                    }
+@if (!Model.Any())
+{
+    <p>You currently have no reservations.</p>
+}
+else
+{
+    <!-- === Awaiting Payment === -->
+    @if (forPayReservations.Any())
+    {
+        <h3 class="loan-section-title">Awaiting Payment</h3>
+        <div class="loan-cards-grid">
+            @foreach (var reservation in forPayReservations)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <img src="@reservation.Copy.Book.CoverImagePath"
+                                 class="loan-cover"
+                                 alt="@reservation.Copy.Book.Title" />
+                            <p><span class="label">Amount:</span> @reservation.Amount.ToString("C")</p>
+                        </a>
+                    </div>
 
-                    @* Кнопка видалення резервації *@
-                    <form asp-action="Delete" asp-route-id="@reservation.ReservationID" method="post" style="display:inline"
-                          onsubmit="return confirm('Видалити цю резервацію?');">
-                        <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    <div class="loan-right">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <h4>@reservation.Copy.Book.Title</h4>
+                            <p class="loan-author">@reservation.Copy.Book.Author</p>
+                        </a>
 
-<a asp-action="Create" class="btn btn-success">Створити нову резервацію</a>
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @reservation.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @reservation.EndDate.ToShortDateString()
+                        </p>
+
+                        <div class="profile-actions">
+                            @if (reservation.Payment != null && reservation.Payment.Status == "Очікує оплату")
+                            {
+                                <form asp-controller="Payment" asp-action="ConfirmPayment" asp-route-paymentId="@reservation.Payment.PaymentID" method="post" style="display:inline">
+                                    <button type="submit" class="btn btn-sm btn-dark">💳 Pay</button>
+                                </form>
+                            }
+                            <form asp-action="Delete" asp-route-id="@reservation.ReservationID" method="post" style="display:inline"
+                                  onsubmit="return confirm('Cancel this reservation?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+
+    <!-- === Active Reservations === -->
+    @if (activeReservations.Any())
+    {
+        <h3 class="loan-section-title">Active Reservations</h3>
+        <div class="loan-cards-grid">
+            @foreach (var reservation in activeReservations)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <img src="@reservation.Copy.Book.CoverImagePath"
+                                 class="loan-cover"
+                                 alt="@reservation.Copy.Book.Title" />
+                        </a>
+                    </div>
+
+                    <div class="loan-right">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <h4>@reservation.Copy.Book.Title</h4>
+                            <p class="loan-author">@reservation.Copy.Book.Author</p>
+                        </a>
+
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @reservation.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @reservation.EndDate.ToShortDateString()
+                        </p>
+
+                        <div class="profile-actions">
+
+                            <form asp-action="Delete" asp-route-id="@reservation.ReservationID" method="post" style="display:inline"
+                                  onsubmit="return confirm('Cancel this reservation?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+
+    <!-- === Canceled Reservations === -->
+    @if (canceledReservations.Any())
+    {
+        <h3 class="loan-section-title">Canceled Reservations</h3>
+        <div class="loan-cards-grid">
+            @foreach (var reservation in canceledReservations)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <img src="@reservation.Copy.Book.CoverImagePath"
+                                 class="loan-cover"
+                                 alt="@reservation.Copy.Book.Title" />
+                        </a>
+                    </div>
+
+                    <div class="loan-right">
+                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.ReservationID" class="reservation-card-link">
+                            <h4>@reservation.Copy.Book.Title</h4>
+                            <p class="loan-author">@reservation.Copy.Book.Author</p>
+                        </a>
+
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @reservation.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @reservation.EndDate.ToShortDateString()
+                        </p>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+}

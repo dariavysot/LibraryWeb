@@ -98,6 +98,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipID = membership.MembershipID,
+                UserName = user.Name,
                 Amount = type.Price,
                 Date = DateTime.Now,
                 Type = "Членство",
@@ -137,18 +138,28 @@ namespace LibraryWeb.Controllers
             return View(membership);
         }
 
-        // --- Видалення членства ---
+        // --- Видалення членства з оновленням платежу ---
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var membership = _context.Memberships.Find(id);
-            if (membership == null) return NotFound();
+            var membership = _context.Memberships
+                .Include(m => m.Payment) 
+                .FirstOrDefault(m => m.MembershipID == id);
 
+            if (membership == null)
+                return NotFound();
+
+            if (membership.Payment != null)
+            {
+                membership.Payment.Status = "Скасований";
+            }
+
+            // Видаляємо членство
             _context.Memberships.Remove(membership);
             _context.SaveChanges();
 
-            TempData["Success"] = "Членство видалено.";
+            TempData["Success"] = "Membership deleted and related payment status updated.";
             return RedirectToAction("Index");
         }
 
@@ -208,6 +219,7 @@ namespace LibraryWeb.Controllers
             {
                 UserID = userId,
                 MembershipID = membership.MembershipID,
+                UserName = user.Name,
                 Amount = type.Price,
                 Date = DateTime.Now,
                 Type = "Членство",

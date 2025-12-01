@@ -1,0 +1,149 @@
+﻿@model List<LibraryWeb.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Reservations";
+}
+
+<main class="loan-main-page">
+    <div class="loan-main-container">
+        <h2 class="loan-main-title">Reservations List</h2> 
+        <p class="loan-main-subtitle">Manage all library reservations</p>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="loan-alert loan-alert-success">@TempData["Success"]</div>
+        }
+
+        <form method="get" class="loan-form">
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Reservation ID</label>
+                    <input type="text" name="searchId" value="@ViewBag.SearchId" class="loan-main-input" placeholder="Search by reservation ID" />
+                </div>
+                <div class="book-form-group">
+                    <label class="loan-main-label">User Name / Login</label>
+                    <input type="text" name="searchUser" value="@ViewBag.SearchUser" class="loan-main-input" placeholder="Search by Name or login" />
+                </div>
+            </div>
+
+            <div class="book-form-row">
+                <div class="book-form-group">
+                    <label class="loan-main-label">Book Title</label>
+                    <input type="text" name="searchBook" value="@ViewBag.SearchBook" class="loan-main-input" placeholder="Search by Book title" />
+                </div>
+                <div class="book-form-group">
+                    <label class="loan-main-label">Inventory Number</label>
+                    <input type="text" name="searchInventory" value="@ViewBag.SearchInventory" class="loan-main-input" placeholder="Search by Inventory #" />
+                </div>
+            </div>
+
+            <div class="loan-main-form-row">
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Status</label>
+                    <select name="statusFilter" class="loan-main-select">
+                        @foreach (var status in (List<string>)ViewBag.Statuses)
+                        {
+                            <option value="@status" selected="@(ViewBag.StatusFilter == status)">
+                                @status
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Date From</label>
+                    <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="loan-main-input" />
+                </div>
+                <div class="loan-main-form-group">
+                    <label class="loan-main-label">Date To</label>
+                    <input type="date" name="dateTo" value="@ViewBag.DateTo" class="loan-main-input" />
+                </div>
+            </div>
+
+            <div class="loan-main-form-actions">
+                <button type="submit" class="loan-main-btn loan-main-btn-primary">Search</button>
+                <a href="/admin/reservations" class="loan-main-btn loan-main-btn-outline">Reset</a>
+            </div>
+        </form>
+
+        @if (!Model.Any())
+        {
+            <div class="loan-alert loan-alert-warning">No results found for your query.</div>
+        }
+        else
+        {
+            <div class="table-responsive" style="margin-top:1.5rem;">
+                <table class="loan-main-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Book</th>
+                            <th>Inventory #</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td>@r.ReservationID</td>
+                                <td>@r.User?.Name</td>
+                                <td>@r.Copy?.Book?.Title</td>
+                                <td>@r.InventoryNum</td>
+                                <td>@r.StartDate.ToShortDateString()</td>
+                                <td>@r.EndDate.ToShortDateString()</td>
+                                <td>
+                                    <span class="loan-main-badge @(r.Status == "Активна" ? "loan-main-active" : r.Status == "Очікує оплату" ? "loan-main-overdue" : "loan-main-returned")">
+                                        @r.Status
+                                    </span>
+                                </td>
+                                <td>@r.Amount</td>
+                                <td>
+                                    @if (r.Payment != null && r.Payment.Status == "Очікує оплату")
+                                    {
+                                        <form method="post"
+                                              action="/payment/confirm/@r.Payment.PaymentID"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button class="loan-main-action-btn loan-main-btn-info"
+                                                    onclick="return confirm('Confirm payment?')">
+                                                💳 Pay
+                                            </button>
+                                        </form>
+                                    }
+    
+                                    @if (r.Status != "Скасована" && r.Status != "Термін дії закінчився")
+                                    {
+                                        <form method="post"
+                                              action="/reservations/delete/@r.ReservationID"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button class="loan-main-action-btn loan-main-btn-return"
+                                                    onclick="return confirm('Cancel this reservation?')">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        
+
+                                    <form method="post" action="/admin/reservations/delete/@r.ReservationID" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button class="loan-main-action-btn loan-main-btn-delete" onclick="return confirm('Delete this reservation?')">Delete</button>
+										</form>
+									}
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</main>

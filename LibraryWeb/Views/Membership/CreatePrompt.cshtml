@@ -1,28 +1,38 @@
 ﻿@{
-    ViewData["Title"] = "Оформлення членства";
+    ViewData["Title"] = "Membership Registration";
     var user = ViewBag.User as LibraryWeb.Models.User;
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="loan-page">
+    <div class="loan-container loan-warning-container">
+        <h2 class="loan-title">⚠️ Membership Registration</h2>
+        <p class="loan-subtitle">The user does not have an active membership.</p>
 
-@if (!string.IsNullOrEmpty(ViewBag.Error))
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
+        <div class="loan-warning-box">
+            <p>
+                The user <strong>@user?.Name</strong> does not have an active membership.
+                Would you like to register it now?
+            </p>
 
-<p>У користувача <strong>@user?.Name</strong> немає активного членства. Бажаєте оформити?</p>
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <p class="loan-alert loan-alert-error">@ViewBag.Error</p>
+            }
+        </div>
 
-<div class="d-flex gap-2 mt-3">
-    <a asp-controller="Membership"
-       asp-action="CreateForUser"
-       asp-route-userId="@user?.UserID"
-       class="btn btn-primary">
-        Оформити членство
-    </a>
+        <div class="loan-actions">
+            <a asp-controller="Membership"
+               asp-action="CreateForUser"
+               asp-route-userId="@user?.UserID"
+               class="loan-btn loan-btn-primary">
+                Register Membership
+            </a>
 
-    <a asp-controller="Loan"
-       asp-action="Create"
-       class="btn btn-secondary">
-        Повернутися до оформлення позики
-    </a>
+            <a asp-controller="Loan"
+               asp-action="Index"
+               class="loan-btn loan-btn-outline">
+                Return to Book Loan
+            </a>
+        </div>
+    </div>
 </div>

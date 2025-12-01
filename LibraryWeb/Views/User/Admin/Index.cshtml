@@ -7,6 +7,7 @@
 <main class="admin-page">
     <div class="admin-container">
         <h1 class="admin-title">User Management</h1>
+        <p class="admin-subtitle">View, search, and manage all registered users of the library system.</p>
 
         @if (TempData["Error"] != null)
         {
@@ -18,14 +19,16 @@
         }
 
         <form method="get" class="admin-filter-form">
-            <input type="text" name="search" class="form-control" placeholder="Search by name or email..."
+            <input type="text" name="search" class="form-control" placeholder="Search by name or login..."
                    value="@ViewBag.Search" />
+
             <select name="role" class="form-select">
                 <option value="">All Roles</option>
                 <option value="Admin" selected="@(ViewBag.Role?.ToString() == "Admin")">Administrator</option>
                 <option value="Employee" selected="@(ViewBag.Role?.ToString() == "Employee")">Employee</option>
                 <option value="User" selected="@(ViewBag.Role?.ToString() == "User")">User</option>
             </select>
+
             <select name="membershipType" class="form-select">
                 <option value="">All Memberships</option>
                 @foreach (var type in (ViewBag.MembershipTypes as List<string> ?? new List<string>()))
@@ -33,59 +36,70 @@
                     <option value="@type" selected="@(ViewBag.MembershipType == type)">@type</option>
                 }
             </select>
+
             <button type="submit" class="btn admin-btn">Filter</button>
+            <a href="/admin/users" class="btn admin-btn-reset">Reset</a>
         </form>
 
-        <div class="table-responsive">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Membership</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model)
-                    {
+        @if (!Model.Any())
+        {
+            <div class="alert admin-alert-warning">No users found for your search.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
                         <tr>
-                            <td>@user.UserID</td>
-                            <td>@user.Name</td>
-                            <td>@user.Email</td>
-                            <td>@user.Phone</td>
-                            <td>
-                                @switch (user.Role)
-                                {
-                                    case LibraryWeb.Models.UserRole.Admin:
-                                        <span class="badge role-admin">Administrator</span>
-                                        break;
-                                    case LibraryWeb.Models.UserRole.Employee:
-                                        <span class="badge role-employee">Employee</span>
-                                        break;
-                                    default:
-                                        <span class="badge role-user">User</span>
-                                        break;
-                                }
-                            </td>
-                            <td>@(user.Membership != null ? user.Membership.Type : "—")</td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-edit">Edit</a>
-                                <form asp-action="Delete" asp-route-id="@user.UserID" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-delete"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
-                                        Delete
-                                    </button>
-                                </form>
-                            </td>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Login</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Membership</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.UserID</td>
+                                <td>@user.Name</td>
+                                <td>@user.Login</td>
+                                <td>@user.Email</td>
+                                <td>@user.Phone</td>
+                                <td>
+                                    @switch (user.Role)
+                                    {
+                                        case LibraryWeb.Models.UserRole.Admin:
+                                            <span class="badge role-admin">Administrator</span>
+                                            break;
+                                        case LibraryWeb.Models.UserRole.Employee:
+                                            <span class="badge role-employee">Employee</span>
+                                            break;
+                                        default:
+                                            <span class="badge role-user">User</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@(user.Membership != null ? user.Membership.Type : "—")</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@user.UserID" class="btn btn-edit">Edit</a>
+                                    <form asp-action="Delete" asp-route-id="@user.UserID" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-delete"
+                                                onclick="return confirm('Are you sure you want to delete this user?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
 
         <a asp-controller="Home" asp-action="AdminDashboard" class="btn btn-back">← Back to Dashboard</a>
     </div>

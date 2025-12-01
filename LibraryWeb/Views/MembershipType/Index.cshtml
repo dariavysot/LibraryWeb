@@ -1,55 +1,55 @@
 ﻿@model IEnumerable<LibraryWeb.Models.MembershipType>
 
 @{
-    ViewData["Title"] = "Типи членства";
+    ViewData["Title"] = "Membership Types";
 }
 
-<h2>Типи членства</h2>
+<section class="admin-page">
+    <div class="membership-page-container">
+        <h2 class="admin-title">Membership Types</h2>
+        <p class="admin-subtitle">Manage the different membership options available for library users.</p>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">Додати новий тип</a>
-}
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Назва</th>
-            <th>Тривалість (місяці)</th>
-            <th>Ціна</th>
-            @if (User.IsInRole("Admin"))
-            {
-                <th>Дії</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var type in Model)
+        @if (TempData["Success"] != null)
         {
-            <tr>
-                <td>@type.Name</td>
-                <td>@type.DurationMonths</td>
-                <td>@type.Price</td>
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@type.MembershipTypeID" class="btn btn-sm btn-warning">Редагувати</a>
-                        <form asp-action="Delete" asp-route-id="@type.MembershipTypeID" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Видалити тип?')">Видалити</button>
-                        </form>
-                    </td>
-                }
-            </tr>
+            <div class="admin-alert-success">@TempData["Success"]</div>
         }
-    </tbody>
-</table>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="admin-alert-error">@TempData["Error"]</div>
+        }
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="button-group mb-3">
+                <a asp-action="Create" class="admin-btn">Add New Type</a>
+            </div>
+        }
+
+        <div class="admin-grid">
+            @foreach (var type in Model)
+            {
+                <div class="admin-card">
+                    <h3>@type.Name</h3>
+                    <p><strong>Duration:</strong> @type.DurationMonths months</p>
+                    <p><strong>Price:</strong> @type.Price.ToString("C")</p>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="admin-actions">
+                            <a asp-action="Edit" asp-route-id="@type.MembershipTypeID" class="admin-btn">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@type.MembershipTypeID" method="post" style="display:inline">
+                                <button type="submit" class="admin-btn admin-btn-dark" onclick="return confirm('Delete this membership type?')">Delete</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <p class="text-muted">No membership types found.</p>
+        }
+    </div>
+</section>

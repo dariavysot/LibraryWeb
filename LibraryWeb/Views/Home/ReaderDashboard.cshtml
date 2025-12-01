@@ -1,40 +1,184 @@
 ﻿@{
-    ViewData["Title"] = "Панель користувача";
+    ViewData["Title"] = "Reader Dashboard";
 }
 
-<h2>Панель користувача</h2>
+<div class="reader-dashboard">
 
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>Останні книги</h5>
-            <ul>
-                @foreach (var book in ViewBag.NewBooks)
+    <h2 class="reader-title">Reader Dashboard</h2>
+    <p class="reader-subtitle">Your current loans, reservations, and membership</p>
+
+
+    <!-- ==== Statistics ==== -->
+    <div class="reader-stats">
+
+        <!-- Membership Stat Card -->
+        @if (ViewBag.ActiveMembership != null)
+        {
+            var m = ViewBag.ActiveMembership;
+            <a asp-controller="Membership"
+               asp-action="Index"
+               asp-route-id="@m.MembershipID"
+               class="stat-card stat-membership-link">
+
+                <h4>@m.Status</h4>
+                <p><strong>Type:</strong> @m.MembershipType.Name</p>
+                <p>Expires: @m.EndDate.ToShortDateString()</p>
+                <p>Click for details</p>
+            </a>
+        }
+        else
+        {
+            <div class="stat-card stat-membership">
+                <h4>No Membership</h4>
+                <p>You have not yet subscribed to a membership</p>
+                <a asp-controller="Membership"
+                   asp-action="Create"
+                   class="reader-btn reader-btn-success">
+                    Register Membership
+                </a>
+            </div>
+        }
+
+        <div class="stat-card stat-yellow">
+            <h4>@ViewBag.ActiveLoansCount</h4>
+            <p>Active Loans</p>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <h4>@ViewBag.OverdueLoansCount</h4>
+            <p>Overdue Loans</p>
+        </div>
+
+        <div class="stat-card stat-blue">
+            <h4>@ViewBag.ActiveReservationsCount</h4>
+            <p>Active Reservations</p>
+        </div>
+
+    </div>
+
+
+    <!-- ==== My Loans (Horizontal Carousel) ==== -->
+    <div class="reader-section wide-card">
+        <h3>My Loans</h3>
+
+        @if (ViewBag.ActiveLoansList != null && ViewBag.ActiveLoansList.Count > 0)
+        {
+            <div class="loan-cards-scroll">
+
+                @foreach (var loan in ViewBag.ActiveLoansList)
                 {
-                    <li>@book.Title (@book.PublicationYear)</li>
+                    <div class="loan-card">
+
+                        <img src="@loan.Cover" alt="@loan.Title" class="loan-cover" />
+
+                        <h4>@loan.Title</h4>
+                        <p class="loan-author">@loan.Author</p>
+
+                        <p><strong>Due:</strong> @loan.EndDate.ToShortDateString()</p>
+
+                        <p class="loan-page-status @(loan.Status == "Прострочена" ? "status-overdue" : "status-active")">
+                            @loan.Status
+                        </p>
+                    </div>
                 }
-            </ul>
-            <p>Усього книг: <strong>@ViewBag.TotalBooks</strong></p>
-            <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-sm">Переглянути книги</a>
-        </div>
+
+            </div>
+        }
+        else
+        {
+            <p class="empty-text">You currently have no active loans.</p>
+        }
     </div>
 
-    <div class="col-md-4">
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>Мої активні позики</h5>
-            <p>Кількість: <strong>@ViewBag.MyActiveLoans</strong></p>
-            <a asp-controller="Loan" asp-action="Index" class="btn btn-warning btn-sm">Переглянути мої позики</a>
+
+    <!-- ==== My Reservations ==== -->
+    <div class="reader-section wide-card">
+        <div class="reservation-header">
+            <h3>My Reservations</h3>
+            <a asp-controller="Reservation"
+               asp-action="Create"
+               class="btn-add-reservation">
+                Add Reservation
+            </a>
         </div>
+
+        @if (ViewBag.ActiveReservationsList != null && ViewBag.ActiveReservationsList.Count > 0)
+        {
+            <div class="reservation-cards-grid">
+                @foreach (var r in ViewBag.ActiveReservationsList)
+                {
+                    <a asp-controller="Reservation"
+                       asp-action="Details"
+                       asp-route-id="@r.ReservationID"
+                       class="reservation-card-link">
+                        <div class="reservation-card">
+                            <img src="@r.Cover" class="reservation-cover" />
+                            <h4>@r.Title</h4>
+                            <p class="reservation-author">@r.Author</p>
+                            <p class="reservation-date">
+                                @r.StartDate.ToString("dd.MM.yyyy") - @r.EndDate.ToString("dd.MM.yyyy")
+                            </p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="empty-text">No active reservations.</p>
+        }
     </div>
 
-    <div class="col-md-4">
-        <div class="card p-3 mb-3 shadow-sm">
-            <h5>Активні резервації</h5>
-            <p>Кількість: <strong>@ViewBag.ActiveReservations</strong></p>
-            <a asp-controller="Reservation" asp-action="Create" class="btn btn-warning btn-sm">Зробити резервацію</a>
-            <a asp-controller="Reservation" asp-action="Index" class="btn btn-secondary btn-sm mt-2">Переглянути всі резервації</a>
-        </div>
+
+
+
+    <!-- ==== My Membership ==== -->
+    <div class="reader-section membership-card">
+
+        <h3>My Membership</h3>
+
+        @if (ViewBag.ActiveMembership != null)
+        {
+            var m = ViewBag.ActiveMembership;
+
+            <p><strong>Type:</strong> @m.MembershipType?.Name</p>
+            <p><strong>Price:</strong> @m.Price.ToString("C")</p>
+            <p><strong>Status:</strong> @m.Status</p>
+            <p><strong>Expires:</strong> @m.EndDate.ToShortDateString()</p>
+
+            <div class="membership-actions">
+
+                @if (ViewBag.MembershipPaymentPending == true)
+                {
+                    <form asp-controller="Payment"
+                          asp-action="ConfirmMembershipPayment"
+                          asp-route-paymentId="@m.Payment.PaymentID"
+                          method="post">
+                        <button class="reader-btn reader-btn-primary">💳 Pay</button>
+                    </form>
+                }
+
+                <form asp-controller="Membership"
+                      asp-action="Delete"
+                      asp-route-id="@m.MembershipID"
+                      method="post"
+                      onsubmit="return confirm('Cancel membership?');">
+                    <button class="reader-btn reader-btn-danger">Cancel</button>
+                </form>
+
+            </div>
+        }
+        else
+        {
+            <p>You have no active membership.</p>
+
+            <a asp-controller="Membership"
+               asp-action="Create"
+               class="reader-btn reader-btn-success">
+                Register Membership
+            </a>
+        }
+
     </div>
 
 </div>
-

@@ -70,6 +70,7 @@ namespace LibraryWeb.Controllers
             ViewBag.TotalUsers = _context.Users.Count();
             ViewBag.ActiveLoans = _context.Loans.Count(l => l.Status == "Активна" || l.Status == "Прострочена");
             ViewBag.TotalMemberships = _context.MembershipTypes.Count();
+            ViewBag.TotalReservations = _context.Reservations.Count();
 
             return View();
         }
@@ -81,6 +82,7 @@ namespace LibraryWeb.Controllers
             ViewBag.ActiveLoans = _context.Loans.Count(l => l.Status == "Активна" || l.Status == "Прострочена");
             ViewBag.TotalBooks = _context.Copies.Count();
             ViewBag.ActiveMemberships = _context.Memberships.Count(m => m.EndDate > DateTime.Now);
+            ViewBag.TotalReservations = _context.Reservations.Count();
 
             return View();
         }
@@ -97,26 +99,93 @@ namespace LibraryWeb.Controllers
             ViewBag.NewBooks = _context.Books
                 .OrderByDescending(b => b.DateAdded)
                 .Take(5)
-                .Select(b => new { b.Title, b.PublicationYear })
+                .Select(b => new {
+                    b.BookID,
+                    b.Title,
+                    b.Author,
+                    b.CoverImagePath
+                })
                 .ToList();
 
+            // Загальна кількість книг
             ViewBag.TotalBooks = _context.Copies.Count();
 
-            // Активні позики користувача
-            ViewBag.MyActiveLoans = _context.Loans.Count(l => l.UserID == userId && (l.Status == "Активна" || l.Status == "Прострочена"));
+            // Кількість активних бронювань
+            ViewBag.ActiveLoansCount = _context.Loans
+                .Count(l => l.UserID == userId && l.Status == "Активна");
+
+            // Кількість прострочених бронювань
+            ViewBag.OverdueLoansCount = _context.Loans
+                .Count(l => l.UserID == userId && l.Status == "Прострочена");
+
+            ViewBag.ActiveLoansList = _context.Loans
+                 .Include(l => l.Copy)
+                     .ThenInclude(c => c.Book)
+                 .Where(l => l.UserID == userId && (l.Status == "Активна" || l.Status == "Прострочена"))
+                 .Select(l => new
+                 {
+                     l.LoanID,
+                     l.EndDate,
+                     l.Status,
+                     Title = l.Copy.Book.Title,
+                     Author = l.Copy.Book.Author,
+                     Cover = l.Copy.Book.CoverImagePath
+                 })
+                 .OrderByDescending(l => l.Status == "Прострочена")
+                 .ThenBy(l => l.EndDate)
+                 .ToList();
+
+
+            // Активні резервації (лічильник)
+            ViewBag.ActiveReservationsCount = _context.Reservations
+                .Count(r => r.UserID == userId && r.Status == "Активна");
+
+            // Список активних резервацій
+            ViewBag.ActiveReservationsList = _context.Reservations
+                .Include(r => r.Copy)
+                    .ThenInclude(c => c.Book)
+                .Where(r => r.UserID == userId && r.Status == "Активна")
+                .Select(r => new
+                {
+                    r.ReservationID,
+                    r.StartDate,
+                    r.EndDate,
+                    r.Status,
+                    Title = r.Copy.Book.Title,
+                    Author = r.Copy.Book.Author,
+                    Cover = r.Copy.Book.CoverImagePath
+                })
+                .ToList();
+
 
             // Активне членство
-            ViewBag.ActiveMembership = _context.Memberships
-                .Where(m => m.UserID == userId && m.EndDate > DateTime.Now)
+            var activeMembership = _context.Memberships
+                .Include(m => m.Payment)
+                .Include(m => m.MembershipType)
+                .Where(m => m.UserID == userId && m.EndDate >= DateTime.Now)
                 .OrderByDescending(m => m.EndDate)
                 .FirstOrDefault();
 
-            ViewBag.ActiveReservations = _context.Reservations
-                .Count(r => r.UserID == userId && r.Status == "Активна");
+            ViewBag.ActiveMembership = activeMembership;
 
+            ViewBag.MembershipStatus = activeMembership?.Status ?? "Неактивне";
+            ViewBag.MembershipEndDate = activeMembership != null
+                ? activeMembership.EndDate.ToString("yyyy-MM-dd")
+                : "-";
+
+            // Чи є неоплачений платіж за активним членством
+            ViewBag.MembershipPaymentPending =
+                activeMembership?.Payment?.Status == "Очікує оплату";
 
             return View("~/Views/Home/ReaderDashboard.cshtml");
         }
+
+        [HttpGet("/about")]
+        public IActionResult About()
+        {
+            return View();
+        }
+
 
     }
 }

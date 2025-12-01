@@ -1,0 +1,110 @@
+﻿@model List<LibraryWeb.Models.Loan>
+
+@{
+    ViewData["Title"] = "My Loans";
+
+    var overdueLoans = Model.Where(l => l.Status == "Прострочено").ToList();
+    var activeLoans = Model.Where(l => l.Status == "Активна").ToList();
+    var returnedLoans = Model.Where(l => l.Status == "Повернено").ToList();
+}
+
+<h2 class="loan-main-title">My Loans</h2>
+<p class="loan-main-subtitle">All your library loans in one place — organized and easy to follow.</p>
+@if (!Model.Any())
+{
+    <p>You currently have no loans.</p>
+}
+else
+{
+    <!-- === Overdue Loans === -->
+    @if (overdueLoans.Any())
+    {
+        <h3 class="loan-section-title">Overdue Loans</h3>
+
+        <div class="loan-cards-grid">
+            @foreach (var loan in overdueLoans)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <img src="@loan.Copy?.Book?.CoverImagePath"
+                             class="loan-cover"
+                             alt="@loan.Copy?.Book?.Title" />
+                    </div>
+
+                    <div class="loan-right">
+                        <h4>@loan.Copy?.Book?.Title</h4>
+                        <p class="loan-author">@loan.Copy?.Book?.Author</p>
+
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @loan.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @loan.EndDate.ToShortDateString()<br />
+                            <strong>Returned:</strong> @(loan.ReturnDate?.ToShortDateString() ?? "—")
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+
+    <!-- === Active Loans === -->
+    @if (activeLoans.Any())
+    {
+        <h3 class="loan-section-title">Active Loans</h3>
+
+        <div class="loan-cards-grid">
+            @foreach (var loan in activeLoans)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <img src="@loan.Copy?.Book?.CoverImagePath"
+                             class="loan-cover"
+                             alt="@loan.Copy?.Book?.Title" />
+                    </div>
+
+                    <div class="loan-right">
+                        <h4>@loan.Copy?.Book?.Title</h4>
+                        <p class="loan-author">@loan.Copy?.Book?.Author</p>
+
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @loan.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @loan.EndDate.ToShortDateString()<br />
+                            <strong>Returned:</strong> @(loan.ReturnDate?.ToShortDateString() ?? "—")
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+
+    <!-- === Returned Loans === -->
+    @if (returnedLoans.Any())
+    {
+        <h3 class="loan-section-title">Returned Books</h3>
+
+        <div class="loan-cards-grid">
+            @foreach (var loan in returnedLoans)
+            {
+                <div class="loan-card horizontal-card">
+                    <div class="loan-left">
+                        <img src="@loan.Copy?.Book?.CoverImagePath"
+                             class="loan-cover"
+                             alt="@loan.Copy?.Book?.Title" />
+                    </div>
+
+                    <div class="loan-right">
+                        <h4>@loan.Copy?.Book?.Title</h4>
+                        <p class="loan-author">@loan.Copy?.Book?.Author</p>
+
+                        <p class="loan-dates">
+                            <strong>Start:</strong> @loan.StartDate.ToShortDateString()<br />
+                            <strong>End:</strong> @loan.EndDate.ToShortDateString()<br />
+                            <strong>Returned:</strong> @(loan.ReturnDate?.ToShortDateString() ?? "—")
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

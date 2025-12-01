@@ -6,12 +6,42 @@
     <h1 class="admin-title">Admin Dashboard</h1>
     <p class="admin-subtitle">Manage all sections of your library system below.</p>
 
-    <div class="admin-grid">
-        <div class="admin-card">
-            <h3>Books</h3>
-            <p>Total books: <strong>@ViewBag.TotalBooks</strong></p>
-            <a asp-controller="Book" asp-action="Index" class="admin-btn admin-btn-orange">View Books</a>
-        </div>
+	<div class="admin-grid">
+
+		<div class="admin-card quick-vertical">
+			<h3>Quick Actions</h3>
+			<p>Add books, edit memberships, or manage users directly.</p>
+            <div class="admin-actions">
+				<a asp-controller="Book" asp-action="Create" class="admin-btn admin-btn-dark">Add new Book</a>
+				<a asp-controller="Loan" asp-action="Create" class="admin-btn admin-btn-dark">Add Loan</a>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<h3>Books</h3>
+			<p>Total books: <strong>@ViewBag.TotalBooks</strong></p>
+			<a asp-controller="Book" asp-action="Index" class="admin-btn admin-btn-orange">View Books</a>
+		</div>
+
+		<div class="admin-card">
+			<h3>Loans</h3>
+			<p>Active loans: <strong>@ViewBag.ActiveLoans</strong></p>
+			<a asp-controller="Loan" asp-action="Index" class="admin-btn admin-btn-orange">View Loans</a>
+		</div>
+
+		<div class="admin-card">
+			<h3>Reservations</h3>
+			<p>Total reservations: <strong>@ViewBag.TotalReservations</strong></p>
+			<a asp-controller="AdminReservation" asp-action="Index" class="admin-btn admin-btn-orange">
+				View Reservations
+			</a>
+		</div>
+
+		<div class="admin-card">
+			<h3>Payments</h3>
+			<p>View and filter all payments</p>
+			<a asp-controller="Payment" asp-action="Index" class="admin-btn admin-btn-orange">View Payments</a>
+		</div>
 
         <div class="admin-card">
             <h3>Users</h3>
@@ -22,22 +52,7 @@
         <div class="admin-card">
             <h3>Membership Types</h3>
             <p>Total: <strong>@ViewBag.TotalMemberships</strong></p>
-            <a asp-controller="MembershipType" asp-action="Index" class="admin-btn admin-btn-orange">Memberships</a>
-        </div>
-
-        <div class="admin-card">
-            <h3>Loans</h3>
-            <p>Active loans: <strong>@ViewBag.ActiveLoans</strong></p>
-            <a asp-controller="Loan" asp-action="Index" class="admin-btn admin-btn-orange">View Loans</a>
-        </div>
-
-        <div class="admin-card wide">
-            <h3>Quick Actions</h3>
-            <p>Add books, edit memberships, or manage users directly.</p>
-            <div class="admin-actions">
-                <a asp-controller="Book" asp-action="Create" class="admin-btn admin-btn-dark">Add Book</a>
-                <a asp-controller="MembershipType" asp-action="Create" class="admin-btn admin-btn-dark">Add Membership</a>
-            </div>
+            <a asp-controller="MembershipType" asp-action="Index" class="admin-btn admin-btn-orange">View Memberships</a>
         </div>
     </div>
 </section>

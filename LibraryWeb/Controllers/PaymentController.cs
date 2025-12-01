@@ -17,6 +17,54 @@ namespace LibraryWeb.Controllers
             _context = context;
         }
 
+        [HttpGet("")]
+        public async Task<IActionResult> Index(string? status, string? type, string? paymentId, string? userSearch, DateTime? fromDate, DateTime? toDate)
+        {
+            var query = _context.Payments.Include(p => p.User).AsQueryable();
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(p => p.Status == status);
+
+            if (!string.IsNullOrEmpty(type))
+                query = query.Where(p => p.Type == type);
+
+            // --- Search by Payment ID ---
+            if (!string.IsNullOrEmpty(paymentId))
+            {
+                if (int.TryParse(paymentId, out int pid))
+                    query = query.Where(p => p.PaymentID == pid);
+                else
+                    query = query.Where(p => p.PaymentID.ToString().Contains(paymentId));
+            }
+
+            if (!string.IsNullOrEmpty(userSearch))
+            {
+                if (int.TryParse(userSearch, out int userId))
+                {
+                    query = query.Where(p => p.UserID == userId);
+                }
+                else
+                {
+                    query = query.Where(p => p.UserName != null && p.UserName.Contains(userSearch));
+                }
+            }
+
+            if (fromDate.HasValue)
+                query = query.Where(p => p.Date >= fromDate.Value);
+
+            if (toDate.HasValue)
+                query = query.Where(p => p.Date <= toDate.Value);
+
+
+
+            var payments = await query.OrderByDescending(p => p.Date).ToListAsync();
+            ViewBag.TotalAmount = payments.Sum(p => p.Amount);
+            ViewBag.StatusList = new List<string> { "Оплачено", "Очікує оплату", "Скасований" };
+            ViewBag.TypeList = _context.Payments.Select(p => p.Type).Distinct().ToList();
+
+            return View(payments);
+        }
+
         // --- Створення платежу для резервації ---
         [HttpPost("create/{reservationId}")]
         public async Task<IActionResult> CreatePaymentForReservation(int reservationId)
@@ -106,7 +154,7 @@ namespace LibraryWeb.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Оплата успішно підтверджена.";
-            return RedirectToAction("Details", "Membership", new { id = payment.Membership.MembershipID });
+            return RedirectToAction("Index", "Membership", new { id = payment.Membership.MembershipID });
         }
 
     }

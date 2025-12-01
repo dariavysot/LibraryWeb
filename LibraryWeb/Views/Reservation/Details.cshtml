@@ -1,26 +1,84 @@
 ﻿@model LibraryWeb.Models.Reservation
-
-<h2>Деталі резервації</h2>
-
-<p><strong>Статус:</strong> @Model.Status</p>
-<p><strong>Сума до сплати:</strong> @Model.Amount.ToString("C")</p>
-
-@if (Model.Payment != null)
-{
-    <p><strong>Статус оплати:</strong> @Model.Payment.Status</p>
-
-    @if (Model.Payment.Status == "Очікує оплату")
-    {
-        <form asp-controller="Payment" asp-action="ConfirmPayment" asp-route-paymentId="@Model.Payment.PaymentID" method="post">
-            <button type="submit" class="btn btn-success">💳 Оплатити</button>
-        </form>
-    }
-}
-else
-{
-    <form asp-controller="Payment" asp-action="CreatePaymentForReservation" asp-route-reservationId="@Model.ReservationID" method="post">
-        <button type="submit" class="btn btn-primary">Створити оплату</button>
-    </form>
+@{
+    ViewData["Title"] = "Reservation Details";
 }
 
-<a asp-controller="Reservation" asp-action="Index" class="btn btn-secondary mt-3">⬅ Назад до резервацій</a>
+<div class="profile-page">
+    <div class="profile-container">
+        <h2 class="profile-title">@ViewData["Title"]</h2>
+        <p class="admin-subtitle">Review the details of your reservation</p>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="auth-alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="auth-alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="profile-sections">
+            <div class="reservation-details-card">
+
+                <div class="reservation-left">
+                    <img src="@Model.Copy?.Book?.CoverImagePath"
+                         alt="@Model.Copy?.Book?.Title"
+                         class="reservation-cover-img" />
+                </div>
+
+                <div class="reservation-right">
+                    <h3 class="reservation-book-title">@Model.Copy?.Book?.Title</h3>
+                    <p class="reservation-author">@Model.Copy?.Book?.Author</p>
+
+                    <p><span class="label">Status:</span> @Model.Status</p>
+                    <p><span class="label">Start date:</span> @Model.StartDate.ToShortDateString()</p>
+                    <p><span class="label">End date:</span> @Model.EndDate.ToShortDateString()</p>
+                    <p><span class="label">Amount:</span> @Model.Amount.ToString("C")</p>
+
+                    @if (Model.Payment != null)
+                    {
+                        <p><span class="label">Payment status:</span> @Model.Payment.Status</p>
+                    }
+
+                    <div class="profile-actions">
+
+                        @* Оплата *@
+                        @if (Model.Payment?.Status == "Очікує оплату")
+                        {
+                            <form asp-controller="Payment"
+                                  asp-action="ConfirmPayment"
+                                  asp-route-paymentId="@Model.Payment.PaymentID"
+                                  method="post" style="display:inline">
+                                <button type="submit" class="btn btn-dark">💳 Pay</button>
+                            </form>
+                        }
+
+                        @* Створити оплату *@
+                        @if (Model.Payment == null)
+                        {
+                            <form asp-controller="Payment"
+                                  asp-action="CreatePaymentForReservation"
+                                  asp-route-reservationId="@Model.ReservationID"
+                                  method="post" style="display:inline">
+                                <button type="submit" class="btn btn-primary">Create Payment</button>
+                            </form>
+                        }
+
+                        @* Скасувати *@
+                        <form asp-action="Delete"
+                              asp-route-id="@Model.ReservationID"
+                              method="post"
+                              style="display:inline"
+                              onsubmit="return confirm('Скасувати резервацію?');">
+                            <button type="submit" class="btn btn-outline-dark">Cancel</button>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <a asp-controller="Reservation" asp-action="Index" class="btn btn-back">← Back to Reservations</a>
+    </div>
+</div>

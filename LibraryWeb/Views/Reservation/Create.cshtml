@@ -1,58 +1,72 @@
 ﻿@{
-    ViewData["Title"] = "Нова резервація";
+    ViewData["Title"] = "New Reservation";
     var books = ViewBag.Books as List<LibraryWeb.Models.Book>;
+    var prefillBook = ViewBag.PrefilledBookTitle as string ?? "";
 }
 
-<h2>Створення резервації</h2>
+<div class ="loan-page">
+    <div class="loan-container">
+        <h2 class="loan-title">Create a New Rservation</h2>
+        <p class="loan-subtitle">
+            Fill in the details for the new reservation.<a href="#"></a>
+        </p>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        <form asp-action="Create" method="post" class="loan-form">
+            @Html.AntiForgeryToken()
+            <div class="loan-form-group">
+                <label for="bookInput" class="loan-label">Book</label>
+                <input list="booksList" id="bookInput" name="selectedBookTitle" class="loan-input"
+                       placeholder="Start typing book title..." value="@prefillBook" />
+                <datalist id="booksList">
+                    @foreach (var book in (books ?? Enumerable.Empty<LibraryWeb.Models.Book>()))
+                    {
+                        <option value="@book.Title">@book.Title</option>
+                    }
+                </datalist>
+            </div>
 
-<form asp-action="Create" method="post">
-    <div class="form-group mb-3">
-        <label>Книга</label>
-        <select name="selectedBookId" class="form-control" required>
-            <option value="">-- Оберіть книгу --</option>
-            @foreach (var book in books ?? Enumerable.Empty<LibraryWeb.Models.Book>())
-            {
-                <option value="@book.BookID">@book.Title</option>
-            }
-        </select>
+            <div class="loan-form-group">
+                <label for="startDate" class="loan-label">Start Date</label>
+                <input type="date" id="startDate" name="startDate" class="loan-input"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="loan-form-group">
+                <label for="endDate" class="loan-label">End Date</label>
+                <input type="date" id="endDate" name="endDate" class="loan-input"
+                       value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="loan-form-group">
+                <label for="bookInput" class="loan-label">Amount payable</label>
+                <input type="text" id="paymentAmount" class="loan-input" readonly />
+            </div>
+            <div class="loan-actions">
+                <button type="submit" class="loan-btn loan-btn-primary">Create Reservation</button>
+                <a asp-action="Index" class="loan-btn loan-btn-outline">Back</a>
+            </div>
+
+        </form>
     </div>
 
-    <div class="form-group mb-3">
-        <label>Дата початку</label>
-        <input type="date" id="startDate" name="startDate" class="form-control"
-               value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-    </div>
+</div>
 
-    <div class="form-group mb-3">
-        <label>Дата завершення</label>
-        <input type="date" id="endDate" name="endDate" class="form-control"
-               value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" required />
-    </div>
 
-    <div class="form-group mb-3">
-        <label>Сума до оплати</label>
-        <input type="text" id="paymentAmount" class="form-control" readonly />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Створити резервацію</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
-</form>
 
 @section Scripts {
     <script>
         const startInput = document.getElementById("startDate");
         const endInput = document.getElementById("endDate");
         const amountInput = document.getElementById("paymentAmount");
-        const dailyRate = 20; // грн за день
+        const dailyRate = 50; // грн за день
 
         function calculateAmount() {
             const start = new Date(startInput.value);

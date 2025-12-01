@@ -1,83 +1,116 @@
 ﻿@model LibraryWeb.Models.Book
 
 @{
-    ViewData["Title"] = "Деталі книги";
+    ViewData["Title"] = "Book Details";
     var availableCopies = Model.Copies?.Count(c => c.Status == "Доступна") ?? 0;
-    bool canViewCopies = User.IsInRole("Admin") || User.IsInRole("Employee");
+    bool isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    bool isUser = User.IsInRole("User");
 }
 
-<h2 class="mb-3">📖 Деталі книги</h2>
+<div class="book-details-page">
+    <div class="book-details-container">
+        <h2 class="book-details-title">@Model.Title</h2>
 
-<div class="card shadow-sm p-4">
-    <h3 class="mb-3">@Model.Title</h3>
+        <div class="book-details-content">
+            <div class="book-details-image">
+                <img src="@Model.CoverImagePath" alt="@Model.Title" />
+            </div>
 
-    <dl class="row">
-        <dt class="col-sm-3">Автор</dt>
-        <dd class="col-sm-9">@Model.Author</dd>
+            <div class="book-details-info">
+                <dl>
+                    <dt>Author:</dt>
+                    <dd>@Model.Author</dd>
 
-        <dt class="col-sm-3">Тип</dt>
-        <dd class="col-sm-9">@Model.Type</dd>
+                    <dt>Type:</dt>
+                    <dd>@Model.Type</dd>
 
-        <dt class="col-sm-3">Жанр</dt>
-        <dd class="col-sm-9">@Model.Genre</dd>
+                    <dt>Genre:</dt>
+                    <dd>@Model.Genre</dd>
 
-        <dt class="col-sm-3">ISBN</dt>
-        <dd class="col-sm-9">@Model.ISBN</dd>
+                    <dt>ISBN:</dt>
+                    <dd>@Model.ISBN</dd>
 
-        <dt class="col-sm-3">Мова</dt>
-        <dd class="col-sm-9">@Model.Language</dd>
+                    <dt>Language:</dt>
+                    <dd>@Model.Language</dd>
 
-        <dt class="col-sm-3">Видавництво</dt>
-        <dd class="col-sm-9">@Model.PublishingHouse</dd>
+                    <dt>Publisher:</dt>
+                    <dd>@Model.PublishingHouse</dd>
 
-        <dt class="col-sm-3">Рік видання</dt>
-        <dd class="col-sm-9">@Model.PublicationYear</dd>
+                    <dt>Year:</dt>
+                    <dd>@Model.PublicationYear</dd>
 
-        <dt class="col-sm-3">Дата додавання</dt>
-        <dd class="col-sm-9">@Model.DateAdded.ToShortDateString()</dd>
+                    <dt>Added on:</dt>
+                    <dd>@Model.DateAdded.ToShortDateString()</dd>
 
-        <dt class="col-sm-3 text-success fw-bold">Доступні примірники</dt>
-        <dd class="col-sm-9 text-success fw-bold">@availableCopies</dd>
-    </dl>
+                    <dt>Available Copies:</dt>
+                    <dd class="text-success fw-bold">@availableCopies</dd>
+                </dl>
+            </div>
+        </div>
 
-    <hr />
-
-    @if (canViewCopies)
-    {
-        <h4>📚 Копії книги</h4>
-        @if (Model.Copies != null && Model.Copies.Any())
+        @if (!string.IsNullOrEmpty(Model.Description))
         {
-            <table class="table table-bordered mt-2">
-                <thead class="table-light">
-                    <tr>
-                        <th>Інвентарний №</th>
-                        <th>Стан</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var copy in Model.Copies)
+            <div class="book-details-description">
+                <h4>Description</h4>
+                <p>@Model.Description</p>
+            </div>
+        }
+
+        @if (isAdminOrEmployee)
+        {
+            <div class="book-details-copies">
+                <h4>Book Copies</h4>
+
+                @if (Model.Copies != null && Model.Copies.Any())
+                {
+                    <table class="book-table">
+                        <thead>
+                            <tr>
+                                <th>Inventory #</th>
+                                <th>Condition</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var copy in Model.Copies)
+                            {
+                                <tr>
+                                    <td>@copy.InventoryNum</td>
+                                    <td>@copy.Condition</td>
+                                    <td>@copy.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No copies added yet.</p>
+                }
+
+                <div class="book-details-actions">
+                    <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@Model.BookID"
+                       class="book-btn-primary">Manage Copies</a>
+
+                    @if (User.IsInRole("Admin"))
                     {
-                        <tr>
-                            <td>@copy.InventoryNum</td>
-                            <td>@copy.Condition</td>
-                            <td>@copy.Status</td>
-                        </tr>
+                        <a asp-controller="Book" asp-action="Edit" asp-route-id="@Model.BookID"
+                           class="book-btn-edit">Edit</a>
                     }
-                </tbody>
-            </table>
+                </div>
+            </div>
         }
-        else
+
+        @if (isUser)
         {
-            <p class="text-muted">Немає доданих копій для цієї книги.</p>
+            <div class="book-details-actions">
+                <a asp-controller="Reservations" asp-action="Create" asp-route-bookId="@Model.BookID"
+                   class="book-btn-primary">Reserve Book</a>
+            </div>
         }
 
-        <a asp-controller="Copies" asp-action="Index" asp-route-bookId="@Model.BookID" class="btn btn-primary mt-3">
-            📚 Керувати примірниками
-        </a>
-    }
-
-    <div class="mt-3">
-        <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">⬅ Назад до списку</a>
+        <div class="book-details-actions">
+            <a asp-controller="Book" asp-action="Index" class="book-btn-secondary">← Back to List</a>
+        </div>
     </div>
 </div>

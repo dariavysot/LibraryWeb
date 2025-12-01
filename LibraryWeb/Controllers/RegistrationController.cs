@@ -44,6 +44,18 @@ namespace LibraryWeb.Controllers
             if (_context.Users.Any(u => u.Login == model.Login))
                 ModelState.AddModelError("Login", "A user with this login already exists!");
 
+            if (!string.IsNullOrWhiteSpace(model.UserPassword))
+            {
+                var password = model.UserPassword;
+                if (password.Length < 8 ||
+                    !password.Any(char.IsUpper) ||
+                    !password.Any(char.IsDigit) ||
+                    !Regex.IsMatch(password, @"[\W_]"))
+                {
+                    ModelState.AddModelError("UserPassword", "Password must be at least 8 characters long, include an uppercase letter, a digit, and a special character.");
+                }
+            }
+
             if (!ModelState.IsValid)
                 return View("~/Views/User/Register.cshtml", model);
 

@@ -11,45 +11,83 @@
 </head>
 <body>
     <header class="navbar-custom">
-        <div class="logo">
-            <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-dark fw-bold">
-                The Private Shelf
-            </a>
+        <div class="logo-wrapper">
+            <div class="logo">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-dark fw-bold">
+                    The Private Shelf
+                </a>
+            </div>
         </div>
 
-        <nav class="nav-left">
-            <a class="nav-link text-dark" asp-controller="Home" asp-action="@(
-                                                                                                                                     (User?.Identity?.IsAuthenticated ?? false)
-                                                                                                                                         ? (User.IsInRole("Admin") ? "AdminDashboard"
-                                                                                                                                         : User.IsInRole("Employee") ? "EmployeeDashboard"
-                                                                                                                                         : "ReaderDashboard")
-                                                                                                                                         : "Index"
-                          )">Home</a>
+            <div class="nav-left-wrapper">
+                <nav class="nav-left">
+                    <a class="nav-link" asp-controller="Home" asp-action="@(
+                                                                                        (User?.Identity?.IsAuthenticated ?? false)
+                                                                                            ? (User.IsInRole("Admin") ? "AdminDashboard"
+                                                                                            : User.IsInRole("Employee") ? "EmployeeDashboard"
+                                                                                            : "ReaderDashboard")
+                                                                                            : "Index"
+                        )">Home</a>
 
-            <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About us</a>
-            <a class="nav-link text-dark" asp-controller="Home" asp-action="Team">Team</a>
-
-        </nav>
-        <div class="nav-right">
-            @if (User?.Identity?.IsAuthenticated ?? false)
-            {
-                <div class="dropdown d-inline-block ms-3">
-                    <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        @User.Identity?.Name
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    {
                         @if (User.IsInRole("Admin"))
                         {
-                            <li><a class="dropdown-item" asp-controller="MembershipType" asp-action="Index">Manage Memberships</a></li>
-                            <li><a class="dropdown-item" asp-controller="Book" asp-action="Index">Manage Books</a></li>
+                            <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
+                            <a class="nav-link" asp-controller="Loan" asp-action="Index">Loans</a>
+                            <a class="nav-link" asp-controller="AdminReservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="Payment" asp-action="Index">Payments</a>
                         }
                         else if (User.IsInRole("Employee"))
                         {
-                            <li><a class="dropdown-item" asp-controller="Loan" asp-action="Index">Manage Loans</a></li>
-                            <li><a class="dropdown-item" asp-controller="Copies" asp-action="Index" asp-route-bookId="0">Manage Copies</a></li>
+                            <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
+                            <a class="nav-link" asp-controller="Loan" asp-action="Index">Loans</a>
+                            <a class="nav-link" asp-controller="AdminReservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="Payment" asp-action="Index">Payments</a>
                         }
+                        else
+                        {
+                            <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
+                            <a class="nav-link" asp-controller="Reservation" asp-action="Index">Reservations</a>
+                            <a class="nav-link" asp-controller="ReaderLoan" asp-action="Index">Loans</a>
+                            <a class="nav-link" asp-controller="Membership" asp-action="Index">Membership</a>
+                        }
+                    }
+                    else
+                    {
+                        <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About us</a>
+                    }
+                </nav>
+            </div>
+
+
+        <div class="nav-right">
+            <form asp-controller="Book" asp-action="Index" method="get" class="nav-search-wrapper">
+                <div class="nav-search">
+                    <input type="text" name="search" placeholder="Search books..." class="nav-search-input" />
+                    <button type="submit" class="nav-search-btn">
+                        <img width="25" height="25" src="https://img.icons8.com/ios-glyphs/30/search--v1.png" alt="search" />
+                    </button>
+                </div>
+            </form>
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <div class="dropdown d-inline-block ms-3">
+                    <a class="nav-link dropdown-toggle text-dark"
+                       href="javascript:void(0)"
+                       id="userDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        @User.Identity?.Name
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Edit">Settings</a></li>
+
                         <li><hr class="dropdown-divider" /></li>
+
                         <li><a class="dropdown-item" asp-controller="Login" asp-action="Logout">Logout</a></li>
                     </ul>
                 </div>
